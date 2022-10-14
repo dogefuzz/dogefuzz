@@ -1,8 +1,8 @@
 package topic
 
 import (
-	"github.com/gongbell/contractfuzzer/bus"
-	"github.com/gongbell/contractfuzzer/bus/event"
+	"github.com/dogefuzz/dogefuzz/bus"
+	"github.com/dogefuzz/dogefuzz/bus/event"
 )
 
 const TASK_FINISH_TOPIC = "task:finish"

@@ -1,6 +1,6 @@
 package listener
 
-import "github.com/gongbell/contractfuzzer/bus/topic"
+import "github.com/dogefuzz/dogefuzz/bus/topic"
 
 type TaskRequestEventListener interface {
 	StartListening()

@@ -19,3 +19,6 @@ go.work
 
 # environment variable
 .env
+
+*.log
+*.db

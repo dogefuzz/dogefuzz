@@ -3,10 +3,10 @@ package api
 import (
 	"net/http"
 
+	"github.com/dogefuzz/dogefuzz/db/domain"
+	"github.com/dogefuzz/dogefuzz/db/repository"
+	"github.com/dogefuzz/dogefuzz/server/model"
 	"github.com/gin-gonic/gin"
-	"github.com/gongbell/contractfuzzer/db/domain"
-	"github.com/gongbell/contractfuzzer/db/repository"
-	"github.com/gongbell/contractfuzzer/server/model"
 	"go.uber.org/zap"
 )
 

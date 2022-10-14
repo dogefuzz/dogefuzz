@@ -1,7 +1,7 @@
 package listener
 
 import (
-	"github.com/gongbell/contractfuzzer/bus/topic"
+	"github.com/dogefuzz/dogefuzz/bus/topic"
 )
 
 type TaskFinishEventListener interface {

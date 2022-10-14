@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/gongbell/contractfuzzer/db"
-	"github.com/gongbell/contractfuzzer/db/domain"
+	"github.com/dogefuzz/dogefuzz/db"
+	"github.com/dogefuzz/dogefuzz/db/domain"
 	"github.com/mattn/go-sqlite3"
 )
 

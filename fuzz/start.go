@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gongbell/contractfuzzer/pkg/abi_gen"
+	"github.com/dogefuzz/dogefuzz/pkg/abi_gen"
 	"go.uber.org/zap"
 )
 

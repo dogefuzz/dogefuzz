@@ -4,12 +4,12 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dogefuzz/dogefuzz/bus"
+	"github.com/dogefuzz/dogefuzz/bus/event"
+	"github.com/dogefuzz/dogefuzz/db/repository"
+	"github.com/dogefuzz/dogefuzz/pkg/oracle"
+	"github.com/dogefuzz/dogefuzz/server/model"
 	"github.com/gin-gonic/gin"
-	"github.com/gongbell/contractfuzzer/bus"
-	"github.com/gongbell/contractfuzzer/bus/event"
-	"github.com/gongbell/contractfuzzer/db/repository"
-	"github.com/gongbell/contractfuzzer/pkg/oracle"
-	"github.com/gongbell/contractfuzzer/server/model"
 	"go.uber.org/zap"
 )
 

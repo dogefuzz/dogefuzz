@@ -13,8 +13,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/dogefuzz/dogefuzz/fuzz"
 	"github.com/gin-gonic/gin"
-	"github.com/gongbell/contractfuzzer/fuzz"
 	"go.uber.org/zap"
 )
 

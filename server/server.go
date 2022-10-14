@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dogefuzz/dogefuzz/env"
+	"github.com/dogefuzz/dogefuzz/server/api"
 	"github.com/gin-gonic/gin"
-	"github.com/gongbell/contractfuzzer/env"
-	"github.com/gongbell/contractfuzzer/server/api"
 )
 
 type Server interface {

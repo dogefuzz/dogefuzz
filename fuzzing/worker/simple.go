@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gongbell/contractfuzzer/fuzz"
+	"github.com/dogefuzz/dogefuzz/fuzz"
 	"go.uber.org/zap"
 )
 

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/gongbell/contractfuzzer/db/domain"
+	"github.com/dogefuzz/dogefuzz/db/domain"
 )
 
 var Oracles = map[string]domain.Oracle{

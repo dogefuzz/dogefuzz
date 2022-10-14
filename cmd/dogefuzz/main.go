@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gongbell/contractfuzzer/env"
-	"github.com/gongbell/contractfuzzer/fuzz"
-	"github.com/gongbell/contractfuzzer/fuzzing"
-	"github.com/gongbell/contractfuzzer/server"
+	"github.com/dogefuzz/dogefuzz/env"
+	"github.com/dogefuzz/dogefuzz/fuzz"
+	"github.com/dogefuzz/dogefuzz/fuzzing"
+	"github.com/dogefuzz/dogefuzz/server"
 )
 
 var (
@@ -45,7 +45,7 @@ func main() {
 	defer appEnv.Destroy()
 
 	// Initialize fuzzing leader
-	_ = new(fuzzing.DefaultFuzzingLeader).Init(appEnv.Logger(), appEnv.EventBus(), *abi_dir, *out_dir)
+	_ = new(fuzzing.DefaultFuzzingMaster).Init(appEnv.Logger(), appEnv.EventBus(), *abi_dir, *out_dir)
 
 	if err := fuzz.Init(appEnv.Logger(), *contract_list, *addr_seeds, *int_seeds, *uint_seeds, *string_seeds, *byte_seeds, *bytes_seeds, *fuzz_scale, *input_scale, *fstart, *fend, *addr_map, *abi_sigs_dir, *bin_sigs_dir, *listen_port, *tester_port); err != nil {
 		appEnv.Logger().Panic(fmt.Sprintf("Error while initializing fuzzer: %s\n", err))

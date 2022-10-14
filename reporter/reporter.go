@@ -1,6 +1,6 @@
 package reporter
 
-import "github.com/gongbell/contractfuzzer/env"
+import "github.com/dogefuzz/dogefuzz/env"
 
 type Reporter interface {
 }

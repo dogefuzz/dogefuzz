@@ -1,6 +1,6 @@
 package oracle
 
-import "github.com/gongbell/contractfuzzer/server/model"
+import "github.com/dogefuzz/dogefuzz/server/model"
 
 const (
 	CALLFAILED               = "HackerRootCallFailed"

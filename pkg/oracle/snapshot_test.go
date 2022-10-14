@@ -3,7 +3,7 @@ package oracle
 import (
 	"testing"
 
-	"github.com/gongbell/contractfuzzer/server/model"
+	"github.com/dogefuzz/dogefuzz/server/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

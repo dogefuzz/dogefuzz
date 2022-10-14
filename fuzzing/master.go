@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gongbell/contractfuzzer/bus"
-	"github.com/gongbell/contractfuzzer/bus/event"
-	"github.com/gongbell/contractfuzzer/fuzzing/worker"
-	"github.com/gongbell/contractfuzzer/pkg/common"
+	"github.com/dogefuzz/dogefuzz/bus"
+	"github.com/dogefuzz/dogefuzz/bus/event"
+	"github.com/dogefuzz/dogefuzz/fuzzing/worker"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"go.uber.org/zap"
 )
 
@@ -28,11 +28,11 @@ type FuzzingMaster interface {
 }
 
 type DefaultFuzzingMaster struct {
-	Logger   *zap.Logger
-	EventBus bus.EventBus
-	AbiDir   string
-	OutDir   string
-	Workers  *common.ConcurrentMap
+	Logger         *zap.Logger
+	EventBus       bus.EventBus
+	AbiDir         string
+	OutDir         string
+	Workers        *common.ConcurrentMap
 	RequestChannel chan string
 }
 
@@ -50,8 +50,6 @@ func (m DefaultFuzzingMaster) Init(
 
 	return m
 }
-
-
 
 func (m DefaultFuzzingMaster) startFuzzer(e event.TaskRequestEvent) {
 	m.Logger.Info(fmt.Sprintf("Running fuzzing task %s for %-8v", e.TaskId, e.Duration))

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/gongbell/contractfuzzer/bus"
-	"github.com/gongbell/contractfuzzer/db"
-	"github.com/gongbell/contractfuzzer/db/repository"
+	"github.com/dogefuzz/dogefuzz/bus"
+	"github.com/dogefuzz/dogefuzz/db"
+	"github.com/dogefuzz/dogefuzz/db/repository"
 	"go.uber.org/zap"
 )
 
