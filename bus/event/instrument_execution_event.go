@@ -1,6 +1,6 @@
 package event
 
-import "github.com/dogefuzz/dogefuzz/db/domain"
+import "github.com/dogefuzz/dogefuzz/domain"
 
 type InstrumentExecutionEvent struct {
 	Input        string

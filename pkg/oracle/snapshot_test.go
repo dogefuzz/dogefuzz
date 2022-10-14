@@ -3,7 +3,7 @@ package oracle
 import (
 	"testing"
 
-	"github.com/dogefuzz/dogefuzz/server/model"
+	"github.com/dogefuzz/dogefuzz/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -13,7 +13,7 @@ type SnapshotTestSuite struct {
 }
 
 func (suite *SnapshotTestSuite) TestEventsSnapshotCreationWithTrueValues() {
-	oracles := []model.OracleEvent{
+	oracles := []dto.OracleEvent{
 		"HackerRootCallFailed",
 		"HackerReentrancy",
 		"HackerRepeatedCall",
@@ -58,7 +58,7 @@ func (suite *SnapshotTestSuite) TestEventsSnapshotCreationWithTrueValues() {
 }
 
 func (suite *SnapshotTestSuite) TestEventsSnapshotCreationWithFalseValues() {
-	oracles := []model.OracleEvent{}
+	oracles := []dto.OracleEvent{}
 
 	expectedSnapshot := EventsSnapshot{
 		CallFailed:          false,

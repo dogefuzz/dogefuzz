@@ -1,6 +1,6 @@
 package db
 
-const migrationQuery = `
+const MIGRATION_QUERY = `
 CREATE TABLE IF NOT EXISTS tasks(
 	id TEXT PRIMARY KEY,
 	duration INT NOT NULL
@@ -65,8 +65,3 @@ CREATE TABLE IF NOT EXISTS tasks_contracts(
 				ON UPDATE CASCADE
 );
 `
-
-func (m SQLiteManager) Migrate() error {
-	_, err := m.db.Exec(migrationQuery)
-	return err
-}

@@ -1,6 +1,6 @@
 package oracle
 
-import "github.com/dogefuzz/dogefuzz/server/model"
+import "github.com/dogefuzz/dogefuzz/dto"
 
 const (
 	CALLFAILED               = "HackerRootCallFailed"
@@ -43,7 +43,7 @@ type EventsSnapshot struct {
 	BlockNumber         bool
 }
 
-func NewEventsSnapshot(oracles []model.OracleEvent) EventsSnapshot {
+func NewEventsSnapshot(oracles []dto.OracleEvent) EventsSnapshot {
 	snapshot := EventsSnapshot{}
 	for _, oracle := range oracles {
 		if oracle == CALLFAILED {

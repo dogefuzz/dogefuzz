@@ -1,6 +1,0 @@
-name()
-bidsCount()
-withdrawEther()
-registry()
-owner()
-token()

@@ -4,23 +4,24 @@ import (
 	evbus "github.com/asaskevich/EventBus"
 )
 
-type MemoryEventBus struct {
-	InternalBus evbus.Bus
+type memoryEventBus struct {
+	internalBus evbus.Bus
 }
 
-func (b MemoryEventBus) Init() (EventBus, error) {
-	b.InternalBus = evbus.New()
-	return b, nil
+func NewMemoryEventBus() *memoryEventBus {
+	return &memoryEventBus{
+		internalBus: evbus.New(),
+	}
 }
 
-func (b MemoryEventBus) Subscribe(topic string, fn interface{}) {
-	b.InternalBus.SubscribeAsync(topic, fn, true)
+func (b *memoryEventBus) Subscribe(topic string, fn interface{}) {
+	b.internalBus.SubscribeAsync(topic, fn, true)
 }
 
-func (b MemoryEventBus) SubscribeOnce(topic string, fn interface{}) {
-	b.InternalBus.SubscribeOnceAsync(topic, fn)
+func (b *memoryEventBus) SubscribeOnce(topic string, fn interface{}) {
+	b.internalBus.SubscribeOnceAsync(topic, fn)
 }
 
-func (b MemoryEventBus) Publish(topic string, args ...interface{}) {
-	b.InternalBus.Publish(topic, args...)
+func (b *memoryEventBus) Publish(topic string, args ...interface{}) {
+	b.internalBus.Publish(topic, args...)
 }
