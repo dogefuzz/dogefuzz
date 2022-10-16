@@ -28,7 +28,7 @@ func NewContractRepo(e Env) *contractRepo {
 
 func (r *contractRepo) Create(contract *domain.Contract) error {
 	contract.Id = uuid.NewString()
-	_, err := r.connection.GetDB().Exec("INSERT INTO contracts(id, name, address) values(?, ?, ?)", contract.Id, contract.Name, contract.Address)
+	_, err := r.connection.GetDB().Exec("INSERT INTO contracts(id, name, source, address) values(?, ?, ?)", contract.Id, contract.Name, contract.Source, contract.Address)
 	if err != nil {
 		var sqliteErr sqlite3.Error
 		if errors.As(err, &sqliteErr) {
@@ -45,7 +45,7 @@ func (r *contractRepo) Find(id string) (*domain.Contract, error) {
 	row := r.connection.GetDB().QueryRow("SELECT * FROM contracts WHERE id = ?", id)
 
 	var contract domain.Contract
-	if err := row.Scan(&contract.Id, &contract.Name, &contract.Address); err != nil {
+	if err := row.Scan(&contract.Id, &contract.Name, &contract.Source, &contract.Address); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNotExists
 		}
@@ -58,7 +58,7 @@ func (r *contractRepo) FindByName(name string) (*domain.Contract, error) {
 	row := r.connection.GetDB().QueryRow("SELECT * FROM contracts WHERE name = ?", name)
 
 	var contract domain.Contract
-	if err := row.Scan(&contract.Id, &contract.Name, &contract.Address); err != nil {
+	if err := row.Scan(&contract.Id, &contract.Name, &contract.Source, &contract.Address); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNotExists
 		}
@@ -71,7 +71,7 @@ func (r *contractRepo) FindByAddress(address string) (*domain.Contract, error) {
 	row := r.connection.GetDB().QueryRow("SELECT * FROM contracts WHERE address = ?", address)
 
 	var contract domain.Contract
-	if err := row.Scan(&contract.Id, &contract.Name, &contract.Address); err != nil {
+	if err := row.Scan(&contract.Id, &contract.Name, &contract.Source, &contract.Address); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNotExists
 		}

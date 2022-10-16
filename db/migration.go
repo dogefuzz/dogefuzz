@@ -47,7 +47,8 @@ CREATE TABLE IF NOT EXISTS tasks_oracles(
 CREATE TABLE IF NOT EXISTS contract(
 	id TEXT PRIMARY KEY,
 	name TEXT NOT NULL,
-	address TEXT NOT NULL UNIQUE
+	source TEXT NOT NULL,
+	address TEXT UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS tasks_contracts(

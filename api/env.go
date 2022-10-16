@@ -9,7 +9,9 @@ import (
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/controller"
 	"github.com/dogefuzz/dogefuzz/db"
+	"github.com/dogefuzz/dogefuzz/mapper"
 	"github.com/dogefuzz/dogefuzz/repo"
+	"github.com/dogefuzz/dogefuzz/service"
 	"go.uber.org/zap"
 )
 
@@ -17,12 +19,14 @@ type Env interface {
 	Logger() *zap.Logger
 	DbConnection() db.Connection
 	EventBus() bus.EventBus
+	ContractMapper() mapper.ContractMapper
 	OracleRepo() repo.OracleRepo
 	TaskOracleRepo() repo.TaskOracleRepo
 	TaskRepo() repo.TaskRepo
 	TransactionRepo() repo.TransactionRepo
 	ContractRepo() repo.ContractRepo
 	TaskContractRepo() repo.TaskContractRepo
+	ContractService() service.ContractService
 	TasksController() controller.TasksController
 	WeaknessesController() controller.WeaknessesController
 	ExecutionsController() controller.ExecutionsController
@@ -34,12 +38,14 @@ type env struct {
 	logger                 *zap.Logger
 	dbConnection           db.Connection
 	eventBus               bus.EventBus
+	contractMapper         mapper.ContractMapper
 	oracleRepo             repo.OracleRepo
 	taskOracleRepo         repo.TaskOracleRepo
 	taskRepo               repo.TaskRepo
 	transactionRepo        repo.TransactionRepo
 	contractRepo           repo.ContractRepo
 	taskContractRepo       repo.TaskContractRepo
+	contractService        service.ContractService
 	tasksController        controller.TasksController
 	weaknessesController   controller.WeaknessesController
 	executionsController   controller.ExecutionsController
@@ -91,6 +97,13 @@ func (e *env) EventBus() bus.EventBus {
 	return e.eventBus
 }
 
+func (e *env) ContractMapper() mapper.ContractMapper {
+	if e.contractMapper == nil {
+		e.contractMapper = mapper.NewContractMapper()
+	}
+	return e.contractMapper
+}
+
 func (e *env) OracleRepo() repo.OracleRepo {
 	if e.oracleRepo == nil {
 		e.oracleRepo = repo.NewOracleRepo(e)
@@ -131,6 +144,13 @@ func (e *env) TaskContractRepo() repo.TaskContractRepo {
 		e.taskContractRepo = repo.NewTaskContractRepo(e)
 	}
 	return e.taskContractRepo
+}
+
+func (e *env) ContractService() service.ContractService {
+	if e.contractService == nil {
+		e.contractService = service.NewContractService(e)
+	}
+	return e.contractService
 }
 
 func (e *env) ExecutionsController() controller.ExecutionsController {

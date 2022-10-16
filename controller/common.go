@@ -4,6 +4,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/bus"
 	"github.com/dogefuzz/dogefuzz/db"
 	"github.com/dogefuzz/dogefuzz/repo"
+	"github.com/dogefuzz/dogefuzz/service"
 	"go.uber.org/zap"
 )
 
@@ -17,4 +18,5 @@ type Env interface {
 	TransactionRepo() repo.TransactionRepo
 	ContractRepo() repo.ContractRepo
 	TaskContractRepo() repo.TaskContractRepo
+	ContractService() service.ContractService
 }
