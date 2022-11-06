@@ -2,6 +2,7 @@ package solc
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -9,24 +10,30 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/ethereum/go-ethereum/common/compiler"
 )
 
 var ErrEmptySourceFile = errors.New("solc: empty source string")
 var ErrSolidityBinaryCouldNotBeDownloaded = errors.New("the solidity binary could not be downloaded externally")
 
-type Compiler struct {
-	StorageFolder string
+type SolidityCompiler interface {
+	CompileSource(source string) (*Contract, error)
 }
 
-func NewCompiler(storageFolder string) *Compiler {
-	return &Compiler{StorageFolder: storageFolder}
+type solidityCompiler struct {
+	storageFolder string
 }
 
-func (c *Compiler) CompileSource(source string) (map[string]*compiler.Contract, error) {
+func NewSolidityCompiler(storageFolder string) *solidityCompiler {
+	return &solidityCompiler{storageFolder: storageFolder}
+}
+
+func (c *solidityCompiler) CompileSource(source string) (*Contract, error) {
 	if len(source) == 0 {
 		return nil, ErrEmptySourceFile
 	}
@@ -44,11 +51,25 @@ func (c *Compiler) CompileSource(source string) (map[string]*compiler.Contract, 
 	args := append(buildArgs(solcVersion), "--")
 	cmd := exec.Command(solcBinaryLocation, append(args, "-")...)
 	cmd.Stdin = strings.NewReader(source)
-	return run(cmd, source, solcVersion)
+	contracts, err := run(cmd, source, solcVersion)
+	if err != nil {
+		return nil, err
+	}
+
+	contractNameKey := common.GetFirstStringKeyFromMap(contracts)
+	contract := contracts[contractNameKey]
+	abiDefinition, err := json.Marshal(contract.Info.AbiDefinition)
+	if err != nil {
+		return nil, err
+	}
+	compiledCode := contract.Code
+	contractName := parseStdinSolidityContractName(contractNameKey)
+
+	return NewContract(contractName, string(abiDefinition), compiledCode), nil
 }
 
-func (c *Compiler) downloadSolcBinaryBasedOnVersion(version *semver.Version) (string, error) {
-	solcDestinationFolder := path.Join(c.StorageFolder, "solc")
+func (c *solidityCompiler) downloadSolcBinaryBasedOnVersion(version *semver.Version) (string, error) {
+	solcDestinationFolder := path.Join(c.storageFolder, "solc")
 	if err := os.MkdirAll(solcDestinationFolder, os.ModePerm); err != nil {
 		return "", err
 	}
@@ -133,4 +154,9 @@ func buildSolcBinaryForLinuxURLBasedOnVersion(version *semver.Version) string {
 
 func getSimplifiedVersionString(version *semver.Version) string {
 	return fmt.Sprintf("%d.%d.%d", version.Major(), version.Minor(), version.Patch())
+}
+
+func parseStdinSolidityContractName(contractName string) string {
+	re := regexp.MustCompile(`^<stdin>:`)
+	return re.ReplaceAllString(contractName, "")
 }

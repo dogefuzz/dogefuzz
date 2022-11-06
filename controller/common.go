@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/dogefuzz/dogefuzz/bus"
 	"github.com/dogefuzz/dogefuzz/db"
+	"github.com/dogefuzz/dogefuzz/pkg/solc"
 	"github.com/dogefuzz/dogefuzz/repo"
 	"github.com/dogefuzz/dogefuzz/service"
 	"go.uber.org/zap"
@@ -19,4 +20,5 @@ type Env interface {
 	ContractRepo() repo.ContractRepo
 	TaskContractRepo() repo.TaskContractRepo
 	ContractService() service.ContractService
+	SolidityCompiler() solc.SolidityCompiler
 }

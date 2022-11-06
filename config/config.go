@@ -1,11 +1,16 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"os"
+	"path"
+
+	"github.com/spf13/viper"
+)
 
 type Config struct {
-	DatabaseName string `mapstructure:"DATABASE_NAME"`
-
-	ServerPort int `mapstructure:"SERVER_PORT"`
+	StorageFolder string `mapstructure:"STORAGE_FOLDER"`
+	DatabaseName  string `mapstructure:"DATABASE_NAME"`
+	ServerPort    int    `mapstructure:"SERVER_PORT"`
 }
 
 func LoadConfig() (*Config, error) {
@@ -20,5 +25,10 @@ func LoadConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if cfg.StorageFolder == "" {
+		cfg.StorageFolder = path.Join(os.TempDir(), "dogefuzz")
+	}
+
 	return &cfg, nil
 }

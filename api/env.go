@@ -10,6 +10,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/controller"
 	"github.com/dogefuzz/dogefuzz/db"
 	"github.com/dogefuzz/dogefuzz/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/solc"
 	"github.com/dogefuzz/dogefuzz/repo"
 	"github.com/dogefuzz/dogefuzz/service"
 	"go.uber.org/zap"
@@ -19,6 +20,7 @@ type Env interface {
 	Logger() *zap.Logger
 	DbConnection() db.Connection
 	EventBus() bus.EventBus
+	SolidityCompiler() solc.SolidityCompiler
 	ContractMapper() mapper.ContractMapper
 	OracleRepo() repo.OracleRepo
 	TaskOracleRepo() repo.TaskOracleRepo
@@ -38,6 +40,7 @@ type env struct {
 	logger                 *zap.Logger
 	dbConnection           db.Connection
 	eventBus               bus.EventBus
+	solidityCompiler       solc.SolidityCompiler
 	contractMapper         mapper.ContractMapper
 	oracleRepo             repo.OracleRepo
 	taskOracleRepo         repo.TaskOracleRepo
@@ -95,6 +98,13 @@ func (e *env) EventBus() bus.EventBus {
 		e.eventBus = bus.NewMemoryEventBus()
 	}
 	return e.eventBus
+}
+
+func (e *env) SolidityCompiler() solc.SolidityCompiler {
+	if e.solidityCompiler == nil {
+		e.solidityCompiler = solc.NewSolidityCompiler(e.cfg.StorageFolder)
+	}
+	return e.solidityCompiler
 }
 
 func (e *env) ContractMapper() mapper.ContractMapper {

@@ -1,13 +1,17 @@
 package dto
 
 type NewContractDTO struct {
-	Name   string `json:"name"`
-	Source string `json:"source"`
+	Source        string `json:"source"`
+	CompiledCode  string `json:"compiledCode"`
+	AbiDefinition string `json:""`
+	Name          string `json:"name"`
 }
 
 type ContractDTO struct {
-	Id      string `json:"id"`
-	Address string `json:"address"`
-	Source  string `json:"source"`
-	Name    string `json:"name"`
+	Id            string `json:"id"`
+	Address       string `json:"address"`
+	Source        string `json:"source"`
+	CompiledCode  string `json:"compiledCode"`
+	AbiDefinition string `json:""`
+	Name          string `json:"name"`
 }
