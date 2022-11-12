@@ -19,6 +19,9 @@ go.work
 
 # environment variable
 .env
+.env.*
 
 *.log
 *.db
+
+.vscode/

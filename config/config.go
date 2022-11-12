@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	StorageFolder string `mapstructure:"STORAGE_FOLDER"`
-	DatabaseName  string `mapstructure:"DATABASE_NAME"`
-	ServerPort    int    `mapstructure:"SERVER_PORT"`
+	StorageFolder   string `mapstructure:"STORAGE_FOLDER"`
+	DatabaseName    string `mapstructure:"DATABASE_NAME"`
+	ServerPort      int    `mapstructure:"SERVER_PORT"`
+	GethNodeAddress string `mapstructure:"GETH_NODE_ADDRESS"`
 }
 
 func LoadConfig() (*Config, error) {

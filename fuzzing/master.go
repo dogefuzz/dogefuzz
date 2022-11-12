@@ -27,7 +27,7 @@ type FuzzingMaster interface {
 	StartTimer(taskId string, duration time.Duration)
 }
 
-type DefaultFuzzingMaster struct {
+type fuzzingMaster struct {
 	Logger         *zap.Logger
 	EventBus       bus.EventBus
 	AbiDir         string
@@ -36,26 +36,26 @@ type DefaultFuzzingMaster struct {
 	RequestChannel chan string
 }
 
-func (m DefaultFuzzingMaster) Init(
+func NewFuzzingMaster(
 	logger *zap.Logger,
 	eventBus bus.EventBus,
 	abiDir string,
 	outDir string,
-) DefaultFuzzingMaster {
-	m.Logger = logger
-	m.EventBus = eventBus
-	m.AbiDir = abiDir
-	m.OutDir = outDir
-	m.Workers = &common.ConcurrentMap{}
-
-	return m
+) *fuzzingMaster {
+	return &fuzzingMaster{
+		Logger:   logger,
+		EventBus: eventBus,
+		AbiDir:   abiDir,
+		OutDir:   outDir,
+		Workers:  &common.ConcurrentMap{},
+	}
 }
 
-func (m DefaultFuzzingMaster) startFuzzer(e event.TaskRequestEvent) {
+func (m *fuzzingMaster) StartFuzzer(e event.TaskRequestEvent) {
 	m.Logger.Info(fmt.Sprintf("Running fuzzing task %s for %-8v", e.TaskId, e.Duration))
 
-	taskCancelChannel := make(chan bool, 0)
-	timerCancelChannel := make(chan bool, 0)
+	taskCancelChannel := make(chan bool)
+	timerCancelChannel := make(chan bool)
 
 	worker, err := m.getWorkerType(e.FuzzingType, taskCancelChannel)
 	if err != nil {
@@ -72,29 +72,30 @@ func (m DefaultFuzzingMaster) startFuzzer(e event.TaskRequestEvent) {
 	worker.Start(e.TaskId, e.Contracts, e.Duration)
 }
 
-func (m DefaultFuzzingMaster) StartTimer(taskId string, duration time.Duration, timerCancelChannel chan bool) {
+func (m *fuzzingMaster) StartTimer(taskId string, duration time.Duration, timerCancelChannel chan bool) {
 	m.Logger.Info(fmt.Sprintf("Start timer for %-8v", duration))
 
 	timer := time.NewTimer(duration)
+loop:
 	for {
 		select {
 		case <-timer.C:
 			m.Logger.Info(fmt.Sprintf("Stopping fuzzer task %s", taskId))
 			m.EventBus.Publish("task:finish", taskId)
 			m.Logger.Info(fmt.Sprintf("Stopping fuzzing timer %s", taskId))
-			break
+			break loop
 		case <-timerCancelChannel:
 			m.Logger.Info(fmt.Sprintf("Stopping fuzzing timer %s", taskId))
-			break
+			break loop
 		}
 	}
 }
 
-func (m DefaultFuzzingMaster) getWorkerType(fuzzingType string, taskCancelChannel chan bool) (worker.FuzzingWorker, error) {
+func (m *fuzzingMaster) getWorkerType(fuzzingType string, taskCancelChannel chan bool) (worker.FuzzingWorker, error) {
 	var fuzzingWorker worker.FuzzingWorker
 	switch fuzzingType {
 	case BLACKBOX_FUZZING:
-		fuzzingWorker = new(worker.SimpleFuzzingWorker).Init(taskCancelChannel, m.Logger, m.AbiDir, m.OutDir)
+		fuzzingWorker = worker.NewSimpleFuzzingWorker(taskCancelChannel, m.Logger, m.AbiDir, m.OutDir)
 	case GREYBOX_FUZZING:
 		return nil, ErrWorkerTypeNotImplemented
 	case DIRECTED_GREYBOX_FUZZING:
