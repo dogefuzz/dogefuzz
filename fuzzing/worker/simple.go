@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dogefuzz/dogefuzz/fuzz"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"go.uber.org/zap"
 )
@@ -32,9 +31,9 @@ func NewSimpleFuzzingWorker(
 
 func (w *simpleFuzzingWorker) Start(taskId string, contracts []string, duration time.Duration) {
 	w.logger.Info(fmt.Sprintf("Running a simple fuzzing for %-8v", duration))
-	go fuzz.Start(w.abiDir, w.outDir, taskId)
+	// go fuzz.Start(w.abiDir, w.outDir, taskId)
 	<-w.cancelChannel
-	fuzz.G_stop <- true
+	// fuzz.G_stop <- true
 }
 
 func (w *simpleFuzzingWorker) GenerateInput(taskId string, contract *abi.ABI) {
