@@ -1,0 +1,21 @@
+package common
+
+import (
+	"math/big"
+	"reflect"
+)
+
+var (
+	Uint8T  = reflect.TypeOf(uint8(0))
+	Uint16T = reflect.TypeOf(uint16(0))
+	Uint32T = reflect.TypeOf(uint32(0))
+	Uint64T = reflect.TypeOf(uint64(0))
+	Int8T   = reflect.TypeOf(int8(0))
+	Int16T  = reflect.TypeOf(int16(0))
+	Int32T  = reflect.TypeOf(int32(0))
+	Int64T  = reflect.TypeOf(int64(0))
+	BigIntT = reflect.TypeOf(&big.Int{})
+	BoolT   = reflect.TypeOf(false)
+	StringT = reflect.TypeOf("")
+	SliceT  = func(typ reflect.Type) reflect.Type { return reflect.SliceOf(typ) }
+)
