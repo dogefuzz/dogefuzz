@@ -29,3 +29,7 @@ func (s *set[T]) Has(value T) bool {
 	}
 	return false
 }
+
+func (s *set[T]) Len() int {
+	return len(s.internal)
+}
