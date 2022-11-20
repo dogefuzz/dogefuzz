@@ -8,6 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
+var ErrInvalidPublicKey = errors.New("could not parse the private key from the provided hex string")
 var ErrCouldNotDerivePublicKey = errors.New("could not derive public key from private key")
 
 type Wallet interface {
@@ -40,7 +41,7 @@ func NewWallet() (*wallet, error) {
 func NewWalletFromPrivateKeyHex(hex string) (*wallet, error) {
 	privateKey, err := crypto.HexToECDSA(hex)
 	if err != nil {
-		return nil, err
+		return nil, ErrInvalidPublicKey
 	}
 
 	publicKey, ok := privateKey.Public().(*ecdsa.PublicKey)

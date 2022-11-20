@@ -3,6 +3,7 @@ package geth
 import (
 	"testing"
 
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -39,4 +40,11 @@ func (s *WalletIntegrationTestSuite) TestNewWalletFromPrivateKeyHex_ShouldGenera
 
 	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), wallet.GetPublicKeyHex(), walletByPrivateKeyHex.GetPublicKeyHex())
+}
+
+func (s *WalletIntegrationTestSuite) TestNewWalletFromPrivateKeyHex_ShouldReturnErrCouldNotDerivePublicKey_WhenReceivedAnInvalidWalletPrivateKeyHex() {
+	invalidPrivateKeyHex := gofakeit.HexUint256()
+	_, err := NewWalletFromPrivateKeyHex(invalidPrivateKeyHex)
+
+	assert.ErrorIs(s.T(), err, ErrInvalidPublicKey)
 }
