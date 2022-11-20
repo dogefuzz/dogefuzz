@@ -13,7 +13,7 @@ type TypeHandler interface {
 	GetMutators() []func()
 }
 
-func GetTypeHandler[T any](typ abi.Type) (TypeHandler, error) {
+func GetTypeHandler(typ abi.Type) (TypeHandler, error) {
 	switch typ.GetType() {
 	case common.BoolT:
 		return NewBoolHandler(), nil

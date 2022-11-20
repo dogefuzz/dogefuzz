@@ -8,29 +8,29 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type BoolSerializerTestSuite struct {
+type BoolHandlerTestSuite struct {
 	suite.Suite
 }
 
-func TestBoolSerializerTestSuite(t *testing.T) {
-	suite.Run(t, new(BoolSerializerTestSuite))
+func TestBoolHandlerTestSuite(t *testing.T) {
+	suite.Run(t, new(BoolHandlerTestSuite))
 }
 
-func (s *BoolSerializerTestSuite) TestDeserializeShouldReturnErrorWhenReceivedInvalidBool() {
+func (s *BoolHandlerTestSuite) TestDeserializeShouldReturnErrorWhenReceivedInvalidBool() {
 	invalidBool := gofakeit.Word()
 	boolHandler := NewBoolHandler()
 	err := boolHandler.Deserialize(invalidBool)
 	assert.ErrorIs(s.T(), err, ErrInvalidBool)
 }
 
-func (s *BoolSerializerTestSuite) TestMapStringToBoolShouldReturnErrorWhenReceivedInvalidBool() {
+func (s *BoolHandlerTestSuite) TestMapStringToBoolShouldReturnErrorWhenReceivedInvalidBool() {
 	invalidBool := gofakeit.Word()
 	boolHandler := NewBoolHandler()
 	err := boolHandler.Deserialize(invalidBool)
 	assert.ErrorIs(s.T(), err, ErrInvalidBool)
 }
 
-func (s *BoolSerializerTestSuite) TestMapStringToBoolShouldReturnErrorWhenReceivedValidBool() {
+func (s *BoolHandlerTestSuite) TestMapStringToBoolShouldReturnErrorWhenReceivedValidBool() {
 	validBoolValues := map[string]bool{
 		"true":  true,
 		"TRUE":  true,

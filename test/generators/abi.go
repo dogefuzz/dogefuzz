@@ -20,3 +20,8 @@ func IntTypeGen(bitSize int) abi.Type {
 	uintTyp, _ := abi.NewType(fmt.Sprintf("int%d", bitSize), "", nil)
 	return uintTyp
 }
+
+func StringTypeGen() abi.Type {
+	uintTyp, _ := abi.NewType("string", "", nil)
+	return uintTyp
+}
