@@ -1,4 +1,4 @@
-package solc
+package common
 
 type Contract struct {
 	Name          string

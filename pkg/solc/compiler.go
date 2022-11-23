@@ -22,7 +22,7 @@ var ErrEmptySourceFile = errors.New("solc: empty source string")
 var ErrSolidityBinaryCouldNotBeDownloaded = errors.New("the solidity binary could not be downloaded externally")
 
 type SolidityCompiler interface {
-	CompileSource(source string) (*Contract, error)
+	CompileSource(source string) (*common.Contract, error)
 }
 
 type solidityCompiler struct {
@@ -33,7 +33,7 @@ func NewSolidityCompiler(storageFolder string) *solidityCompiler {
 	return &solidityCompiler{storageFolder: storageFolder}
 }
 
-func (c *solidityCompiler) CompileSource(source string) (*Contract, error) {
+func (c *solidityCompiler) CompileSource(source string) (*common.Contract, error) {
 	if len(source) == 0 {
 		return nil, ErrEmptySourceFile
 	}
@@ -65,7 +65,7 @@ func (c *solidityCompiler) CompileSource(source string) (*Contract, error) {
 	compiledCode := contract.Code
 	contractName := parseStdinSolidityContractName(contractNameKey)
 
-	return NewContract(contractName, string(abiDefinition), compiledCode), nil
+	return common.NewContract(contractName, string(abiDefinition), compiledCode), nil
 }
 
 func (c *solidityCompiler) downloadSolcBinaryBasedOnVersion(version *semver.Version) (string, error) {

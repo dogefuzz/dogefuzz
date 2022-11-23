@@ -1,0 +1,8 @@
+version: "3.9"
+
+services:
+  geth:
+    build: 
+      context: https://medisco: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@github.com/dogefuzz/enhanced-go-ethereum.git#main
+    ports:
+      - "8545:8545"

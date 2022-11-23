@@ -3,11 +3,13 @@ package service
 import (
 	"github.com/dogefuzz/dogefuzz/dto"
 	"github.com/dogefuzz/dogefuzz/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/repo"
 )
 
 type ContractService interface {
 	Create(ctr *dto.NewContractDTO) (*dto.ContractDTO, error)
+	Deploy(ctr *common.Contract)
 }
 
 type contractService struct {

@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"errors"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 )
@@ -16,7 +17,7 @@ type Wallet interface {
 	GetPrivateKeyHex() string
 	GetPublicKey() *ecdsa.PublicKey
 	GetPublicKeyHex() string
-	GetAddress() string
+	GetAddress() common.Address
 }
 
 type wallet struct {
@@ -70,6 +71,6 @@ func (w *wallet) GetPublicKeyHex() string {
 	return hexutil.Encode(publicKeyAsBytes)[4:] // Removing 0x04 prefix
 }
 
-func (w *wallet) GetAddress() string {
-	return crypto.PubkeyToAddress(*w.publicKey).Hex()
+func (w *wallet) GetAddress() common.Address {
+	return crypto.PubkeyToAddress(*w.publicKey)
 }

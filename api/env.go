@@ -10,6 +10,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/controller"
 	"github.com/dogefuzz/dogefuzz/db"
 	"github.com/dogefuzz/dogefuzz/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/geth"
 	"github.com/dogefuzz/dogefuzz/pkg/solc"
 	"github.com/dogefuzz/dogefuzz/repo"
 	"github.com/dogefuzz/dogefuzz/service"
@@ -33,6 +34,7 @@ type Env interface {
 	WeaknessesController() controller.WeaknessesController
 	ExecutionsController() controller.ExecutionsController
 	TransactionsController() controller.TransactionsController
+	Deployer() geth.Deployer
 }
 
 type env struct {
@@ -53,6 +55,7 @@ type env struct {
 	weaknessesController   controller.WeaknessesController
 	executionsController   controller.ExecutionsController
 	transactionsController controller.TransactionsController
+	deployer               geth.Deployer
 }
 
 func NewEnv(cfg *config.Config) *env {
@@ -189,6 +192,21 @@ func (e *env) WeaknessesController() controller.WeaknessesController {
 		e.weaknessesController = controller.NewWeaknessesController(e)
 	}
 	return e.weaknessesController
+}
+
+func (e *env) Deployer() geth.Deployer {
+	if e.deployer == nil {
+		wallet, err := geth.NewWallet()
+		if err != nil {
+			panic(err)
+		}
+
+		e.deployer, err = geth.NewDeployer(e.cfg.GethConfig, wallet)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return e.deployer
 }
 
 func initLogger() (*zap.Logger, error) {
