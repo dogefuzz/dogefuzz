@@ -9,14 +9,13 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 
 	gethcommon "github.com/ethereum/go-ethereum/common"
 )
 
 type Deployer interface {
-	Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (gethcommon.Address, *types.Transaction, error)
+	Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error)
 }
 
 type deployer struct {
@@ -34,25 +33,25 @@ func NewDeployer(cfg config.GethConfig, wallet Wallet) (*deployer, error) {
 	return &deployer{client, wallet, cfg}, nil
 }
 
-func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (gethcommon.Address, *types.Transaction, error) {
+func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error) {
 	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 	if err != nil {
-		return gethcommon.Address{}, nil, err
+		return "", err
 	}
 
 	nonce, err := d.client.PendingNonceAt(ctx, d.wallet.GetAddress())
 	if err != nil {
-		return gethcommon.Address{}, nil, err
+		return "", err
 	}
 
 	gasPrice, err := d.client.SuggestGasPrice(ctx)
 	if err != nil {
-		return gethcommon.Address{}, nil, err
+		return "", err
 	}
 
 	auth, err := bind.NewKeyedTransactorWithChainID(d.wallet.GetPrivateKey(), big.NewInt(d.cfg.ChainID))
 	if err != nil {
-		return gethcommon.Address{}, nil, err
+		return "", err
 	}
 
 	auth.Nonce = big.NewInt(int64(nonce))
@@ -60,9 +59,9 @@ func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args .
 	auth.GasLimit = uint64(300000)
 	auth.GasPrice = gasPrice
 
-	address, tx, _, err := bind.DeployContract(auth, parsedABI, gethcommon.FromHex(contract.CompiledCode), d.client, args...)
+	address, _, _, err := bind.DeployContract(auth, parsedABI, gethcommon.FromHex(contract.CompiledCode), d.client, args...)
 	if err != nil {
-		return gethcommon.Address{}, nil, err
+		return "", err
 	}
-	return address, tx, nil
+	return address.Hex(), nil
 }

@@ -3,7 +3,7 @@ package dto
 type NewContractDTO struct {
 	Source        string `json:"source"`
 	CompiledCode  string `json:"compiledCode"`
-	AbiDefinition string `json:""`
+	AbiDefinition string `json:"abiDefinition"`
 	Name          string `json:"name"`
 }
 

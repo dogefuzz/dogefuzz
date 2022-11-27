@@ -5,4 +5,5 @@ type Contract struct {
 	Address string
 	Source  string
 	Name    string
+	Args    string
 }
