@@ -6,3 +6,8 @@ services:
       context: https://medisco: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@github.com/dogefuzz/enhanced-go-ethereum.git#main
     ports:
       - "8545:8545"
+  vandal:
+    build: 
+      context: https://medisco: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@github.com/dogefuzz/vandal-api.git#main
+    ports:
+      - "5005:5000"
