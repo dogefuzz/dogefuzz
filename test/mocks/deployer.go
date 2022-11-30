@@ -15,7 +15,9 @@ func (m *DeployerMock) Deploy(ctx context.Context, contract *common.Contract, ar
 	arguments := make([]interface{}, 0)
 	arguments = append(arguments, ctx)
 	arguments = append(arguments, contract)
-	arguments = append(arguments, args...)
+	if len(args) > 0 {
+		arguments = append(arguments, args...)
+	}
 	mockArgs := m.Called(arguments...)
 	return mockArgs.Get(0).(string), mockArgs.Error(1)
 }
