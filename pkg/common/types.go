@@ -19,3 +19,11 @@ var (
 	StringT = reflect.TypeOf("")
 	SliceT  = func(typ reflect.Type) reflect.Type { return reflect.SliceOf(typ) }
 )
+
+type FuzzingType string
+
+const (
+	BLACKBOX_FUZZING         FuzzingType = "blackbox"
+	GREYBOX_FUZZING          FuzzingType = "greybox"
+	DIRECTED_GREYBOX_FUZZING FuzzingType = "directed_greybox"
+)

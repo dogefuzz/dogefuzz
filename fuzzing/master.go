@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/dogefuzz/dogefuzz/bus"
-	"github.com/dogefuzz/dogefuzz/bus/event"
 	"github.com/dogefuzz/dogefuzz/fuzzing/worker"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"go.uber.org/zap"
@@ -51,25 +50,25 @@ func NewFuzzingMaster(
 	}
 }
 
-func (m *fuzzingMaster) StartFuzzer(e event.TaskRequestEvent) {
-	m.Logger.Info(fmt.Sprintf("Running fuzzing task %s for %-8v", e.TaskId, e.Duration))
+func (m *fuzzingMaster) StartFuzzer(e bus.TaskStartEvent) {
+	// m.Logger.Info(fmt.Sprintf("Running fuzzing task %s for %-8v", e.TaskId, e.Duration))
 
-	taskCancelChannel := make(chan bool)
-	timerCancelChannel := make(chan bool)
+	// taskCancelChannel := make(chan bool)
+	// timerCancelChannel := make(chan bool)
 
-	worker, err := m.getWorkerType(e.FuzzingType, taskCancelChannel)
-	if err != nil {
-		m.Logger.Error(fmt.Sprintf("Error while starting worker: %s", e.TaskId))
-		return
-	}
+	// worker, err := m.getWorkerType(e.FuzzingType, taskCancelChannel)
+	// if err != nil {
+	// 	m.Logger.Error(fmt.Sprintf("Error while starting worker: %s", e.TaskId))
+	// 	return
+	// }
 
-	workerInfo := FuzzingTask{}
-	workerInfo.TaskCancelChannel = taskCancelChannel
-	workerInfo.TimerCancelChannel = timerCancelChannel
-	m.Workers.Add(e.TaskId, workerInfo)
+	// workerInfo := FuzzingTask{}
+	// workerInfo.TaskCancelChannel = taskCancelChannel
+	// workerInfo.TimerCancelChannel = timerCancelChannel
+	// m.Workers.Add(e.TaskId, workerInfo)
 
-	go m.StartTimer(e.TaskId, e.Duration, timerCancelChannel)
-	worker.Start(e.TaskId, e.Contracts, e.Duration)
+	// go m.StartTimer(e.TaskId, e.Duration, timerCancelChannel)
+	// worker.Start(e.TaskId, e.Contracts, e.Duration)
 }
 
 func (m *fuzzingMaster) StartTimer(taskId string, duration time.Duration, timerCancelChannel chan bool) {

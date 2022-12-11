@@ -1,32 +1,28 @@
 package listener
 
-import (
-	"github.com/dogefuzz/dogefuzz/bus/topic"
-)
-
 type TaskFinishEventListener interface {
 	StartListening()
 }
 
-type DefaultTaskFinishEventListener struct {
-	fuzzingMasterFinishChannel chan string
-	taskFinishTopic            topic.TaskFinishTopic
-}
+// type DefaultTaskFinishEventListener struct {
+// 	fuzzingMasterFinishChannel chan string
+// 	taskFinishTopic            topic.TaskFinishTopic
+// }
 
-func (l DefaultTaskFinishEventListener) Init(
-	fuzzingMasterFinishChannel chan string,
-	taskFinishTopic topic.TaskFinishTopic,
-) DefaultTaskFinishEventListener {
-	l.fuzzingMasterFinishChannel = fuzzingMasterFinishChannel
-	l.taskFinishTopic = taskFinishTopic
+// func (l DefaultTaskFinishEventListener) Init(
+// 	fuzzingMasterFinishChannel chan string,
+// 	taskFinishTopic topic.TaskFinishTopic,
+// ) DefaultTaskFinishEventListener {
+// 	l.fuzzingMasterFinishChannel = fuzzingMasterFinishChannel
+// 	l.taskFinishTopic = taskFinishTopic
 
-	return l
-}
+// 	return l
+// }
 
-func (l DefaultTaskFinishEventListener) StartListening() {
-	l.taskFinishTopic.Subscribe(l.processEvent)
-}
+// func (l DefaultTaskFinishEventListener) StartListening() {
+// 	l.taskFinishTopic.Subscribe(l.processEvent)
+// }
 
-func (l DefaultTaskFinishEventListener) processEvent() {
+// func (l DefaultTaskFinishEventListener) processEvent() {
 
-}
+// }

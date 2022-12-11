@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/dogefuzz/dogefuzz/bus"
-	"github.com/dogefuzz/dogefuzz/bus/event"
 	"github.com/dogefuzz/dogefuzz/dto"
 	"github.com/dogefuzz/dogefuzz/repo"
 	"github.com/gin-gonic/gin"
@@ -47,10 +46,8 @@ func (ctrl *executionsController) Create(c *gin.Context) {
 		return
 	}
 
-	ctrl.eventBus.Publish("instrument:execution", event.InstrumentExecutionEvent{
-		Input:        request.Input,
-		Instructions: request.Instructions,
-		Transaction:  *transaction,
+	ctrl.eventBus.Publish("instrument:execution", bus.InstrumentExecutionEvent{
+		TransactionId: transaction.Id,
 	})
 	c.AbortWithStatus(200)
 }
