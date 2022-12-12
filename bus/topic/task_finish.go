@@ -10,8 +10,8 @@ type taskFinishTopic struct {
 	eventBus bus.EventBus
 }
 
-func NewTaskFinishTopic(eventBus bus.EventBus) *taskFinishTopic {
-	return &taskFinishTopic{eventBus: eventBus}
+func NewTaskFinishTopic(e env) *taskFinishTopic {
+	return &taskFinishTopic{eventBus: e.EventBus()}
 }
 
 func (t *taskFinishTopic) Publish(e bus.TaskFinishEvent) {

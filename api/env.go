@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/dogefuzz/dogefuzz/bus"
+	"github.com/dogefuzz/dogefuzz/bus/topic"
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/controller"
 	"github.com/dogefuzz/dogefuzz/db"
@@ -23,6 +24,9 @@ type Env interface {
 	EventBus() bus.EventBus
 	SolidityCompiler() solc.SolidityCompiler
 	ContractMapper() mapper.ContractMapper
+	TransactionMapper() mapper.TransactionMapper
+	TaskMapper() mapper.TaskMapper
+	OracleMapper() mapper.OracleMapper
 	OracleRepo() repo.OracleRepo
 	TaskOracleRepo() repo.TaskOracleRepo
 	TaskRepo() repo.TaskRepo
@@ -30,32 +34,45 @@ type Env interface {
 	ContractRepo() repo.ContractRepo
 	TaskContractRepo() repo.TaskContractRepo
 	ContractService() service.ContractService
+	TransactionService() service.TransactionService
+	OracleService() service.OracleService
+	TaskService() service.TaskService
 	TasksController() controller.TasksController
-	WeaknessesController() controller.WeaknessesController
-	ExecutionsController() controller.ExecutionsController
 	TransactionsController() controller.TransactionsController
+	InstrumentExecutionTopic() topic.Topic[bus.InstrumentExecutionEvent]
+	TaskFinishTopic() topic.Topic[bus.TaskFinishEvent]
+	TaskInputRequestTopic() topic.Topic[bus.TaskInputRequestEvent]
+	TaskStartTopic() topic.Topic[bus.TaskStartEvent]
 	Deployer() geth.Deployer
 }
 
 type env struct {
-	cfg                    *config.Config
-	logger                 *zap.Logger
-	dbConnection           db.Connection
-	eventBus               bus.EventBus
-	solidityCompiler       solc.SolidityCompiler
-	contractMapper         mapper.ContractMapper
-	oracleRepo             repo.OracleRepo
-	taskOracleRepo         repo.TaskOracleRepo
-	taskRepo               repo.TaskRepo
-	transactionRepo        repo.TransactionRepo
-	contractRepo           repo.ContractRepo
-	taskContractRepo       repo.TaskContractRepo
-	contractService        service.ContractService
-	tasksController        controller.TasksController
-	weaknessesController   controller.WeaknessesController
-	executionsController   controller.ExecutionsController
-	transactionsController controller.TransactionsController
-	deployer               geth.Deployer
+	cfg                      *config.Config
+	logger                   *zap.Logger
+	dbConnection             db.Connection
+	eventBus                 bus.EventBus
+	solidityCompiler         solc.SolidityCompiler
+	contractMapper           mapper.ContractMapper
+	transactionMapper        mapper.TransactionMapper
+	taskMapper               mapper.TaskMapper
+	oracleMapper             mapper.OracleMapper
+	oracleRepo               repo.OracleRepo
+	taskOracleRepo           repo.TaskOracleRepo
+	taskRepo                 repo.TaskRepo
+	transactionRepo          repo.TransactionRepo
+	contractRepo             repo.ContractRepo
+	taskContractRepo         repo.TaskContractRepo
+	contractService          service.ContractService
+	transactionService       service.TransactionService
+	oracleService            service.OracleService
+	taskService              service.TaskService
+	tasksController          controller.TasksController
+	transactionsController   controller.TransactionsController
+	instrumentExecutionTopic topic.Topic[bus.InstrumentExecutionEvent]
+	taskFinishTopic          topic.Topic[bus.TaskFinishEvent]
+	taskInputRequestTopic    topic.Topic[bus.TaskInputRequestEvent]
+	taskStartTopic           topic.Topic[bus.TaskStartEvent]
+	deployer                 geth.Deployer
 }
 
 func NewEnv(cfg *config.Config) *env {
@@ -117,6 +134,27 @@ func (e *env) ContractMapper() mapper.ContractMapper {
 	return e.contractMapper
 }
 
+func (e *env) TransactionMapper() mapper.TransactionMapper {
+	if e.transactionMapper == nil {
+		e.transactionMapper = mapper.NewTransactionMapper()
+	}
+	return e.transactionMapper
+}
+
+func (e *env) TaskMapper() mapper.TaskMapper {
+	if e.taskMapper == nil {
+		e.taskMapper = mapper.NewTaskMapper()
+	}
+	return e.taskMapper
+}
+
+func (e *env) OracleMapper() mapper.OracleMapper {
+	if e.oracleMapper == nil {
+		e.oracleMapper = mapper.NewOracleMapper()
+	}
+	return e.oracleMapper
+}
+
 func (e *env) OracleRepo() repo.OracleRepo {
 	if e.oracleRepo == nil {
 		e.oracleRepo = repo.NewOracleRepo(e)
@@ -166,11 +204,25 @@ func (e *env) ContractService() service.ContractService {
 	return e.contractService
 }
 
-func (e *env) ExecutionsController() controller.ExecutionsController {
-	if e.executionsController == nil {
-		e.executionsController = controller.NewExecutionsController(e)
+func (e *env) TransactionService() service.TransactionService {
+	if e.transactionService == nil {
+		e.transactionService = service.NewTransactionService(e)
 	}
-	return e.executionsController
+	return e.transactionService
+}
+
+func (e *env) OracleService() service.OracleService {
+	if e.oracleService == nil {
+		e.oracleService = service.NewOracleService(e)
+	}
+	return e.oracleService
+}
+
+func (e *env) TaskService() service.TaskService {
+	if e.taskService == nil {
+		e.taskService = service.NewTaskService(e)
+	}
+	return e.taskService
 }
 
 func (e *env) TasksController() controller.TasksController {
@@ -187,11 +239,32 @@ func (e *env) TransactionsController() controller.TransactionsController {
 	return e.transactionsController
 }
 
-func (e *env) WeaknessesController() controller.WeaknessesController {
-	if e.weaknessesController == nil {
-		e.weaknessesController = controller.NewWeaknessesController(e)
+func (e *env) InstrumentExecutionTopic() topic.Topic[bus.InstrumentExecutionEvent] {
+	if e.instrumentExecutionTopic == nil {
+		e.instrumentExecutionTopic = topic.NewInstrumentExecutionTopic(e)
 	}
-	return e.weaknessesController
+	return e.instrumentExecutionTopic
+}
+
+func (e *env) TaskFinishTopic() topic.Topic[bus.TaskFinishEvent] {
+	if e.taskFinishTopic == nil {
+		e.taskFinishTopic = topic.NewTaskFinishTopic(e)
+	}
+	return e.taskFinishTopic
+}
+
+func (e *env) TaskInputRequestTopic() topic.Topic[bus.TaskInputRequestEvent] {
+	if e.taskInputRequestTopic == nil {
+		e.taskInputRequestTopic = topic.NewTaskInputRequestTopic(e)
+	}
+	return e.taskInputRequestTopic
+}
+
+func (e *env) TaskStartTopic() topic.Topic[bus.TaskStartEvent] {
+	if e.taskStartTopic == nil {
+		e.taskStartTopic = topic.NewTaskStartTopic(e)
+	}
+	return e.taskStartTopic
 }
 
 func (e *env) Deployer() geth.Deployer {

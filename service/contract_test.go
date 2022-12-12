@@ -3,9 +3,10 @@ package service
 import (
 	"context"
 	"errors"
+	"testing"
+
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
-	"testing"
 
 	"github.com/dogefuzz/dogefuzz/mapper"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
@@ -120,17 +121,52 @@ var e = &env{
 }
 
 type env struct {
-	contractMapper mapper.ContractMapper
-	contractRepo   repo.ContractRepo
-	deployer       geth.Deployer
+	contractMapper    mapper.ContractMapper
+	transactionMapper mapper.TransactionMapper
+	taskMapper        mapper.TaskMapper
+	oracleMapper      mapper.OracleMapper
+	taskOracleRepo    repo.TaskOracleRepo
+	taskRepo          repo.TaskRepo
+	contractRepo      repo.ContractRepo
+	transactionRepo   repo.TransactionRepo
+	oracleRepo        repo.OracleRepo
+	deployer          geth.Deployer
 }
 
 func (e *env) ContractMapper() mapper.ContractMapper {
 	return e.contractMapper
 }
 
+func (e *env) TransactionMapper() mapper.TransactionMapper {
+	return e.transactionMapper
+}
+
+func (e *env) TaskMapper() mapper.TaskMapper {
+	return e.taskMapper
+}
+
+func (e *env) OracleMapper() mapper.OracleMapper {
+	return e.oracleMapper
+}
+
+func (e *env) TaskOracleRepo() repo.TaskOracleRepo {
+	return e.taskOracleRepo
+}
+
+func (e *env) TaskRepo() repo.TaskRepo {
+	return e.taskRepo
+}
+
+func (e *env) TransactionRepo() repo.TransactionRepo {
+	return e.transactionRepo
+}
+
 func (e *env) ContractRepo() repo.ContractRepo {
 	return e.contractRepo
+}
+
+func (e *env) OracleRepo() repo.OracleRepo {
+	return e.oracleRepo
 }
 
 func (e *env) Deployer() geth.Deployer {

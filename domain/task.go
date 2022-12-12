@@ -1,6 +1,8 @@
 package domain
 
 type Task struct {
-	Id       string
-	Duration int64
+	Id        string
+	Contract  string
+	Duration  int64
+	Detectors string
 }

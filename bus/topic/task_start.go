@@ -10,8 +10,8 @@ type taskStartTopic struct {
 	eventBus bus.EventBus
 }
 
-func NewTaskStartTopic(eventBus bus.EventBus) *taskStartTopic {
-	return &taskStartTopic{eventBus: eventBus}
+func NewTaskStartTopic(e env) *taskStartTopic {
+	return &taskStartTopic{eventBus: e.EventBus()}
 }
 
 func (t *taskStartTopic) Publish(e bus.TaskStartEvent) {

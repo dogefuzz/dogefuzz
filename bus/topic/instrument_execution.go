@@ -10,8 +10,8 @@ type instrumentExecutionTopic struct {
 	eventBus bus.EventBus
 }
 
-func NewInstrumentExecutionTopic(eventBus bus.EventBus) *instrumentExecutionTopic {
-	return &instrumentExecutionTopic{eventBus: eventBus}
+func NewInstrumentExecutionTopic(e env) *instrumentExecutionTopic {
+	return &instrumentExecutionTopic{eventBus: e.EventBus()}
 }
 
 func (t *instrumentExecutionTopic) Publish(e bus.InstrumentExecutionEvent) {

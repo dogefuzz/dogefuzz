@@ -10,8 +10,8 @@ type taskInputRequestTopic struct {
 	eventBus bus.EventBus
 }
 
-func NewTaskInputRequestTopic(eventBus bus.EventBus) *taskInputRequestTopic {
-	return &taskInputRequestTopic{eventBus: eventBus}
+func NewTaskInputRequestTopic(e env) *taskInputRequestTopic {
+	return &taskInputRequestTopic{eventBus: e.EventBus()}
 }
 
 func (t *taskInputRequestTopic) Publish(e bus.TaskInputRequestEvent) {

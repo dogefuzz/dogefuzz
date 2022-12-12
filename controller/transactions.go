@@ -1,51 +1,128 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
+	"strconv"
 
-	"github.com/dogefuzz/dogefuzz/domain"
+	"github.com/dogefuzz/dogefuzz/bus"
+	"github.com/dogefuzz/dogefuzz/bus/topic"
 	"github.com/dogefuzz/dogefuzz/dto"
+	"github.com/dogefuzz/dogefuzz/pkg/oracle"
 	"github.com/dogefuzz/dogefuzz/repo"
+	"github.com/dogefuzz/dogefuzz/service"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
 type TransactionsController interface {
-	Create(c *gin.Context)
+	StoreDetectedWeaknesses(c *gin.Context)
+	StoreTransactionExecution(c *gin.Context)
 }
 
 type transactionsController struct {
-	logger          *zap.Logger
-	transactionRepo repo.TransactionRepo
-	contractRepo    repo.ContractRepo
+	logger                   *zap.Logger
+	transactionService       service.TransactionService
+	oracleService            service.OracleService
+	instrumentExecutionTopic topic.Topic[bus.InstrumentExecutionEvent]
 }
 
 func NewTransactionsController(e Env) *transactionsController {
 	return &transactionsController{
-		logger:          e.Logger(),
-		transactionRepo: e.TransactionRepo(),
+		logger:                   e.Logger(),
+		transactionService:       e.TransactionService(),
+		oracleService:            e.OracleService(),
+		instrumentExecutionTopic: e.InstrumentExecutionTopic(),
 	}
 }
 
-func (ctrl transactionsController) Create(c *gin.Context) {
-	var request dto.NewTransactionDTO
+func (ctrl *transactionsController) StoreDetectedWeaknesses(c *gin.Context) {
+	var request dto.NewWeaknessDTO
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	contract, err := ctrl.contractRepo.FindByAddress(request.ContractAddress)
+	transaction, err := ctrl.transactionService.FindByHash(request.TxHash)
 	if err != nil {
+		if errors.Is(err, repo.ErrNotExists) {
+			c.AbortWithStatus(404)
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	oracles, err := ctrl.oracleService.FindByTaskId(transaction.TaskId)
+	if err != nil {
+		if errors.Is(err, service.ErrOraclesNotFound) {
+			c.AbortWithStatus(404)
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var oracleNames []string
+	for _, entity := range oracles {
+		oracleNames = append(oracleNames, entity.Name)
+	}
+	snapshot := oracle.NewEventsSnapshot(request.OracleEvents)
+
+	var weaknesses []string
+	for _, o := range oracle.GetOracles(oracleNames) {
+		if o.Detect(snapshot) {
+			weaknesses = append(weaknesses, o.Name())
+		}
+	}
+	transaction.DetectedWeaknesses = weaknesses
+
+	err = ctrl.transactionService.Update(transaction)
+	if err != nil {
+		if errors.Is(err, repo.ErrNotExists) {
+			c.AbortWithStatus(404)
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.AbortWithStatus(200)
+}
+
+func (ctrl *transactionsController) StoreTransactionExecution(c *gin.Context) {
+	var request dto.NewExecutionDTO
+	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	transaction := domain.Transaction{}
-	transaction.TaskId = request.TaskId
-	transaction.BlockchainHash = request.BlockchainHash
-	transaction.ContractId = contract.Id
-	ctrl.transactionRepo.Create(&transaction)
+	transaction, err := ctrl.transactionService.FindByHash(request.TxHash)
+	if err != nil {
+		if errors.Is(err, repo.ErrNotExists) {
+			c.AbortWithStatus(404)
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-	response := dto.TransactionDTO{TransactionId: transaction.Id}
-	c.JSON(200, response)
+	executedInstructions := make([]string, len(request.Instructions))
+	for _, instructionPC := range request.Instructions {
+		executedInstructions = append(executedInstructions, strconv.FormatUint(instructionPC, 16))
+	}
+	transaction.ExecutedInstructions = executedInstructions
+
+	err = ctrl.transactionService.Update(transaction)
+	if err != nil {
+		if errors.Is(err, repo.ErrNotExists) {
+			c.AbortWithStatus(404)
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctrl.instrumentExecutionTopic.Publish(bus.InstrumentExecutionEvent{TransactionId: transaction.Id})
+	c.AbortWithStatus(200)
 }
