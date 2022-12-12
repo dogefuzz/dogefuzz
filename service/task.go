@@ -11,6 +11,8 @@ type TaskService interface {
 	Create(task *dto.NewTaskDTO) (*dto.TaskDTO, error)
 	AddOracle(taskId string, oracleId string) error
 	AddContract(taskId string, contractId string) error
+	FindNotFinishedTasksThatDontHaveIncompletedTransactions() []*dto.TaskDTO
+	FindNotFinishedAndExpired() []*dto.TaskDTO
 }
 
 type taskService struct {
@@ -50,3 +52,14 @@ func (s *taskService) AddContract(taskId string, contractId string) error {
 	taskContract.TaskId = taskId
 	return s.taskContractRepo.Create(&taskContract)
 }
+
+func (s *taskService) FindNotFinishedTasksThatDontHaveIncompletedTransactions() []*dto.TaskDTO {
+	// TODO: Call repository to find tasks that were not finished and don't have incompleted transactions
+	return nil
+}
+
+func (s *taskService) FindNotFinishedAndExpired() []*dto.TaskDTO {
+	// TODO: Call repository to find tasks that were not finished and are expired
+	return nil
+}
+ 

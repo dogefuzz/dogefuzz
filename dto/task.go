@@ -1,6 +1,10 @@
 package dto
 
-import "time"
+import (
+	"time"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
+)
 
 type StartTaskRequest struct {
 	Contract  string   `json:"contract"`
@@ -13,16 +17,16 @@ type StartTaskResponse struct {
 }
 
 type NewTaskDTO struct {
-	Contract  string        `json:"contract"`
-	Duration  time.Duration `json:"duration"`
-	Detectors []string      `json:"detectors"`
+	Contract   string            `json:"contract"`
+	Expiration time.Time         `json:"expiration"`
+	Detectors  []string          `json:"detectors"`
+	Status     common.TaskStatus `json:"status"`
 }
 
 type TaskDTO struct {
-	Id        string        `json:"id"`
-	Contract  string        `json:"contract"`
-	Duration  time.Duration `json:"duration"`
-	Detectors []string      `json:"detectors"`
+	Id         string            `json:"id"`
+	Contract   string            `json:"contract"`
+	Expiration time.Time         `json:"expiration"`
+	Detectors  []string          `json:"detectors"`
+	Status     common.TaskStatus `json:"status"`
 }
-
-

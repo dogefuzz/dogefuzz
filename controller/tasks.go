@@ -54,9 +54,10 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	}
 
 	taskDTO := dto.NewTaskDTO{
-		Contract:  request.Contract,
-		Duration:  duration,
-		Detectors: request.Detectors,
+		Contract:   request.Contract,
+		Expiration: time.Now().Add(duration),
+		Detectors:  request.Detectors,
+		Status:     common.TASK_RUNNING,
 	}
 	task, err := ctrl.taskService.Create(&taskDTO)
 	if err != nil {
@@ -97,7 +98,9 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	}
 	ctrl.taskService.AddContract(task.Id, contract.Id)
 
-	ctrl.logger.Info(fmt.Sprintf("Requesting fuzzing task %s for %d seconds for %s", task.Id, task.Duration, contract.Name))
+	// TODO: store contract's functions in database
+
+	ctrl.logger.Info(fmt.Sprintf("Requesting fuzzing task %s for %s until %v", task.Id, contract.Name, task.Expiration))
 	ctrl.taskStartTopic.Publish(bus.TaskStartEvent{TaskId: task.Id})
 	c.JSON(200, dto.StartTaskResponse{TaskId: task.Id})
 }

@@ -27,3 +27,17 @@ const (
 	GREYBOX_FUZZING          FuzzingType = "greybox"
 	DIRECTED_GREYBOX_FUZZING FuzzingType = "directed_greybox"
 )
+
+type TaskStatus string
+
+const (
+	TASK_RUNNING TaskStatus = "running"
+	TASK_DONE    TaskStatus = "done"
+)
+
+type TransactionStatus string
+
+const (
+	TRANSACTION_RUNNING TransactionStatus = "running"
+	TRANSACTION_DONE    TransactionStatus = "done"
+)

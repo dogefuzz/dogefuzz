@@ -2,7 +2,6 @@ package mapper
 
 import (
 	"strings"
-	"time"
 
 	"github.com/dogefuzz/dogefuzz/domain"
 	"github.com/dogefuzz/dogefuzz/dto"
@@ -22,26 +21,29 @@ func NewTaskMapper() *taskMapper {
 
 func (m *taskMapper) ToDomainForCreation(c *dto.NewTaskDTO) *domain.Task {
 	return &domain.Task{
-		Contract:  c.Contract,
-		Duration:  int64(c.Duration),
-		Detectors: strings.Join(c.Detectors, ";"),
+		Contract:   c.Contract,
+		Expiration: c.Expiration,
+		Detectors:  strings.Join(c.Detectors, ";"),
+		Status:     c.Status,
 	}
 }
 
 func (m *taskMapper) ToDomain(c *dto.TaskDTO) *domain.Task {
 	return &domain.Task{
-		Id:        c.Id,
-		Contract:  c.Contract,
-		Duration:  int64(c.Duration),
-		Detectors: strings.Join(c.Detectors, ";"),
+		Id:         c.Id,
+		Contract:   c.Contract,
+		Expiration: c.Expiration,
+		Detectors:  strings.Join(c.Detectors, ";"),
+		Status:     c.Status,
 	}
 }
 
 func (m *taskMapper) ToDTO(c *domain.Task) *dto.TaskDTO {
 	return &dto.TaskDTO{
-		Id:        c.Id,
-		Contract:  c.Contract,
-		Duration:  time.Duration(c.Duration),
-		Detectors: strings.Split(c.Detectors, ";"),
+		Id:         c.Id,
+		Contract:   c.Contract,
+		Expiration: c.Expiration,
+		Detectors:  strings.Split(c.Detectors, ";"),
+		Status:     c.Status,
 	}
 }
