@@ -21,7 +21,7 @@ func NewVandalClient() *vandalClient {
 }
 
 func (c *vandalClient) Decompile() ([]Block, []Function, error) {
-	resp, err := http.Get("http://localhost:5005")
+	resp, err := http.Get("http://localhost:51243")
 	if err != nil {
 		return nil, nil, err
 	}

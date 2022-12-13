@@ -52,3 +52,16 @@ const (
 	REENTRANCY_ORACLE           OracleType = "reentrancy"
 	TIMESTAMP_DEPENDENCY_ORACLE OracleType = "timestamp-dependency"
 )
+
+type CFG struct {
+	Graph  map[string][]string `json:"graph"`
+	Blocks map[string]CFGBlock `json:"blocks"`
+}
+
+type CFGBlock struct {
+	InitialPC       string            `json:"initialPC"`
+	Instructions    map[string]string `json:"instructions"`
+	InstructionsPCs string            `json:"instructionsPCs"`
+}
+
+type DistanceMap map[string]map[string]int64 // blockPC => instruction => distance

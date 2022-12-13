@@ -6,4 +6,5 @@ type Contract struct {
 	Source  string
 	Name    string
 	Args    string
+	CFG string
 }
