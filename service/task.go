@@ -1,33 +1,37 @@
 package service
 
 import (
-	"github.com/dogefuzz/dogefuzz/domain"
+	"errors"
+
 	"github.com/dogefuzz/dogefuzz/dto"
 	"github.com/dogefuzz/dogefuzz/mapper"
 	"github.com/dogefuzz/dogefuzz/repo"
 )
 
+var ErrTaskNotFound = errors.New("task not found")
+
 type TaskService interface {
+	Get(taskId string) (*dto.TaskDTO, error)
 	Create(task *dto.NewTaskDTO) (*dto.TaskDTO, error)
-	AddOracle(taskId string, oracleId string) error
-	AddContract(taskId string, contractId string) error
 	FindNotFinishedTasksThatDontHaveIncompletedTransactions() []*dto.TaskDTO
 	FindNotFinishedAndExpired() []*dto.TaskDTO
 }
 
 type taskService struct {
-	taskRepo         repo.TaskRepo
-	taskOracleRepo   repo.TaskOracleRepo
-	taskContractRepo repo.TaskContractRepo
-	taskMapper       mapper.TaskMapper
+	taskRepo   repo.TaskRepo
+	taskMapper mapper.TaskMapper
 }
 
 func NewTaskService(e Env) *taskService {
 	return &taskService{
-		taskRepo:       e.TaskRepo(),
-		taskOracleRepo: e.TaskOracleRepo(),
-		taskMapper:     e.TaskMapper(),
+		taskRepo:   e.TaskRepo(),
+		taskMapper: e.TaskMapper(),
 	}
+}
+
+func (s *taskService) Get(taskId string) (*dto.TaskDTO, error) {
+	// TODO: get task
+	return nil, nil
 }
 
 func (s *taskService) Create(task *dto.NewTaskDTO) (*dto.TaskDTO, error) {
@@ -39,20 +43,6 @@ func (s *taskService) Create(task *dto.NewTaskDTO) (*dto.TaskDTO, error) {
 	return s.taskMapper.ToDTO(entity), nil
 }
 
-func (s *taskService) AddOracle(taskId string, oracleId string) error {
-	taskOracle := domain.TaskOracle{}
-	taskOracle.OracleId = oracleId
-	taskOracle.TaskId = taskId
-	return s.taskOracleRepo.Create(&taskOracle)
-}
-
-func (s *taskService) AddContract(taskId string, contractId string) error {
-	taskContract := domain.TaskContract{}
-	taskContract.ContractId = contractId
-	taskContract.TaskId = taskId
-	return s.taskContractRepo.Create(&taskContract)
-}
-
 func (s *taskService) FindNotFinishedTasksThatDontHaveIncompletedTransactions() []*dto.TaskDTO {
 	// TODO: Call repository to find tasks that were not finished and don't have incompleted transactions
 	return nil
@@ -62,4 +52,3 @@ func (s *taskService) FindNotFinishedAndExpired() []*dto.TaskDTO {
 	// TODO: Call repository to find tasks that were not finished and are expired
 	return nil
 }
- 

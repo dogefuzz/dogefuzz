@@ -1,32 +1,32 @@
 package service
 
 import (
-	"context"
-
 	"github.com/dogefuzz/dogefuzz/dto"
 	"github.com/dogefuzz/dogefuzz/mapper"
-	"github.com/dogefuzz/dogefuzz/pkg/common"
-	"github.com/dogefuzz/dogefuzz/pkg/geth"
 	"github.com/dogefuzz/dogefuzz/repo"
 )
 
 type ContractService interface {
+	Get(contractId string) (*dto.ContractDTO, error)
 	Create(ctr *dto.NewContractDTO) (*dto.ContractDTO, error)
-	Deploy(ctx context.Context, contract *common.Contract, args ...string) (string, error)
+	Update(ctr *dto.ContractDTO) error
 }
 
 type contractService struct {
 	contractMapper mapper.ContractMapper
 	contractRepo   repo.ContractRepo
-	deployer       geth.Deployer
 }
 
 func NewContractService(e Env) *contractService {
 	return &contractService{
 		contractMapper: e.ContractMapper(),
 		contractRepo:   e.ContractRepo(),
-		deployer:       e.Deployer(),
 	}
+}
+
+func (s *contractService) Get(contractId string) (*dto.ContractDTO, error) {
+	// TODO: get contract by ID
+	return nil, nil
 }
 
 func (s *contractService) Create(ctr *dto.NewContractDTO) (*dto.ContractDTO, error) {
@@ -39,10 +39,7 @@ func (s *contractService) Create(ctr *dto.NewContractDTO) (*dto.ContractDTO, err
 	return contractDTO, nil
 }
 
-func (s *contractService) Deploy(ctx context.Context, contract *common.Contract, args ...string) (string, error) {
-	address, err := s.deployer.Deploy(ctx, contract, common.ConvertStringArrayToInterfaceArray(args)...)
-	if err != nil {
-		return "", err
-	}
-	return address, nil
+func (s *contractService) Update(ctr *dto.ContractDTO) error {
+	// TODO: Add update logic
+	return nil
 }

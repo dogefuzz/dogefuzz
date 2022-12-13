@@ -23,7 +23,7 @@ type TransactionsController interface {
 type transactionsController struct {
 	logger                   *zap.Logger
 	transactionService       service.TransactionService
-	oracleService            service.OracleService
+	taskService              service.TaskService
 	instrumentExecutionTopic topic.Topic[bus.InstrumentExecutionEvent]
 }
 
@@ -31,7 +31,7 @@ func NewTransactionsController(e Env) *transactionsController {
 	return &transactionsController{
 		logger:                   e.Logger(),
 		transactionService:       e.TransactionService(),
-		oracleService:            e.OracleService(),
+		taskService:              e.TaskService(),
 		instrumentExecutionTopic: e.InstrumentExecutionTopic(),
 	}
 }
@@ -53,9 +53,9 @@ func (ctrl *transactionsController) StoreDetectedWeaknesses(c *gin.Context) {
 		return
 	}
 
-	oracles, err := ctrl.oracleService.FindByTaskId(transaction.TaskId)
+	task, err := ctrl.taskService.Get(transaction.TaskId)
 	if err != nil {
-		if errors.Is(err, service.ErrOraclesNotFound) {
+		if errors.Is(err, service.ErrTaskNotFound) {
 			c.AbortWithStatus(404)
 			return
 		}
@@ -63,16 +63,11 @@ func (ctrl *transactionsController) StoreDetectedWeaknesses(c *gin.Context) {
 		return
 	}
 
-	var oracleNames []string
-	for _, entity := range oracles {
-		oracleNames = append(oracleNames, entity.Name)
-	}
 	snapshot := oracle.NewEventsSnapshot(request.OracleEvents)
-
 	var weaknesses []string
-	for _, o := range oracle.GetOracles(oracleNames) {
+	for _, o := range oracle.GetOracles(task.Detectors) {
 		if o.Detect(snapshot) {
-			weaknesses = append(weaknesses, o.Name())
+			weaknesses = append(weaknesses, string(o.Name()))
 		}
 	}
 	transaction.DetectedWeaknesses = weaknesses

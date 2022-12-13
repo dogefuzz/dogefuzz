@@ -11,7 +11,6 @@ import (
 
 type Connection interface {
 	Migrate() error
-	Seed() error
 	Clean() error
 	GetDB() *sql.DB
 }
@@ -48,19 +47,4 @@ func (m *connection) GetDB() *sql.DB {
 func (m *connection) Migrate() error {
 	_, err := m.db.Exec(MIGRATION_QUERY)
 	return err
-}
-
-func (m *connection) Seed() error {
-	tx, _ := m.db.Begin()
-
-	for _, oracle := range ORACLE_SEEDS {
-		_, err := m.db.Exec(`INSERT INTO oracles(id, name) (?, ?)`, oracle.Id, oracle.Name)
-		if err != nil {
-			tx.Rollback()
-			return err
-		}
-	}
-
-	tx.Commit()
-	return nil
 }

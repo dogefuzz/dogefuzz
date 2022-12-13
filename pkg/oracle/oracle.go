@@ -1,15 +1,19 @@
 package oracle
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
+)
 
 type Oracle interface {
-	Name() string
+	Name() common.OracleType
 	Detect(snapshot EventsSnapshot) bool
 }
 
 var ErrOracleDoesntExist = errors.New("oracle doesn't exist")
 
-func GetOracles(oracleNames []string) []Oracle {
+func GetOracles(oracleNames []common.OracleType) []Oracle {
 	oracles := make([]Oracle, len(oracleNames))
 
 	for _, oracleName := range oracleNames {
@@ -22,19 +26,19 @@ func GetOracles(oracleNames []string) []Oracle {
 	return oracles
 }
 
-func GetOracleFromName(name string) (Oracle, error) {
+func GetOracleFromName(name common.OracleType) (Oracle, error) {
 	switch name {
-	case DELEGATE:
+	case common.DELEGATE_ORACLE:
 		return DelegateOracle{}, nil
-	case EXCEPTION_DISORDER_ORACLE:
+	case common.EXCEPTION_DISORDER_ORACLE:
 		return ExceptionDisorderOracle{}, nil
-	case GASLESS_SEND_ORACLE:
+	case common.GASLESS_SEND_ORACLE:
 		return GaslessSendOracle{}, nil
-	case NUMBER_DEPENDENCY_ORACLE:
+	case common.NUMBER_DEPENDENCY_ORACLE:
 		return NumberDependencyOracle{}, nil
-	case REENTRANCY_ORACLE:
+	case common.REENTRANCY_ORACLE:
 		return ReentrancyOracle{}, nil
-	case TIMESTAMP_DEPENDENCY_ORACLE:
+	case common.TIMESTAMP_DEPENDENCY_ORACLE:
 		return TimestampDependencyOracle{}, nil
 	}
 	return nil, ErrOracleDoesntExist

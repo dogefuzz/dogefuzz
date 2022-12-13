@@ -14,14 +14,10 @@ type Env interface {
 	Logger() *zap.Logger
 	DbConnection() db.Connection
 	EventBus() bus.EventBus
-	OracleRepo() repo.OracleRepo
-	TaskOracleRepo() repo.TaskOracleRepo
 	TaskRepo() repo.TaskRepo
 	TransactionRepo() repo.TransactionRepo
 	ContractRepo() repo.ContractRepo
-	TaskContractRepo() repo.TaskContractRepo
 	ContractService() service.ContractService
-	OracleService() service.OracleService
 	TransactionService() service.TransactionService
 	TaskService() service.TaskService
 	SolidityCompiler() solc.SolidityCompiler

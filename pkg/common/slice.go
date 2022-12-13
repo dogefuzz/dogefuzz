@@ -1,8 +1,10 @@
 package common
 
-func GetUniqueSlice(slice []string) []string {
-	keys := make(map[string]bool)
-	list := []string{}
+import "strings"
+
+func GetUniqueSlice[T comparable](slice []T) []T {
+	keys := make(map[T]bool)
+	list := []T{}
 	for _, entry := range slice {
 		if _, value := keys[entry]; !value {
 			keys[entry] = true
@@ -10,4 +12,21 @@ func GetUniqueSlice(slice []string) []string {
 		}
 	}
 	return list
+}
+
+func JoinOracleTypeList(types []OracleType) string {
+	words := make([]string, 0)
+	for _, t := range types {
+		words = append(words, string(t))
+	}
+	return strings.Join(words, ";")
+}
+
+func SplitOracleTypeString(input string) []OracleType {
+	words := strings.Split(input, ";")
+	result := make([]OracleType, 0)
+	for _, w := range words {
+		result = append(result, OracleType(w))
+	}
+	return result
 }

@@ -9,15 +9,15 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type WalletIntegrationTestSuite struct {
+type WalletTestSuite struct {
 	suite.Suite
 }
 
-func TestWalletIntegrationTestSuite(t *testing.T) {
-	suite.Run(t, new(WalletIntegrationTestSuite))
+func TestWalletTestSuite(t *testing.T) {
+	suite.Run(t, new(WalletTestSuite))
 }
 
-func (s *WalletIntegrationTestSuite) TestNewWallet_ShouldGenerateUniqueWallet() {
+func (s *WalletTestSuite) TestNewWallet_ShouldGenerateUniqueWallet() {
 	privateKeysSet := common.NewSet[string]()
 	errorsList := make([]error, 0)
 
@@ -34,7 +34,7 @@ func (s *WalletIntegrationTestSuite) TestNewWallet_ShouldGenerateUniqueWallet() 
 	assert.Empty(s.T(), errorsList)
 }
 
-func (s *WalletIntegrationTestSuite) TestNewWalletFromPrivateKeyHex_ShouldGenerateEquivalentWallet_WhenReceivedAWalletPrivateKeyHex() {
+func (s *WalletTestSuite) TestNewWalletFromPrivateKeyHex_ShouldGenerateEquivalentWallet_WhenReceivedAWalletPrivateKeyHex() {
 	wallet, _ := NewWallet()
 	walletByPrivateKeyHex, err := NewWalletFromPrivateKeyHex(wallet.GetPrivateKeyHex())
 
@@ -42,7 +42,7 @@ func (s *WalletIntegrationTestSuite) TestNewWalletFromPrivateKeyHex_ShouldGenera
 	assert.Equal(s.T(), wallet.GetPublicKeyHex(), walletByPrivateKeyHex.GetPublicKeyHex())
 }
 
-func (s *WalletIntegrationTestSuite) TestNewWalletFromPrivateKeyHex_ShouldReturnErrCouldNotDerivePublicKey_WhenReceivedAnInvalidWalletPrivateKeyHex() {
+func (s *WalletTestSuite) TestNewWalletFromPrivateKeyHex_ShouldReturnErrCouldNotDerivePublicKey_WhenReceivedAnInvalidWalletPrivateKeyHex() {
 	invalidPrivateKeyHex := gofakeit.HexUint256()
 	_, err := NewWalletFromPrivateKeyHex(invalidPrivateKeyHex)
 

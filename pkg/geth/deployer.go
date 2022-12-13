@@ -4,11 +4,14 @@ import (
 	"context"
 	"math/big"
 	"strings"
+	"time"
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 
 	gethcommon "github.com/ethereum/go-ethereum/common"
@@ -56,12 +59,28 @@ func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args .
 
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(300000)
+	auth.GasLimit = uint64(1000000)
 	auth.GasPrice = gasPrice
 
-	address, _, _, err := bind.DeployContract(auth, parsedABI, gethcommon.FromHex(contract.CompiledCode), d.client, args...)
+	_, tx, _, err := bind.DeployContract(auth, parsedABI, gethcommon.FromHex(contract.CompiledCode), d.client, args...)
 	if err != nil {
 		return "", err
 	}
-	return address.Hex(), nil
+
+	var receipt *types.Receipt
+	for {
+		receipt, err = d.client.TransactionReceipt(context.Background(), tx.Hash())
+		if err != nil {
+			if err != ethereum.NotFound {
+				return "", err
+			} else {
+
+			}
+		} else {
+			break
+		}
+
+		time.Sleep(1 * time.Second)
+	}
+	return receipt.ContractAddress.Hex(), nil
 }

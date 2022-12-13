@@ -8,7 +8,7 @@ import (
 
 type Task struct {
 	Id         string
-	Contract   string
+	ContractId string
 	Expiration time.Time
 	Detectors  string
 	Status     common.TaskStatus

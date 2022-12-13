@@ -1,10 +1,9 @@
 package mapper
 
 import (
-	"strings"
-
 	"github.com/dogefuzz/dogefuzz/domain"
 	"github.com/dogefuzz/dogefuzz/dto"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 type TaskMapper interface {
@@ -21,9 +20,9 @@ func NewTaskMapper() *taskMapper {
 
 func (m *taskMapper) ToDomainForCreation(c *dto.NewTaskDTO) *domain.Task {
 	return &domain.Task{
-		Contract:   c.Contract,
+		ContractId: c.ContractId,
 		Expiration: c.Expiration,
-		Detectors:  strings.Join(c.Detectors, ";"),
+		Detectors:  common.JoinOracleTypeList(c.Detectors),
 		Status:     c.Status,
 	}
 }
@@ -31,9 +30,9 @@ func (m *taskMapper) ToDomainForCreation(c *dto.NewTaskDTO) *domain.Task {
 func (m *taskMapper) ToDomain(c *dto.TaskDTO) *domain.Task {
 	return &domain.Task{
 		Id:         c.Id,
-		Contract:   c.Contract,
+		ContractId: c.ContractId,
 		Expiration: c.Expiration,
-		Detectors:  strings.Join(c.Detectors, ";"),
+		Detectors:  common.JoinOracleTypeList(c.Detectors),
 		Status:     c.Status,
 	}
 }
@@ -41,9 +40,9 @@ func (m *taskMapper) ToDomain(c *dto.TaskDTO) *domain.Task {
 func (m *taskMapper) ToDTO(c *domain.Task) *dto.TaskDTO {
 	return &dto.TaskDTO{
 		Id:         c.Id,
-		Contract:   c.Contract,
+		ContractId: c.ContractId,
 		Expiration: c.Expiration,
-		Detectors:  strings.Split(c.Detectors, ";"),
+		Detectors:  common.SplitOracleTypeString(c.Detectors),
 		Status:     c.Status,
 	}
 }

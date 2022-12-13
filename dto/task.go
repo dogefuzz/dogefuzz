@@ -7,9 +7,9 @@ import (
 )
 
 type StartTaskRequest struct {
-	Contract  string   `json:"contract"`
-	Duration  string   `json:"duration"`
-	Detectors []string `json:"detectors"`
+	Contract  string              `json:"contract"`
+	Duration  string              `json:"duration"`
+	Detectors []common.OracleType `json:"detectors"`
 }
 
 type StartTaskResponse struct {
@@ -17,16 +17,16 @@ type StartTaskResponse struct {
 }
 
 type NewTaskDTO struct {
-	Contract   string            `json:"contract"`
-	Expiration time.Time         `json:"expiration"`
-	Detectors  []string          `json:"detectors"`
-	Status     common.TaskStatus `json:"status"`
+	ContractId string              `json:"contractId"`
+	Expiration time.Time           `json:"expiration"`
+	Detectors  []common.OracleType `json:"detectors"`
+	Status     common.TaskStatus   `json:"status"`
 }
 
 type TaskDTO struct {
-	Id         string            `json:"id"`
-	Contract   string            `json:"contract"`
-	Expiration time.Time         `json:"expiration"`
-	Detectors  []string          `json:"detectors"`
-	Status     common.TaskStatus `json:"status"`
+	Id         string              `json:"id"`
+	ContractId string              `json:"contractId"`
+	Expiration time.Time           `json:"expiration"`
+	Detectors  []common.OracleType `json:"detectors"`
+	Status     common.TaskStatus   `json:"status"`
 }

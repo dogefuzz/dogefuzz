@@ -26,16 +26,11 @@ type Env interface {
 	ContractMapper() mapper.ContractMapper
 	TransactionMapper() mapper.TransactionMapper
 	TaskMapper() mapper.TaskMapper
-	OracleMapper() mapper.OracleMapper
-	OracleRepo() repo.OracleRepo
-	TaskOracleRepo() repo.TaskOracleRepo
 	TaskRepo() repo.TaskRepo
 	TransactionRepo() repo.TransactionRepo
 	ContractRepo() repo.ContractRepo
-	TaskContractRepo() repo.TaskContractRepo
 	ContractService() service.ContractService
 	TransactionService() service.TransactionService
-	OracleService() service.OracleService
 	TaskService() service.TaskService
 	TasksController() controller.TasksController
 	TransactionsController() controller.TransactionsController
@@ -55,16 +50,11 @@ type env struct {
 	contractMapper           mapper.ContractMapper
 	transactionMapper        mapper.TransactionMapper
 	taskMapper               mapper.TaskMapper
-	oracleMapper             mapper.OracleMapper
-	oracleRepo               repo.OracleRepo
-	taskOracleRepo           repo.TaskOracleRepo
 	taskRepo                 repo.TaskRepo
 	transactionRepo          repo.TransactionRepo
 	contractRepo             repo.ContractRepo
-	taskContractRepo         repo.TaskContractRepo
 	contractService          service.ContractService
 	transactionService       service.TransactionService
-	oracleService            service.OracleService
 	taskService              service.TaskService
 	tasksController          controller.TasksController
 	transactionsController   controller.TransactionsController
@@ -148,27 +138,6 @@ func (e *env) TaskMapper() mapper.TaskMapper {
 	return e.taskMapper
 }
 
-func (e *env) OracleMapper() mapper.OracleMapper {
-	if e.oracleMapper == nil {
-		e.oracleMapper = mapper.NewOracleMapper()
-	}
-	return e.oracleMapper
-}
-
-func (e *env) OracleRepo() repo.OracleRepo {
-	if e.oracleRepo == nil {
-		e.oracleRepo = repo.NewOracleRepo(e)
-	}
-	return e.oracleRepo
-}
-
-func (e *env) TaskOracleRepo() repo.TaskOracleRepo {
-	if e.taskOracleRepo == nil {
-		e.taskOracleRepo = repo.NewTaskOracleRepo(e)
-	}
-	return e.taskOracleRepo
-}
-
 func (e *env) TaskRepo() repo.TaskRepo {
 	if e.taskRepo == nil {
 		e.taskRepo = repo.NewTaskRepo(e)
@@ -190,13 +159,6 @@ func (e *env) ContractRepo() repo.ContractRepo {
 	return e.contractRepo
 }
 
-func (e *env) TaskContractRepo() repo.TaskContractRepo {
-	if e.taskContractRepo == nil {
-		e.taskContractRepo = repo.NewTaskContractRepo(e)
-	}
-	return e.taskContractRepo
-}
-
 func (e *env) ContractService() service.ContractService {
 	if e.contractService == nil {
 		e.contractService = service.NewContractService(e)
@@ -209,13 +171,6 @@ func (e *env) TransactionService() service.TransactionService {
 		e.transactionService = service.NewTransactionService(e)
 	}
 	return e.transactionService
-}
-
-func (e *env) OracleService() service.OracleService {
-	if e.oracleService == nil {
-		e.oracleService = service.NewOracleService(e)
-	}
-	return e.oracleService
 }
 
 func (e *env) TaskService() service.TaskService {

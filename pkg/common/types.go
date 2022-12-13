@@ -41,3 +41,14 @@ const (
 	TRANSACTION_RUNNING TransactionStatus = "running"
 	TRANSACTION_DONE    TransactionStatus = "done"
 )
+
+type OracleType string
+
+const (
+	DELEGATE_ORACLE             OracleType = "delegate"
+	EXCEPTION_DISORDER_ORACLE   OracleType = "exception-disorder"
+	GASLESS_SEND_ORACLE         OracleType = "gasless-send"
+	NUMBER_DEPENDENCY_ORACLE    OracleType = "number-dependency"
+	REENTRANCY_ORACLE           OracleType = "reentrancy"
+	TIMESTAMP_DEPENDENCY_ORACLE OracleType = "timestamp-dependency"
+)

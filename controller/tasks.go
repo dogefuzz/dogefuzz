@@ -22,7 +22,6 @@ type TasksController interface {
 type tasksController struct {
 	logger           *zap.Logger
 	taskService      service.TaskService
-	oracleService    service.OracleService
 	contractService  service.ContractService
 	taskStartTopic   topic.Topic[bus.TaskStartEvent]
 	solidityCompiler solc.SolidityCompiler
@@ -32,7 +31,6 @@ func NewTasksController(e Env) *tasksController {
 	return &tasksController{
 		logger:           e.Logger(),
 		taskService:      e.TaskService(),
-		oracleService:    e.OracleService(),
 		contractService:  e.ContractService(),
 		taskStartTopic:   e.TaskStartTopic(),
 		solidityCompiler: e.SolidityCompiler(),
@@ -53,33 +51,6 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		return
 	}
 
-	taskDTO := dto.NewTaskDTO{
-		Contract:   request.Contract,
-		Expiration: time.Now().Add(duration),
-		Detectors:  request.Detectors,
-		Status:     common.TASK_RUNNING,
-	}
-	task, err := ctrl.taskService.Create(&taskDTO)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
-		return
-	}
-
-	uniqueDetectors := common.GetUniqueSlice(request.Detectors)
-	for _, detectorName := range uniqueDetectors {
-		oracle, err := ctrl.oracleService.FindByName(detectorName)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		err = ctrl.taskService.AddOracle(task.Id, oracle.Id)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-	}
-
 	compiledContract, err := ctrl.solidityCompiler.CompileSource(request.Contract)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -93,10 +64,20 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	}
 	contract, err := ctrl.contractService.Create(&contractDTO)
 	if err != nil {
-		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	ctrl.taskService.AddContract(task.Id, contract.Id)
+
+	taskDTO := dto.NewTaskDTO{
+		ContractId: contract.Id,
+		Expiration: time.Now().Add(duration),
+		Detectors:  common.GetUniqueSlice(request.Detectors),
+		Status:     common.TASK_RUNNING,
+	}
+	task, err := ctrl.taskService.Create(&taskDTO)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
 
 	// TODO: store contract's functions in database
 
