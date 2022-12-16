@@ -27,7 +27,12 @@ type deployer struct {
 	cfg    config.GethConfig
 }
 
-func NewDeployer(cfg config.GethConfig, wallet Wallet) (*deployer, error) {
+func NewDeployer(cfg config.GethConfig) (*deployer, error) {
+	wallet, err := NewWalletFromPrivateKeyHex(cfg.DeployerPrivateKeyHex)
+	if err != nil {
+		return nil, err
+	}
+
 	client, err := ethclient.Dial(cfg.NodeAddress)
 	if err != nil {
 		return nil, err
@@ -69,7 +74,7 @@ func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args .
 
 	var receipt *types.Receipt
 	for {
-		receipt, err = d.client.TransactionReceipt(context.Background(), tx.Hash())
+		receipt, err = d.client.TransactionReceipt(ctx, tx.Hash())
 		if err != nil {
 			if err != ethereum.NotFound {
 				return "", err

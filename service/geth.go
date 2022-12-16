@@ -5,6 +5,7 @@ import (
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
+	"go.uber.org/zap"
 )
 
 type GethService interface {
@@ -12,11 +13,15 @@ type GethService interface {
 }
 
 type gethService struct {
+	logger   *zap.Logger
 	deployer geth.Deployer
 }
 
 func NewGethService(e Env) *gethService {
-	return &gethService{deployer: e.Deployer()}
+	return &gethService{
+		logger:   e.Logger(),
+		deployer: e.Deployer(),
+	}
 }
 
 func (s *gethService) Deploy(ctx context.Context, contract *common.Contract, args ...string) (string, error) {
@@ -24,5 +29,6 @@ func (s *gethService) Deploy(ctx context.Context, contract *common.Contract, arg
 	if err != nil {
 		return "", err
 	}
+	s.logger.Sugar().Infof("deploying contract %s at address %s", contract.Name, address)
 	return address, nil
 }

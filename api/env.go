@@ -224,15 +224,11 @@ func (e *env) TaskStartTopic() topic.Topic[bus.TaskStartEvent] {
 
 func (e *env) Deployer() geth.Deployer {
 	if e.deployer == nil {
-		wallet, err := geth.NewWallet()
+		deployer, err := geth.NewDeployer(e.cfg.GethConfig)
 		if err != nil {
 			panic(err)
 		}
-
-		e.deployer, err = geth.NewDeployer(e.cfg.GethConfig, wallet)
-		if err != nil {
-			panic(err)
-		}
+		e.deployer = deployer
 	}
 	return e.deployer
 }

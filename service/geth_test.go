@@ -7,25 +7,39 @@ import (
 
 	"github.com/brianvoe/gofakeit/v6"
 
+	"github.com/dogefuzz/dogefuzz/test"
 	"github.com/dogefuzz/dogefuzz/test/generators"
+	"github.com/dogefuzz/dogefuzz/test/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
 
 type GethServiceTestSuite struct {
 	suite.Suite
+
+	contractMapperMock *mocks.ContractMapperMock
+	contractRepoMock   *mocks.ContractRepoMock
+	deployerMock       *mocks.DeployerMock
+	env                *test.TestEnv
 }
 
 func TestGethServiceTestSuite(t *testing.T) {
 	suite.Run(t, new(GethServiceTestSuite))
 }
 
+func (s *GethServiceTestSuite) SetupTest() {
+	s.contractMapperMock = new(mocks.ContractMapperMock)
+	s.contractRepoMock = new(mocks.ContractRepoMock)
+	s.deployerMock = new(mocks.DeployerMock)
+	s.env = test.NewTestEnv(s.contractMapperMock, nil, nil, nil, s.contractRepoMock, nil, s.deployerMock)
+}
+
 func (s *GethServiceTestSuite) TestDeploy_ShouldReturnAddress_WhenProvideNoArgsAndDontOccurFailure() {
-	contractService := NewGethService(e)
+	contractService := NewGethService(s.env)
 	contract := generators.CommonContractGen()
 	ctx := context.Background()
 	expectedAddress := generators.SmartContractGen()
-	deployerMock.On("Deploy", ctx, contract).Return(expectedAddress, nil)
+	s.deployerMock.On("Deploy", ctx, contract).Return(expectedAddress, nil)
 
 	address, err := contractService.Deploy(context.Background(), contract)
 
@@ -34,10 +48,10 @@ func (s *GethServiceTestSuite) TestDeploy_ShouldReturnAddress_WhenProvideNoArgsA
 }
 
 func (s *GethServiceTestSuite) TestDeploy_ShouldReturnError_WhenProvideNoArgsAndOccurFailureInDeployment() {
-	contractService := NewGethService(e)
+	contractService := NewGethService(s.env)
 	contract := generators.CommonContractGen()
 	expectedError := errors.New("expected Error")
-	deployerMock.On("Deploy", context.Background(), contract).Return("", expectedError)
+	s.deployerMock.On("Deploy", context.Background(), contract).Return("", expectedError)
 
 	address, err := contractService.Deploy(context.Background(), contract)
 
@@ -46,13 +60,13 @@ func (s *GethServiceTestSuite) TestDeploy_ShouldReturnError_WhenProvideNoArgsAnd
 }
 
 func (s *GethServiceTestSuite) TestDeploy_ShouldReturnAddress_WhenProvideMultipleArgsAndDontOccurFailure() {
-	contractService := NewGethService(e)
+	contractService := NewGethService(s.env)
 	args := make([]string, 10)
 	gofakeit.Slice(&args)
 	contract := generators.CommonContractGen()
 	ctx := context.Background()
 	expectedAddress := generators.SmartContractGen()
-	deployerMock.On("Deploy", packArgsToVariadicFuncParameters(ctx, contract, args)...).Return(expectedAddress, nil)
+	s.deployerMock.On("Deploy", packArgsToVariadicFuncParameters(ctx, contract, args)...).Return(expectedAddress, nil)
 
 	address, err := contractService.Deploy(ctx, contract, args...)
 
@@ -61,13 +75,14 @@ func (s *GethServiceTestSuite) TestDeploy_ShouldReturnAddress_WhenProvideMultipl
 }
 
 func (s *GethServiceTestSuite) TestDeploy_ShouldReturnError_WhenProvideMultipleArgsAndOccurFailureInDeployment() {
-	contractService := NewGethService(e)
+
+	contractService := NewGethService(s.env)
 	args := make([]string, 10)
 	gofakeit.Slice(&args)
 	contract := generators.CommonContractGen()
 	ctx := context.Background()
 	expectedError := errors.New("expected Error")
-	deployerMock.On("Deploy", packArgsToVariadicFuncParameters(ctx, contract, args)...).Return("", expectedError)
+	s.deployerMock.On("Deploy", packArgsToVariadicFuncParameters(ctx, contract, args)...).Return("", expectedError)
 
 	address, err := contractService.Deploy(ctx, contract, args...)
 
