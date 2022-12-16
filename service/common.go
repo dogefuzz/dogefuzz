@@ -14,14 +14,16 @@ type Env interface {
 	ContractMapper() mapper.ContractMapper
 	TransactionMapper() mapper.TransactionMapper
 	TaskMapper() mapper.TaskMapper
+	FunctionMapper() mapper.FunctionMapper
 	TaskRepo() repo.TaskRepo
 	ContractRepo() repo.ContractRepo
 	TransactionRepo() repo.TransactionRepo
+	FunctionRepo() repo.FunctionRepo
 	Logger() *zap.Logger
 	Deployer() geth.Deployer
 }
 
-func packArgsToVariadicFuncParameters(ctx context.Context, contract *common.Contract, args []string) []interface{} {
+func packArgsToVariadicFuncParameters(ctx context.Context, contract *common.Contract, args []interface{}) []interface{} {
 	parameters := make([]interface{}, len(args)+2)
 	parameters[0] = ctx
 	parameters[1] = contract

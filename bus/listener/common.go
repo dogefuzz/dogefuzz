@@ -4,6 +4,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/bus"
 	"github.com/dogefuzz/dogefuzz/bus/topic"
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/mapper"
 	"github.com/dogefuzz/dogefuzz/service"
 	"go.uber.org/zap"
 )
@@ -17,4 +18,6 @@ type env interface {
 	GethService() service.GethService
 	VandalService() service.VandalService
 	ContractService() service.ContractService
+	FunctionService() service.FunctionService
+	ContractMapper() mapper.ContractMapper
 }

@@ -15,9 +15,11 @@ type TestEnv struct {
 	contractMapper    mapper.ContractMapper
 	transactionMapper mapper.TransactionMapper
 	taskMapper        mapper.TaskMapper
+	functionMapper    mapper.FunctionMapper
 	taskRepo          repo.TaskRepo
 	contractRepo      repo.ContractRepo
 	transactionRepo   repo.TransactionRepo
+	functionRepo      repo.FunctionRepo
 	deployer          geth.Deployer
 }
 
@@ -25,9 +27,11 @@ func NewTestEnv(
 	contractMapper mapper.ContractMapper,
 	transactionMapper mapper.TransactionMapper,
 	taskMapper mapper.TaskMapper,
+	functionMapper mapper.FunctionMapper,
 	taskRepo repo.TaskRepo,
 	contractRepo repo.ContractRepo,
 	transactionRepo repo.TransactionRepo,
+	functionRepo repo.FunctionRepo,
 	deployer geth.Deployer,
 ) *TestEnv {
 	return &TestEnv{
@@ -49,6 +53,10 @@ func (e *TestEnv) TaskMapper() mapper.TaskMapper {
 	return e.taskMapper
 }
 
+func (e *TestEnv) FunctionMapper() mapper.FunctionMapper {
+	return e.functionMapper
+}
+
 func (e *TestEnv) TaskRepo() repo.TaskRepo {
 	return e.taskRepo
 }
@@ -59,6 +67,10 @@ func (e *TestEnv) TransactionRepo() repo.TransactionRepo {
 
 func (e *TestEnv) ContractRepo() repo.ContractRepo {
 	return e.contractRepo
+}
+
+func (e *TestEnv) FunctionRepo() repo.FunctionRepo {
+	return e.functionRepo
 }
 
 func (e *TestEnv) Logger() *zap.Logger {

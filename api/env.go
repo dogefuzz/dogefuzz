@@ -26,12 +26,15 @@ type Env interface {
 	ContractMapper() mapper.ContractMapper
 	TransactionMapper() mapper.TransactionMapper
 	TaskMapper() mapper.TaskMapper
+	FunctionMapper() mapper.FunctionMapper
 	TaskRepo() repo.TaskRepo
 	TransactionRepo() repo.TransactionRepo
 	ContractRepo() repo.ContractRepo
+	FunctionRepo() repo.FunctionRepo
 	ContractService() service.ContractService
 	TransactionService() service.TransactionService
 	TaskService() service.TaskService
+	FunctionService() service.FunctionService
 	TasksController() controller.TasksController
 	TransactionsController() controller.TransactionsController
 	InstrumentExecutionTopic() topic.Topic[bus.InstrumentExecutionEvent]
@@ -50,12 +53,15 @@ type env struct {
 	contractMapper           mapper.ContractMapper
 	transactionMapper        mapper.TransactionMapper
 	taskMapper               mapper.TaskMapper
+	functionMapper           mapper.FunctionMapper
 	taskRepo                 repo.TaskRepo
 	transactionRepo          repo.TransactionRepo
 	contractRepo             repo.ContractRepo
+	functionRepo             repo.FunctionRepo
 	contractService          service.ContractService
 	transactionService       service.TransactionService
 	taskService              service.TaskService
+	functionService          service.FunctionService
 	tasksController          controller.TasksController
 	transactionsController   controller.TransactionsController
 	instrumentExecutionTopic topic.Topic[bus.InstrumentExecutionEvent]
@@ -138,6 +144,13 @@ func (e *env) TaskMapper() mapper.TaskMapper {
 	return e.taskMapper
 }
 
+func (e *env) FunctionMapper() mapper.FunctionMapper {
+	if e.functionMapper == nil {
+		e.functionMapper = mapper.NewFunctionMapper()
+	}
+	return e.functionMapper
+}
+
 func (e *env) TaskRepo() repo.TaskRepo {
 	if e.taskRepo == nil {
 		e.taskRepo = repo.NewTaskRepo(e)
@@ -159,6 +172,13 @@ func (e *env) ContractRepo() repo.ContractRepo {
 	return e.contractRepo
 }
 
+func (e *env) FunctionRepo() repo.FunctionRepo {
+	if e.functionRepo == nil {
+		e.functionRepo = repo.NewFunctionRepo(e)
+	}
+	return e.functionRepo
+}
+
 func (e *env) ContractService() service.ContractService {
 	if e.contractService == nil {
 		e.contractService = service.NewContractService(e)
@@ -178,6 +198,13 @@ func (e *env) TaskService() service.TaskService {
 		e.taskService = service.NewTaskService(e)
 	}
 	return e.taskService
+}
+
+func (e *env) FunctionService() service.FunctionService {
+	if e.functionService == nil {
+		e.functionService = service.NewFunctionService(e)
+	}
+	return e.functionService
 }
 
 func (e *env) TasksController() controller.TasksController {

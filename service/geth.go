@@ -9,7 +9,7 @@ import (
 )
 
 type GethService interface {
-	Deploy(ctx context.Context, contract *common.Contract, args ...string) (string, error)
+	Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error)
 }
 
 type gethService struct {
@@ -24,8 +24,8 @@ func NewGethService(e Env) *gethService {
 	}
 }
 
-func (s *gethService) Deploy(ctx context.Context, contract *common.Contract, args ...string) (string, error) {
-	address, err := s.deployer.Deploy(ctx, contract, common.ConvertStringArrayToInterfaceArray(args)...)
+func (s *gethService) Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error) {
+	address, err := s.deployer.Deploy(ctx, contract, args...)
 	if err != nil {
 		return "", err
 	}

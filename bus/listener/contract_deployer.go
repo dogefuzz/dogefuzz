@@ -2,13 +2,17 @@ package listener
 
 import (
 	"context"
+	"strings"
 
 	"github.com/dogefuzz/dogefuzz/bus"
 	"github.com/dogefuzz/dogefuzz/bus/topic"
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/mapper"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/distance"
+	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/dogefuzz/dogefuzz/service"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 	"go.uber.org/zap"
 )
 
@@ -25,6 +29,8 @@ type contractDeployerListener struct {
 	gethService           service.GethService
 	vandalService         service.VandalService
 	contractService       service.ContractService
+	functionService       service.FunctionService
+	contractMapper        mapper.ContractMapper
 }
 
 func NewContractDeployerListener(e env) *contractDeployerListener {
@@ -37,6 +43,8 @@ func NewContractDeployerListener(e env) *contractDeployerListener {
 		gethService:           e.GethService(),
 		vandalService:         e.VandalService(),
 		contractService:       e.ContractService(),
+		functionService:       e.FunctionService(),
+		contractMapper:        e.ContractMapper(),
 	}
 }
 
@@ -57,10 +65,44 @@ func (l *contractDeployerListener) processEvent(evt bus.TaskStartEvent) {
 		return
 	}
 
-	address, err := l.gethService.Deploy(
-		context.Background(),
-		&common.Contract{Name: contract.Name, AbiDefinition: contract.AbiDefinition, CompiledCode: contract.CompiledCode},
-	)
+	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
+	if err != nil {
+		l.logger.Sugar().Errorf("an error ocurred when parsing contract ABI definition: %v", err)
+		return
+	}
+
+	constructor, err := l.functionService.Get(contract.ConstructorId)
+	if err != nil {
+		l.logger.Sugar().Errorf("an error ocurred when retrieving contract's constructor: %v", err)
+		return
+	}
+
+	args := make([]interface{}, 0)
+
+	var idx int64
+	for idx = 0; idx < constructor.NumberOfArgs; idx++ {
+		definition := parsedABI.Constructor.Inputs[idx]
+
+		handler, err := solidity.GetTypeHandler(definition.Type)
+		if err != nil {
+			l.logger.Sugar().Errorf("an error ocurred when parsing args: %v", err)
+			return
+		}
+
+		if len(task.Arguments) > 0 {
+			err = handler.Deserialize(task.Arguments[idx])
+			if err != nil {
+				l.logger.Sugar().Errorf("an error ocurred when parsing args: %v", err)
+				return
+			}
+		} else {
+			handler.Generate()
+		}
+
+		args = append(args, handler.GetValue())
+	}
+
+	address, err := l.gethService.Deploy(context.Background(), l.contractMapper.ToCommon(contract), args...)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when deploying contract: %v", err)
 		return

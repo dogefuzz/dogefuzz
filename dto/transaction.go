@@ -5,7 +5,8 @@ import "github.com/dogefuzz/dogefuzz/pkg/common"
 type NewTransactionDTO struct {
 	BlockchainHash       string                   `json:"blockchainHash"`
 	TaskId               string                   `json:"taskId"`
-	ContractId           string                   `json:"contractId"`
+	FunctionId           string                   `json:"functionId"`
+	Inputs               []string                 `json:"inputs"`
 	DetectedWeaknesses   []string                 `json:"detectedWeaknesses"`
 	ExecutedInstructions []string                 `json:"executedInstructions"`
 	Status               common.TransactionStatus `json:"status"`
@@ -15,7 +16,8 @@ type TransactionDTO struct {
 	Id                   string                   `json:"id"`
 	BlockchainHash       string                   `json:"blockchainHash"`
 	TaskId               string                   `json:"taskId"`
-	ContractId           string                   `json:"contractId"`
+	FunctionId           string                   `json:"functionId"`
+	Inputs               []string                 `json:"inputs"`
 	DetectedWeaknesses   []string                 `json:"detectedWeaknesses"`
 	ExecutedInstructions []string                 `json:"executedInstructions"`
 	Status               common.TransactionStatus `json:"status"`

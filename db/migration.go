@@ -44,11 +44,23 @@ CREATE TABLE IF NOT EXISTS tasks_oracles(
 				ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS contract(
+CREATE TABLE IF NOT EXISTS functions(
+	id TEXT PRIMARY KEY,
+	name TEXT NOT NULL,
+	number_of_args INT NOT NULL,
+);
+
+CREATE TABLE IF NOT EXISTS contracts(
 	id TEXT PRIMARY KEY,
 	name TEXT NOT NULL,
 	source TEXT NOT NULL,
-	address TEXT UNIQUE
+	address TEXT UNIQUE,
+	function_id TEXT NOT NULL,
+	CONSTRAINT fk_contracts_function_id_functions
+		FOREIGN KEY (function_id)
+			REFERENCES functions (id)
+				ON DELETE CASCADE
+				ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tasks_contracts(

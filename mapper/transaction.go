@@ -23,7 +23,8 @@ func (m *transactionMapper) ToDomain(c *dto.TransactionDTO) *domain.Transaction 
 		Id:                   c.Id,
 		BlockchainHash:       c.BlockchainHash,
 		TaskId:               c.TaskId,
-		ContractId:           c.ContractId,
+		FunctionId:           c.FunctionId,
+		Inputs:               c.Inputs,
 		DetectedWeaknesses:   strings.Join(c.DetectedWeaknesses, ";"),
 		ExecutedInstructions: strings.Join(c.ExecutedInstructions, ";"),
 	}
@@ -34,7 +35,8 @@ func (m *transactionMapper) ToDTO(c *domain.Transaction) *dto.TransactionDTO {
 		Id:                   c.Id,
 		BlockchainHash:       c.BlockchainHash,
 		TaskId:               c.TaskId,
-		ContractId:           c.ContractId,
+		FunctionId:           c.FunctionId,
+		Inputs:               c.Inputs,
 		DetectedWeaknesses:   strings.Split(c.DetectedWeaknesses, ";"),
 		ExecutedInstructions: strings.Split(c.ExecutedInstructions, ";"),
 	}

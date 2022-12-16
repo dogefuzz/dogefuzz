@@ -6,7 +6,8 @@ type Transaction struct {
 	Id                   string
 	BlockchainHash       string
 	TaskId               string
-	ContractId           string
+	FunctionId           string
+	Inputs               []string
 	DetectedWeaknesses   string
 	ExecutedInstructions string
 	Status               common.TransactionStatus

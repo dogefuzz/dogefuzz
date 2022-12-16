@@ -31,7 +31,7 @@ func (s *GethServiceTestSuite) SetupTest() {
 	s.contractMapperMock = new(mocks.ContractMapperMock)
 	s.contractRepoMock = new(mocks.ContractRepoMock)
 	s.deployerMock = new(mocks.DeployerMock)
-	s.env = test.NewTestEnv(s.contractMapperMock, nil, nil, nil, s.contractRepoMock, nil, s.deployerMock)
+	s.env = test.NewTestEnv(s.contractMapperMock, nil, nil, nil, nil, s.contractRepoMock, nil, nil, s.deployerMock)
 }
 
 func (s *GethServiceTestSuite) TestDeploy_ShouldReturnAddress_WhenProvideNoArgsAndDontOccurFailure() {
@@ -61,7 +61,7 @@ func (s *GethServiceTestSuite) TestDeploy_ShouldReturnError_WhenProvideNoArgsAnd
 
 func (s *GethServiceTestSuite) TestDeploy_ShouldReturnAddress_WhenProvideMultipleArgsAndDontOccurFailure() {
 	contractService := NewGethService(s.env)
-	args := make([]string, 10)
+	args := make([]interface{}, 10)
 	gofakeit.Slice(&args)
 	contract := generators.CommonContractGen()
 	ctx := context.Background()
@@ -77,7 +77,7 @@ func (s *GethServiceTestSuite) TestDeploy_ShouldReturnAddress_WhenProvideMultipl
 func (s *GethServiceTestSuite) TestDeploy_ShouldReturnError_WhenProvideMultipleArgsAndOccurFailureInDeployment() {
 
 	contractService := NewGethService(s.env)
-	args := make([]string, 10)
+	args := make([]interface{}, 10)
 	gofakeit.Slice(&args)
 	contract := generators.CommonContractGen()
 	ctx := context.Background()

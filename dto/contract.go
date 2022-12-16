@@ -7,6 +7,7 @@ type NewContractDTO struct {
 	CompiledCode  string `json:"compiledCode"`
 	AbiDefinition string `json:"abiDefinition"`
 	Name          string `json:"name"`
+	ConstructorId string `json:"constructorId"`
 }
 
 type ContractDTO struct {
@@ -14,8 +15,9 @@ type ContractDTO struct {
 	Address       string             `json:"address"`
 	Source        string             `json:"source"`
 	CompiledCode  string             `json:"compiledCode"`
-	AbiDefinition string             `json:""`
+	AbiDefinition string             `json:"abiDefinition"`
 	Name          string             `json:"name"`
+	ConstructorId string             `json:"constructorId"`
 	CFG           common.CFG         `json:"cfg"`
 	DistanceMap   common.DistanceMap `json:"distanceMap"`
 }

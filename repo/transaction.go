@@ -48,7 +48,7 @@ func (r *transactionRepo) Update(transaction *domain.Transaction) error {
 		SET 
 			blockchain_hash = $2,
 			task_id = $3,
-			contract_id = $4,
+			transaction_id = $4,
 			detected_weaknesses = $5
 		WHERE id = $1
 	`
@@ -57,7 +57,7 @@ func (r *transactionRepo) Update(transaction *domain.Transaction) error {
 		transaction.Id,
 		transaction.BlockchainHash,
 		transaction.TaskId,
-		transaction.ContractId,
+		transaction.FunctionId,
 		transaction.DetectedWeaknesses,
 	)
 
@@ -81,7 +81,7 @@ func (r *transactionRepo) Find(id string) (*domain.Transaction, error) {
 		&transaction.Id,
 		&transaction.BlockchainHash,
 		&transaction.TaskId,
-		&transaction.ContractId,
+		&transaction.FunctionId,
 		&transaction.DetectedWeaknesses,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -100,7 +100,7 @@ func (r *transactionRepo) FindByBlockchainHash(blockchainHash string) (*domain.T
 		&transaction.Id,
 		&transaction.BlockchainHash,
 		&transaction.TaskId,
-		&transaction.ContractId,
+		&transaction.FunctionId,
 		&transaction.DetectedWeaknesses,
 	); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -125,7 +125,7 @@ func (r *transactionRepo) FindTransactionsByTaskId(taskId string) ([]domain.Tran
 			&transaction.Id,
 			&transaction.BlockchainHash,
 			&transaction.TaskId,
-			&transaction.ContractId,
+			&transaction.FunctionId,
 			&transaction.DetectedWeaknesses,
 		); err != nil {
 			return nil, err
