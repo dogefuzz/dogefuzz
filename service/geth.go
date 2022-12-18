@@ -10,6 +10,7 @@ import (
 
 type GethService interface {
 	Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error)
+	BatchCall(ctx context.Context, contract *common.Contract, functionName string, inputsByTransactionId map[string][]interface{}) (map[string]string, error)
 }
 
 type gethService struct {
@@ -31,4 +32,14 @@ func (s *gethService) Deploy(ctx context.Context, contract *common.Contract, arg
 	}
 	s.logger.Sugar().Infof("deploying contract %s at address %s", contract.Name, address)
 	return address, nil
+}
+
+func (s *gethService) BatchCall(
+	ctx context.Context,
+	contract *common.Contract,
+	functionName string,
+	inputsByTransactionId map[string][]interface{},
+) (map[string]string, error) {
+	// TODO: add logic to call geth multiple times
+	return nil, nil
 }

@@ -20,4 +20,5 @@ type env interface {
 	ContractService() service.ContractService
 	FunctionService() service.FunctionService
 	ContractMapper() mapper.ContractMapper
+	TransactionService() service.TransactionService
 }

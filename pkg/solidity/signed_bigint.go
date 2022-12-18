@@ -22,6 +22,10 @@ func (h *signedBigIntHandler) GetValue() interface{} {
 	return h.value
 }
 
+func (h *signedBigIntHandler) SetValue(value interface{}) {
+	h.value = value.(*big.Int)
+}
+
 func (h *signedBigIntHandler) Serialize() string {
 	return h.value.String()
 }

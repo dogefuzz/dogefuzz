@@ -24,6 +24,10 @@ func (h *uint8Handler) GetValue() interface{} {
 	return h.value
 }
 
+func (h *uint8Handler) SetValue(value interface{}) {
+	h.value = value.(uint8)
+}
+
 func (h *uint8Handler) Serialize() string {
 	return strconv.FormatUint(uint64(h.value), 10)
 }

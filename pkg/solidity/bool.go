@@ -21,6 +21,10 @@ func (h *boolHandler) GetValue() interface{} {
 	return h.value
 }
 
+func (h *boolHandler) SetValue(value interface{}) {
+	h.value = value.(bool)
+}
+
 func (h *boolHandler) Serialize() string {
 	return strconv.FormatBool(h.value)
 }

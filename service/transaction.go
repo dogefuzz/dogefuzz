@@ -13,6 +13,8 @@ var ErrTransactionNotFound = errors.New("transaction not found")
 type TransactionService interface {
 	FindByHash(hash string) (*dto.TransactionDTO, error)
 	Update(transaction *dto.TransactionDTO) error
+	BulkCreate(transactions []*dto.NewTransactionDTO) ([]*dto.TransactionDTO, error)
+	BulkUpdate(transactions []*dto.TransactionDTO) error
 }
 
 type transactionService struct {
@@ -25,6 +27,16 @@ func NewTransactionService(e Env) *transactionService {
 		transactionRepo:   e.TransactionRepo(),
 		transactionMapper: e.TransactionMapper(),
 	}
+}
+
+func (s *transactionService) BulkCreate(transactions []*dto.NewTransactionDTO) ([]*dto.TransactionDTO, error) {
+	// TODO: create multiple transactions
+	return nil, nil
+}
+
+func (s *transactionService) BulkUpdate(transactions []*dto.NewTransactionDTO) error {
+	// TODO: update multiple transactions
+	return nil
 }
 
 func (s *transactionService) FindByHash(hash string) (*dto.TransactionDTO, error) {

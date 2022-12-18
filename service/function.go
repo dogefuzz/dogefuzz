@@ -13,6 +13,7 @@ var ErrFunctionNotFound = errors.New("function not found")
 type FunctionService interface {
 	Get(functionId string) (*dto.FunctionDTO, error)
 	Create(task *dto.NewFunctionDTO) (*dto.FunctionDTO, error)
+	FindByContractId(contractId string) []*dto.FunctionDTO
 }
 
 type functionService struct {
@@ -45,4 +46,9 @@ func (s *functionService) Create(function *dto.NewFunctionDTO) (*dto.FunctionDTO
 		return nil, err
 	}
 	return s.functionMapper.ToDTO(entity), nil
+}
+
+func (s *functionService) FindByContractId(contractId string) []*dto.FunctionDTO {
+	// TODO: call repository to find functions of some specific contract
+	return nil
 }

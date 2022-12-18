@@ -20,6 +20,10 @@ func (h *stringHandler) GetValue() interface{} {
 	return h.value
 }
 
+func (h *stringHandler) SetValue(value interface{}) {
+	h.value = value.(string)
+}
+
 func (h *stringHandler) Serialize() string {
 	return h.value
 }

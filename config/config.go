@@ -13,6 +13,7 @@ type Config struct {
 	ServerPort          int      `mapstructure:"SERVER_PORT"`
 	CritialInstructions []string `mapstructure:"CRITIAL_INSTRUCTIONS"`
 	GethConfig          GethConfig
+	FuzzerConfig        FuzzerConfig
 }
 
 func LoadConfig() (*Config, error) {

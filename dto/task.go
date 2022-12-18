@@ -18,18 +18,20 @@ type StartTaskResponse struct {
 }
 
 type NewTaskDTO struct {
-	ContractId string              `json:"contractId"`
-	Arguments  []string            `json:"arguments"`
-	Expiration time.Time           `json:"expiration"`
-	Detectors  []common.OracleType `json:"detectors"`
-	Status     common.TaskStatus   `json:"status"`
+	ContractId  string              `json:"contractId"`
+	Arguments   []string            `json:"arguments"`
+	Expiration  time.Time           `json:"expiration"`
+	Detectors   []common.OracleType `json:"detectors"`
+	FuzzingType common.FuzzingType  `json:"fuzzingType"`
+	Status      common.TaskStatus   `json:"status"`
 }
 
 type TaskDTO struct {
-	Id         string              `json:"id"`
-	ContractId string              `json:"contractId"`
-	Arguments  []string            `json:"arguments"`
-	Expiration time.Time           `json:"expiration"`
-	Detectors  []common.OracleType `json:"detectors"`
-	Status     common.TaskStatus   `json:"status"`
+	Id          string              `json:"id"`
+	ContractId  string              `json:"contractId"`
+	Arguments   []string            `json:"arguments"`
+	Expiration  time.Time           `json:"expiration"`
+	Detectors   []common.OracleType `json:"detectors"`
+	FuzzingType common.FuzzingType  `json:"fuzzingType"`
+	Status      common.TaskStatus   `json:"status"`
 }
