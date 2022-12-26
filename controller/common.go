@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"github.com/dogefuzz/dogefuzz/bus"
-	"github.com/dogefuzz/dogefuzz/bus/topic"
+	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/solc"
 	"github.com/dogefuzz/dogefuzz/service"
+	"github.com/dogefuzz/dogefuzz/topic"
 	"go.uber.org/zap"
 )
 

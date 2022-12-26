@@ -2,7 +2,7 @@ package generators
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/dogefuzz/dogefuzz/dto"
+	"github.com/dogefuzz/dogefuzz/pkg/dto"
 )
 
 func NewContractDTOGen() *dto.NewContractDTO {

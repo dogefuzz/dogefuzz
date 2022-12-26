@@ -5,8 +5,8 @@ import (
 	"sort"
 
 	"github.com/dogefuzz/dogefuzz/config"
-	"github.com/dogefuzz/dogefuzz/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/dogefuzz/dogefuzz/service"
 	"github.com/ethereum/go-ethereum/accounts/abi"

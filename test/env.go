@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/dogefuzz/dogefuzz/mapper"
+	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
-	"github.com/dogefuzz/dogefuzz/repo"
+	"github.com/dogefuzz/dogefuzz/pkg/mapper"
 	"go.uber.org/zap"
 )
 

@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/dogefuzz/dogefuzz/bus"
-	"github.com/dogefuzz/dogefuzz/bus/topic"
-	"github.com/dogefuzz/dogefuzz/dto"
+	"github.com/dogefuzz/dogefuzz/data/repo"
+	"github.com/dogefuzz/dogefuzz/pkg/bus"
+	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/oracle"
-	"github.com/dogefuzz/dogefuzz/repo"
 	"github.com/dogefuzz/dogefuzz/service"
+	"github.com/dogefuzz/dogefuzz/topic"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )

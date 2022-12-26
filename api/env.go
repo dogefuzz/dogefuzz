@@ -5,22 +5,22 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dogefuzz/dogefuzz/bus"
-	"github.com/dogefuzz/dogefuzz/bus/topic"
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/controller"
-	"github.com/dogefuzz/dogefuzz/db"
-	"github.com/dogefuzz/dogefuzz/mapper"
+	"github.com/dogefuzz/dogefuzz/data"
+	"github.com/dogefuzz/dogefuzz/data/repo"
+	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
+	"github.com/dogefuzz/dogefuzz/pkg/mapper"
 	"github.com/dogefuzz/dogefuzz/pkg/solc"
-	"github.com/dogefuzz/dogefuzz/repo"
 	"github.com/dogefuzz/dogefuzz/service"
+	"github.com/dogefuzz/dogefuzz/topic"
 	"go.uber.org/zap"
 )
 
 type Env interface {
 	Logger() *zap.Logger
-	DbConnection() db.Connection
+	DbConnection() data.Connection
 	EventBus() bus.EventBus
 	SolidityCompiler() solc.SolidityCompiler
 	ContractMapper() mapper.ContractMapper
@@ -47,7 +47,7 @@ type Env interface {
 type env struct {
 	cfg                      *config.Config
 	logger                   *zap.Logger
-	dbConnection             db.Connection
+	dbConnection             data.Connection
 	eventBus                 bus.EventBus
 	solidityCompiler         solc.SolidityCompiler
 	contractMapper           mapper.ContractMapper
@@ -97,9 +97,9 @@ func (e *env) Logger() *zap.Logger {
 	return e.logger
 }
 
-func (e *env) DbConnection() db.Connection {
+func (e *env) DbConnection() data.Connection {
 	if e.dbConnection == nil {
-		dbConnection, err := db.NewConnection(e.cfg, e.logger)
+		dbConnection, err := data.NewConnection(e.cfg, e.logger)
 		if err != nil {
 			e.logger.Error(fmt.Sprintf("Error while initializing database manager: %s", err))
 			return nil

@@ -3,7 +3,7 @@ package oracle
 import (
 	"testing"
 
-	"github.com/dogefuzz/dogefuzz/dto"
+	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )

@@ -1,6 +1,6 @@
 package oracle
 
-import "github.com/dogefuzz/dogefuzz/dto"
+import "github.com/dogefuzz/dogefuzz/pkg/dto"
 
 const (
 	CALLFAILED               = "HackerRootCallFailed"

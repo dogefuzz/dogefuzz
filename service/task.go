@@ -3,9 +3,9 @@ package service
 import (
 	"errors"
 
-	"github.com/dogefuzz/dogefuzz/dto"
-	"github.com/dogefuzz/dogefuzz/mapper"
-	"github.com/dogefuzz/dogefuzz/repo"
+	"github.com/dogefuzz/dogefuzz/data/repo"
+	"github.com/dogefuzz/dogefuzz/pkg/dto"
+	"github.com/dogefuzz/dogefuzz/pkg/mapper"
 )
 
 var ErrTaskNotFound = errors.New("task not found")
