@@ -8,16 +8,17 @@ import (
 )
 
 type Config struct {
-	StorageFolder       string   `mapstructure:"STORAGE_FOLDER"`
-	DatabaseName        string   `mapstructure:"DATABASE_NAME"`
-	ServerPort          int      `mapstructure:"SERVER_PORT"`
-	CritialInstructions []string `mapstructure:"CRITIAL_INSTRUCTIONS"`
-	GethConfig          GethConfig
-	FuzzerConfig        FuzzerConfig
+	StorageFolder       string       `json:"storageFolder"`
+	DatabaseName        string       `json:"databaseName"`
+	ServerPort          int          `json:"serverPort"`
+	GethConfig          GethConfig   `json:"geth"`
+	FuzzerConfig        FuzzerConfig `json:"fuzzer"`
 }
 
 func LoadConfig() (*Config, error) {
-	viper.SetConfigFile(".env")
+	viper.AddConfigPath(".")
+	viper.SetConfigName("config")
+	viper.SetConfigType("json")
 	err := viper.ReadInConfig()
 	if err != nil {
 		return nil, err

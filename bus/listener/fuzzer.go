@@ -26,6 +26,7 @@ type FuzzerListener interface {
 type fuzzerListener struct {
 	cfg                   *config.Config
 	logger                *zap.Logger
+	fuzzerLeader          fuzz.FuzzerLeader
 	contractMapper        mapper.ContractMapper
 	taskInputRequestTopic topic.Topic[bus.TaskInputRequestEvent]
 	taskService           service.TaskService
@@ -39,6 +40,7 @@ func NewFuzzerListener(e env) *fuzzerListener {
 	return &fuzzerListener{
 		cfg:                   e.Config(),
 		logger:                e.Logger(),
+		fuzzerLeader:          e.FuzzerLeader(),
 		contractMapper:        e.ContractMapper(),
 		taskInputRequestTopic: e.TaskInputRequestTopic(),
 		taskService:           e.TaskService(),
@@ -80,7 +82,7 @@ func (l *fuzzerListener) processEvent(evt bus.TaskInputRequestEvent) {
 	functions := l.functionService.FindByContractId(task.ContractId)
 	chosenFunction := chooseFunction(functions)
 
-	fuzzer, err := fuzz.CreateFuzzer(task.FuzzingType)
+	fuzzer, err := l.fuzzerLeader.GetFuzzer(task.FuzzingType)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when getting the fuzzer instance for %s type: %v", task.FuzzingType, err)
 		return

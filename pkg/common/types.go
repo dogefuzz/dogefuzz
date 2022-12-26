@@ -65,3 +65,10 @@ type CFGBlock struct {
 }
 
 type DistanceMap map[string]map[string]int64 // blockPC => instruction => distance
+
+type PowerScheduleStrategy string
+
+const (
+	DISTANCE_BASED_STRATEGY PowerScheduleStrategy = "distance_based"
+	COVERAGE_BASED_STRATEGY PowerScheduleStrategy = "coverage_based"
+)

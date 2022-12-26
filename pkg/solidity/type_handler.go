@@ -8,6 +8,7 @@ import (
 type TypeHandler interface {
 	GetValue() interface{}
 	SetValue(value interface{})
+	GetType() TypeIdentifier
 	Serialize() string
 	Deserialize(value string) error
 	Generate() // Add Random provider to be mocked in tests

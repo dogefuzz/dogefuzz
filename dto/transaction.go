@@ -1,25 +1,35 @@
 package dto
 
-import "github.com/dogefuzz/dogefuzz/pkg/common"
+import (
+	"time"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
+)
 
 type NewTransactionDTO struct {
+	Timestamp            time.Time                `json:"timestamp"`
 	BlockchainHash       string                   `json:"blockchainHash"`
 	TaskId               string                   `json:"taskId"`
 	FunctionId           string                   `json:"functionId"`
 	Inputs               []string                 `json:"inputs"`
 	DetectedWeaknesses   []string                 `json:"detectedWeaknesses"`
 	ExecutedInstructions []string                 `json:"executedInstructions"`
+	DeltaCoverage        int64                    `json:"deltaCoverage"`
+	DeltaMinDistance     int64                    `json:"deltaMinDistance"`
 	Status               common.TransactionStatus `json:"status"`
 }
 
 type TransactionDTO struct {
 	Id                   string                   `json:"id"`
+	Timestamp            time.Time                `json:"timestamp"`
 	BlockchainHash       string                   `json:"blockchainHash"`
 	TaskId               string                   `json:"taskId"`
 	FunctionId           string                   `json:"functionId"`
 	Inputs               []string                 `json:"inputs"`
 	DetectedWeaknesses   []string                 `json:"detectedWeaknesses"`
 	ExecutedInstructions []string                 `json:"executedInstructions"`
+	DeltaCoverage        int64                    `json:"deltaCoverage"`
+	DeltaMinDistance     int64                    `json:"deltaMinDistance"`
 	Status               common.TransactionStatus `json:"status"`
 }
 

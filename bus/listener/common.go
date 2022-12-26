@@ -4,6 +4,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/bus"
 	"github.com/dogefuzz/dogefuzz/bus/topic"
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/fuzz"
 	"github.com/dogefuzz/dogefuzz/mapper"
 	"github.com/dogefuzz/dogefuzz/service"
 	"go.uber.org/zap"
@@ -12,6 +13,7 @@ import (
 type env interface {
 	Config() *config.Config
 	Logger() *zap.Logger
+	FuzzerLeader() fuzz.FuzzerLeader
 	TaskStartTopic() topic.Topic[bus.TaskStartEvent]
 	TaskInputRequestTopic() topic.Topic[bus.TaskInputRequestEvent]
 	TaskService() service.TaskService

@@ -28,6 +28,10 @@ func (h *uint32Handler) SetValue(value interface{}) {
 	h.value = value.(uint32)
 }
 
+func (h *uint32Handler) GetType() TypeIdentifier {
+	return UINT32
+}
+
 func (h *uint32Handler) Serialize() string {
 	return strconv.FormatUint(uint64(h.value), 10)
 }

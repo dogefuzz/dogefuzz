@@ -27,11 +27,12 @@ type NewTaskDTO struct {
 }
 
 type TaskDTO struct {
-	Id          string              `json:"id"`
-	ContractId  string              `json:"contractId"`
-	Arguments   []string            `json:"arguments"`
-	Expiration  time.Time           `json:"expiration"`
-	Detectors   []common.OracleType `json:"detectors"`
-	FuzzingType common.FuzzingType  `json:"fuzzingType"`
-	Status      common.TaskStatus   `json:"status"`
+	Id                             string              `json:"id"`
+	ContractId                     string              `json:"contractId"`
+	Arguments                      []string            `json:"arguments"`
+	Expiration                     time.Time           `json:"expiration"`
+	Detectors                      []common.OracleType `json:"detectors"`
+	FuzzingType                    common.FuzzingType  `json:"fuzzingType"`
+	AggregatedExecutedInstructions []string            `json:"aggregatedExecutedInstructions"`
+	Status                         common.TaskStatus   `json:"status"`
 }

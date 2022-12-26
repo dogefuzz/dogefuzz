@@ -28,6 +28,10 @@ func (h *uint16Handler) SetValue(value interface{}) {
 	h.value = value.(uint16)
 }
 
+func (h *uint16Handler) GetType() TypeIdentifier {
+	return UINT16
+}
+
 func (h *uint16Handler) Serialize() string {
 	return strconv.FormatUint(uint64(h.value), 10)
 }

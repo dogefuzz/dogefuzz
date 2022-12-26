@@ -26,6 +26,11 @@ func (h *unsignedBigIntHandler) SetValue(value interface{}) {
 	h.value = value.(*big.Int)
 }
 
+func (h *unsignedBigIntHandler) GetType() TypeIdentifier {
+	options := []TypeIdentifier{UINT8, UINT16, UINT24, UINT32, UINT40, UINT48, UINT56, UINT64, UINT72, UINT80, UINT88, UINT96, UINT104, UINT112, UINT120, UINT128, UINT136, UINT144, UINT152, UINT160, UINT168, UINT176, UINT184, UINT192, UINT200, UINT208, UINT216, UINT224, UINT232, UINT240, UINT248, UINT256}
+	return options[h.bitSize/8]
+}
+
 func (h *unsignedBigIntHandler) Serialize() string {
 	return h.value.String()
 }

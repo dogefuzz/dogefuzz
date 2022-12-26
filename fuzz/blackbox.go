@@ -8,7 +8,7 @@ import (
 type blackboxFuzzer struct {
 }
 
-func newBlackboxFuzzer() *blackboxFuzzer {
+func NewBlackboxFuzzer() *blackboxFuzzer {
 	return &blackboxFuzzer{}
 }
 

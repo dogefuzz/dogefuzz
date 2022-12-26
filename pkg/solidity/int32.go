@@ -30,6 +30,10 @@ func (h *int32Handler) SetValue(value interface{}) {
 	h.value = value.(int32)
 }
 
+func (h *int32Handler) GetType() TypeIdentifier {
+	return INT32
+}
+
 func (h *int32Handler) Serialize() string {
 	return strconv.FormatInt(int64(h.value), 10)
 }

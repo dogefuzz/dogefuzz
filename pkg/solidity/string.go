@@ -24,6 +24,10 @@ func (h *stringHandler) SetValue(value interface{}) {
 	h.value = value.(string)
 }
 
+func (h *stringHandler) GetType() TypeIdentifier {
+	return STRING
+}
+
 func (h *stringHandler) Serialize() string {
 	return h.value
 }
