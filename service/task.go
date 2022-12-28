@@ -13,6 +13,7 @@ var ErrTaskNotFound = errors.New("task not found")
 type TaskService interface {
 	Get(taskId string) (*dto.TaskDTO, error)
 	Create(task *dto.NewTaskDTO) (*dto.TaskDTO, error)
+	Update(task *dto.TaskDTO) error
 	FindNotFinishedTasksThatDontHaveIncompletedTransactions() []*dto.TaskDTO
 	FindNotFinishedAndExpired() []*dto.TaskDTO
 }
@@ -41,6 +42,11 @@ func (s *taskService) Create(task *dto.NewTaskDTO) (*dto.TaskDTO, error) {
 		return nil, err
 	}
 	return s.taskMapper.ToDTO(entity), nil
+}
+
+func (s *taskService) Update(task *dto.TaskDTO) error {
+	// TODO: update task in the database
+	return nil
 }
 
 func (s *taskService) FindNotFinishedTasksThatDontHaveIncompletedTransactions() []*dto.TaskDTO {

@@ -16,6 +16,7 @@ type env interface {
 	FuzzerLeader() fuzz.FuzzerLeader
 	TaskStartTopic() topic.Topic[bus.TaskStartEvent]
 	TaskInputRequestTopic() topic.Topic[bus.TaskInputRequestEvent]
+	InstrumentExecutionTopic() topic.Topic[bus.InstrumentExecutionEvent]
 	TaskService() service.TaskService
 	GethService() service.GethService
 	VandalService() service.VandalService

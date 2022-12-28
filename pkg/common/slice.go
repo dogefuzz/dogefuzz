@@ -30,3 +30,8 @@ func SplitOracleTypeString(input string) []OracleType {
 	}
 	return result
 }
+
+func MergeSortedSlices(a []string, b []string) []string {
+	// TODO: merge two sorted array and remove duplicated elements
+	return nil
+}

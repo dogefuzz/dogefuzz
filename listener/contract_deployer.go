@@ -16,10 +16,6 @@ import (
 	"go.uber.org/zap"
 )
 
-type ContractDeployerListener interface {
-	StartListening()
-}
-
 type contractDeployerListener struct {
 	cfg                   *config.Config
 	logger                *zap.Logger

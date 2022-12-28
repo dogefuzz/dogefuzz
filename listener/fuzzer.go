@@ -19,10 +19,6 @@ import (
 	"go.uber.org/zap"
 )
 
-type FuzzerListener interface {
-	StartListening()
-}
-
 type fuzzerListener struct {
 	cfg                   *config.Config
 	logger                *zap.Logger
