@@ -30,6 +30,7 @@ type TaskDTO struct {
 	Id                             string              `json:"id"`
 	ContractId                     string              `json:"contractId"`
 	Arguments                      []string            `json:"arguments"`
+	StartTime                      time.Time           `json:"startTime"`
 	Expiration                     time.Time           `json:"expiration"`
 	Detectors                      []common.OracleType `json:"detectors"`
 	FuzzingType                    common.FuzzingType  `json:"fuzzingType"`

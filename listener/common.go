@@ -15,6 +15,7 @@ type env interface {
 	Logger() *zap.Logger
 	FuzzerLeader() fuzz.FuzzerLeader
 	TaskStartTopic() topic.Topic[bus.TaskStartEvent]
+	TaskFinishTopic() topic.Topic[bus.TaskFinishEvent]
 	TaskInputRequestTopic() topic.Topic[bus.TaskInputRequestEvent]
 	InstrumentExecutionTopic() topic.Topic[bus.InstrumentExecutionEvent]
 	TaskService() service.TaskService
@@ -24,4 +25,5 @@ type env interface {
 	FunctionService() service.FunctionService
 	ContractMapper() mapper.ContractMapper
 	TransactionService() service.TransactionService
+	ReporterService() service.ReporterService
 }

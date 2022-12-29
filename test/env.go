@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 
+	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
 	"github.com/dogefuzz/dogefuzz/pkg/mapper"
@@ -11,6 +12,7 @@ import (
 )
 
 type TestEnv struct {
+	cfg               *config.Config
 	logger            *zap.Logger
 	contractMapper    mapper.ContractMapper
 	transactionMapper mapper.TransactionMapper
@@ -39,6 +41,10 @@ func NewTestEnv(
 		contractRepo:   contractRepo,
 		deployer:       deployer,
 	}
+}
+
+func (e *TestEnv) Config() *config.Config {
+	return e.cfg
 }
 
 func (e *TestEnv) ContractMapper() mapper.ContractMapper {

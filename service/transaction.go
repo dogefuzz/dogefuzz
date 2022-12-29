@@ -17,6 +17,7 @@ type TransactionService interface {
 	BulkCreate(transactions []*dto.NewTransactionDTO) ([]*dto.TransactionDTO, error)
 	BulkUpdate(transactions []*dto.TransactionDTO) error
 	FindByFunctionName(functionName string) []*dto.TransactionDTO
+	FindByTaskId(taskId string) []*dto.TransactionDTO
 	FindLastNTransactionsByFunctionNameAndOrderByTimestamp(functionName string, n int64) []*dto.TransactionDTO
 }
 
@@ -72,6 +73,11 @@ func (s *transactionService) Update(transaction *dto.TransactionDTO) error {
 
 func (s *transactionService) FindByFunctionName(functionName string) []*dto.TransactionDTO {
 	// TODO: return list of transaction related to function's name
+	return nil
+}
+
+func (s *transactionService) FindByTaskId(taskId string) []*dto.TransactionDTO {
+	// TODO: return list of transaction related to task
 	return nil
 }
 

@@ -3,6 +3,7 @@ package common
 import (
 	"math/big"
 	"reflect"
+	"time"
 )
 
 var (
@@ -72,3 +73,29 @@ const (
 	DISTANCE_BASED_STRATEGY PowerScheduleStrategy = "distance_based"
 	COVERAGE_BASED_STRATEGY PowerScheduleStrategy = "coverage_based"
 )
+
+type TaskReport struct {
+	TimeElapsed        time.Duration       `json:"timeElapsed"`
+	ContractName       string              `json:"contractName"`
+	Coverage           int64               `json:"coverage"`
+	CoverageByTime     TimeSeriesData      `json:"coverageByTime"`
+	MinDistance        int64               `json:"minDistance"`
+	MinDistanceByTime  TimeSeriesData      `json:"minDistanceByTime"`
+	Transactions       []TransactionReport `json:"transactions"`
+	DetectedWeaknesses []string            `json:"detectedWeaknesses"`
+}
+
+type TimeSeriesData struct {
+	X []time.Time `json:"x"`
+	Y []int64     `json:"y"`
+}
+
+type TransactionReport struct {
+	Timestamp            time.Time `json:"timestamp"`
+	BlockchainHash       string    `json:"blockchainHash"`
+	Inputs               []string  `json:"inputs"`
+	DetectedWeaknesses   []string  `json:"detectedWeaknesses"`
+	ExecutedInstructions []string  `json:"executedInstructions"`
+	DeltaCoverage        int64     `json:"deltaCoverage"`
+	DeltaMinDistance     int64     `json:"deltaMinDistance"`
+}

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
@@ -21,6 +22,7 @@ type Env interface {
 	FunctionRepo() repo.FunctionRepo
 	Logger() *zap.Logger
 	Deployer() geth.Deployer
+	Config() *config.Config
 }
 
 func packArgsToVariadicFuncParameters(ctx context.Context, contract *common.Contract, args []interface{}) []interface{} {

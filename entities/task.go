@@ -10,6 +10,7 @@ type Task struct {
 	Id          string
 	ContractId  string
 	Arguments   string
+	StartTime   time.Time
 	Expiration  time.Time
 	Detectors   string
 	FuzzingType common.FuzzingType
