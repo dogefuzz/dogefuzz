@@ -84,6 +84,10 @@ func (e *env) Destroy() {
 	}
 }
 
+func (e *env) Config() *config.Config {
+	return e.cfg
+}
+
 func (e *env) Logger() *zap.Logger {
 	if e.logger == nil {
 		logger, err := initLogger()
