@@ -8,11 +8,12 @@ import (
 )
 
 type Config struct {
-	StorageFolder       string       `json:"storageFolder"`
-	DatabaseName        string       `json:"databaseName"`
-	ServerPort          int          `json:"serverPort"`
-	GethConfig          GethConfig   `json:"geth"`
-	FuzzerConfig        FuzzerConfig `json:"fuzzer"`
+	StorageFolder string       `json:"storageFolder"`
+	DatabaseName  string       `json:"databaseName"`
+	ServerPort    int          `json:"serverPort"`
+	GethConfig    GethConfig   `json:"geth"`
+	FuzzerConfig  FuzzerConfig `json:"fuzzer"`
+	VandalConfig  VandalConfig `json:"vandal"`
 }
 
 func LoadConfig() (*Config, error) {

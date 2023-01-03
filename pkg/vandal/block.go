@@ -26,8 +26,9 @@ type BlockRange struct {
 }
 
 type Instruction struct {
-	Op      string `json:"op"`
-	StackOp string `json:"stackOp"`
+	Op      string   `json:"op"`
+	Args    []string `json:"args"`
+	StackOp string   `json:"stackOp"`
 }
 
 func NewBlockFromLines(lines []string) Block {
@@ -95,8 +96,12 @@ func readOpsSection(lines []string, block *Block) {
 		spaceIdx := strings.Index(line, " ")
 		pc := line[0:spaceIdx]
 		block.InstructionOrder = append(block.InstructionOrder, pc)
+
+		opWithArgs := line[spaceIdx+1:]
+		opWithArgsList := strings.Split(opWithArgs, " ")
 		block.Instructions[pc] = Instruction{
-			Op: line[spaceIdx+1 : len(line)-1],
+			Op:   opWithArgsList[0],
+			Args: opWithArgsList[1:],
 		}
 	}
 }

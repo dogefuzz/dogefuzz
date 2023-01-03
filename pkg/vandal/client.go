@@ -2,6 +2,9 @@ package vandal
 
 import (
 	"bufio"
+	"bytes"
+	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -9,29 +12,46 @@ import (
 
 const DELIMITER = "================================"
 
+type VandalDecompileRequest struct {
+	Source string `json:"source"`
+}
+
 type VandalClient interface {
-	Decompile() ([]Block, []Function, error)
+	Decompile(ctx context.Context, source string) ([]Block, []Function, error)
 }
 
 type vandalClient struct {
+	endpoint string
 }
 
-func NewVandalClient() *vandalClient {
-	return &vandalClient{}
+func NewVandalClient(vandalEndpoint string) *vandalClient {
+	return &vandalClient{endpoint: vandalEndpoint}
 }
 
-func (c *vandalClient) Decompile() ([]Block, []Function, error) {
-	resp, err := http.Get("http://localhost:51243")
+func (c *vandalClient) Decompile(ctx context.Context, source string) ([]Block, []Function, error) {
+	body, err := json.Marshal(VandalDecompileRequest{Source: source})
 	if err != nil {
 		return nil, nil, err
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf("bad status :%s", resp.Status)
+	req, err := http.NewRequestWithContext(ctx, "POST", c.endpoint, bytes.NewBuffer(body))
+	if err != nil {
+		return nil, nil, err
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	client := http.DefaultClient
+	res, err := client.Do(req)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return nil, nil, fmt.Errorf("bad status :%s", res.Status)
 	}
 
-	scanner := bufio.NewScanner(resp.Body)
+	scanner := bufio.NewScanner(res.Body)
 	scanner.Split(bufio.ScanLines)
 
 	blocks := make([]Block, 0)

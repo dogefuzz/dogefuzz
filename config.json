@@ -1,6 +1,9 @@
 {
   "databaseName": "dogefuzz",
   "serverPort": 3456,
+  "vandal": {
+    "endpoint": "http://localhost:5005"
+  },
   "geth": {
     "nodeAddress": "http://localhost:8545",
     "chainId": 1900,

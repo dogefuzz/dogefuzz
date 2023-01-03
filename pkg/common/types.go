@@ -62,7 +62,7 @@ type CFG struct {
 type CFGBlock struct {
 	InitialPC       string            `json:"initialPC"`
 	Instructions    map[string]string `json:"instructions"`
-	InstructionsPCs string            `json:"instructionsPCs"`
+	InstructionsPCs []string          `json:"instructionsPCs"`
 }
 
 type DistanceMap map[string]map[string]int64 // blockPC => instruction => distance
