@@ -16,12 +16,14 @@ type GethService interface {
 type gethService struct {
 	logger   *zap.Logger
 	deployer geth.Deployer
+	agent    geth.Agent
 }
 
 func NewGethService(e Env) *gethService {
 	return &gethService{
 		logger:   e.Logger(),
 		deployer: e.Deployer(),
+		agent:    e.Agent(),
 	}
 }
 
@@ -41,5 +43,6 @@ func (s *gethService) BatchCall(
 	inputsByTransactionId map[string][]interface{},
 ) (map[string]string, error) {
 	// TODO: add logic to call geth multiple times
+
 	return nil, nil
 }

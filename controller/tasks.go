@@ -108,7 +108,7 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	}
 
 	for _, method := range parsedABI.Methods {
-		functionDTO := dto.NewFunctionDTO{Name: method.Name, NumberOfArgs: int64(len(method.Inputs))}
+		functionDTO := dto.NewFunctionDTO{Name: method.Name, NumberOfArgs: int64(len(method.Inputs)), Payable: method.Payable}
 		_, err := ctrl.functionService.Create(&functionDTO)
 		if err != nil {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})

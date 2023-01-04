@@ -23,6 +23,7 @@ func (m *functionMapper) ToDomainForCreation(c *dto.NewFunctionDTO) *entities.Fu
 		Id:           uuid.NewString(),
 		Name:         c.Name,
 		NumberOfArgs: c.NumberOfArgs,
+		Payable:      c.Payable,
 	}
 }
 
@@ -31,6 +32,7 @@ func (m *functionMapper) ToDomain(c *dto.FunctionDTO) *entities.Function {
 		Id:           c.Id,
 		Name:         c.Name,
 		NumberOfArgs: c.NumberOfArgs,
+		Payable:      c.Payable,
 	}
 }
 
@@ -38,5 +40,6 @@ func (m *functionMapper) ToDTO(c *entities.Function) *dto.FunctionDTO {
 	return &dto.FunctionDTO{
 		Name:         c.Name,
 		NumberOfArgs: c.NumberOfArgs,
+		Payable:      c.Payable,
 	}
 }

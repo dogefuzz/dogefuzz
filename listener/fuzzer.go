@@ -157,7 +157,14 @@ func (l *fuzzerListener) processEvent(evt bus.TaskInputRequestEvent) {
 }
 
 func chooseFunction(functions []*dto.FunctionDTO) *dto.FunctionDTO {
+	payableFunctions := make([]*dto.FunctionDTO, len(functions))
+	for idx, function := range payableFunctions {
+		if !function.Payable {
+			continue
+		}
+		payableFunctions[idx] = function
+	}
 	rand.Seed(time.Now().Unix())
 	idx := rand.Intn(len(functions))
-	return functions[idx]
+	return payableFunctions[idx]
 }

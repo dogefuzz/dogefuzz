@@ -42,6 +42,7 @@ type Env interface {
 	TaskInputRequestTopic() topic.Topic[bus.TaskInputRequestEvent]
 	TaskStartTopic() topic.Topic[bus.TaskStartEvent]
 	Deployer() geth.Deployer
+	Agent() geth.Agent
 }
 
 type env struct {
@@ -69,6 +70,7 @@ type env struct {
 	taskInputRequestTopic    topic.Topic[bus.TaskInputRequestEvent]
 	taskStartTopic           topic.Topic[bus.TaskStartEvent]
 	deployer                 geth.Deployer
+	agent                    geth.Agent
 }
 
 func NewEnv(cfg *config.Config) *env {
@@ -262,6 +264,17 @@ func (e *env) Deployer() geth.Deployer {
 		e.deployer = deployer
 	}
 	return e.deployer
+}
+
+func (e *env) Agent() geth.Agent {
+	if e.agent == nil {
+		agent, err := geth.NewAgent(e.cfg.GethConfig)
+		if err != nil {
+			panic(err)
+		}
+		e.agent = agent
+	}
+	return e.agent
 }
 
 func initLogger() (*zap.Logger, error) {

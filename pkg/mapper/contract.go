@@ -39,5 +39,6 @@ func (m *contractMapper) ToCommon(c *dto.ContractDTO) *common.Contract {
 		Name:          c.Name,
 		AbiDefinition: c.AbiDefinition,
 		CompiledCode:  c.CompiledCode,
+		Address:       c.Address,
 	}
 }

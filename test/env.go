@@ -23,6 +23,7 @@ type TestEnv struct {
 	transactionRepo   repo.TransactionRepo
 	functionRepo      repo.FunctionRepo
 	deployer          geth.Deployer
+	agent             geth.Agent
 }
 
 func NewTestEnv(
@@ -35,11 +36,13 @@ func NewTestEnv(
 	transactionRepo repo.TransactionRepo,
 	functionRepo repo.FunctionRepo,
 	deployer geth.Deployer,
+	agent geth.Agent,
 ) *TestEnv {
 	return &TestEnv{
 		contractMapper: contractMapper,
 		contractRepo:   contractRepo,
 		deployer:       deployer,
+		agent:          agent,
 	}
 }
 
@@ -77,6 +80,10 @@ func (e *TestEnv) ContractRepo() repo.ContractRepo {
 
 func (e *TestEnv) FunctionRepo() repo.FunctionRepo {
 	return e.functionRepo
+}
+
+func (e *TestEnv) Agent() geth.Agent {
+	return e.agent
 }
 
 func (e *TestEnv) Logger() *zap.Logger {

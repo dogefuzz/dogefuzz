@@ -22,6 +22,7 @@ type Env interface {
 	FunctionRepo() repo.FunctionRepo
 	Logger() *zap.Logger
 	Deployer() geth.Deployer
+	Agent() geth.Agent
 	Config() *config.Config
 }
 
