@@ -25,7 +25,11 @@ func (j *transactionsCheckerJob) ID() string         { return "transactions-chec
 func (j *transactionsCheckerJob) CronConfig() string { return "*/5 * * * *" }
 
 func (j *transactionsCheckerJob) Handler() {
-	tasks := j.taskService.FindNotFinishedTasksThatDontHaveIncompletedTransactions()
+	tasks, err := j.taskService.FindNotFinishedTasksThatDontHaveIncompletedTransactions()
+	if err != nil {
+		j.logger.Sugar().Errorf("an error occured when retrieving tasks that are still running: %v", err)
+		return
+	}
 
 	for _, task := range tasks {
 		j.taskInputRequestTopic.Publish(bus.TaskInputRequestEvent{TaskId: task.Id})

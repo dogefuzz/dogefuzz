@@ -31,7 +31,10 @@ func NewPowerSchedule(e env) *powerSchedule {
 }
 
 func (s *powerSchedule) RequestSeeds(method abi.Method, strategy common.PowerScheduleStrategy) ([][]interface{}, error) {
-	transactions := s.transactionService.FindLastNTransactionsByFunctionNameAndOrderByTimestamp(method.Name, int64(s.cfg.FuzzerConfig.SeedsSize)*2)
+	transactions, err := s.transactionService.FindTransactionsByFunctionNameAndOrderByTimestamp(method.Name, int64(s.cfg.FuzzerConfig.SeedsSize)*2)
+	if err != nil {
+		return nil, err
+	}
 
 	switch strategy {
 	case common.COVERAGE_BASED_STRATEGY:

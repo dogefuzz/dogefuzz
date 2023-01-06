@@ -6,7 +6,6 @@ import (
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
-	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/distance"
 	"github.com/dogefuzz/dogefuzz/pkg/mapper"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
@@ -55,7 +54,7 @@ func (l *contractDeployerListener) processEvent(evt bus.TaskStartEvent) {
 		return
 	}
 
-	contract, err := l.contractService.Get(task.ContractId)
+	contract, err := l.contractService.FindByTaskId(task.Id)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when retrieving contract: %v", err)
 		return
@@ -67,7 +66,7 @@ func (l *contractDeployerListener) processEvent(evt bus.TaskStartEvent) {
 		return
 	}
 
-	constructor, err := l.functionService.Get(contract.ConstructorId)
+	constructor, err := l.functionService.FindConstructorByContractId(contract.Id)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when retrieving contract's constructor: %v", err)
 		return
@@ -98,14 +97,14 @@ func (l *contractDeployerListener) processEvent(evt bus.TaskStartEvent) {
 		args = append(args, handler.GetValue())
 	}
 
-	address, err := l.gethService.Deploy(context.Background(), l.contractMapper.ToCommon(contract), args...)
+	address, err := l.gethService.Deploy(context.Background(), l.contractMapper.MapDTOToCommon(contract), args...)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when deploying contract: %v", err)
 		return
 	}
 	contract.Address = address
 
-	cfg, err := l.vandalService.GetCFG(context.Background(), &common.Contract{Name: contract.Name, AbiDefinition: contract.AbiDefinition, CompiledCode: contract.CompiledCode})
+	cfg, err := l.vandalService.GetCFG(context.Background(), l.contractMapper.MapDTOToCommon(contract))
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred while getting CFG from vandal service: %v", err)
 		return

@@ -57,7 +57,12 @@ func (l *reporterListener) processEvent(evt bus.TaskFinishEvent) {
 		return
 	}
 
-	transactions := l.transactionService.FindByTaskId(task.Id)
+	transactions, err := l.transactionService.FindByTaskId(task.Id)
+	if err != nil {
+		l.logger.Sugar().Errorf("an error occurred when retrieving transactions of this task: %v", err)
+		return
+	}
+
 	transactionsReports := make([]common.TransactionReport, len(transactions))
 	aggregatedWeakneses := make([]string, 0)
 	for idx, transaction := range transactions {

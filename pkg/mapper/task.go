@@ -9,9 +9,9 @@ import (
 )
 
 type TaskMapper interface {
-	ToDomainForCreation(c *dto.NewTaskDTO) *entities.Task
-	ToDomain(c *dto.TaskDTO) *entities.Task
-	ToDTO(c *entities.Task) *dto.TaskDTO
+	MapNewDTOToEntity(c *dto.NewTaskDTO) *entities.Task
+	MapDTOToEntity(c *dto.TaskDTO) *entities.Task
+	MapEntityToDTO(c *entities.Task) *dto.TaskDTO
 }
 
 type taskMapper struct{}
@@ -20,34 +20,39 @@ func NewTaskMapper() *taskMapper {
 	return &taskMapper{}
 }
 
-func (m *taskMapper) ToDomainForCreation(c *dto.NewTaskDTO) *entities.Task {
+func (m *taskMapper) MapNewDTOToEntity(c *dto.NewTaskDTO) *entities.Task {
 	return &entities.Task{
-		ContractId: c.ContractId,
-		Arguments:  strings.Join(c.Arguments, ";"),
-		Expiration: c.Expiration,
-		Detectors:  common.JoinOracleTypeList(c.Detectors),
-		Status:     c.Status,
+		Arguments:   strings.Join(c.Arguments, ";"),
+		StartTime:   c.StartTime,
+		Expiration:  c.Expiration,
+		Detectors:   common.JoinOracleTypeList(c.Detectors),
+		FuzzingType: c.FuzzingType,
+		Status:      c.Status,
 	}
 }
 
-func (m *taskMapper) ToDomain(c *dto.TaskDTO) *entities.Task {
+func (m *taskMapper) MapDTOToEntity(c *dto.TaskDTO) *entities.Task {
 	return &entities.Task{
-		Id:         c.Id,
-		ContractId: c.ContractId,
-		Arguments:  strings.Join(c.Arguments, ";"),
-		Expiration: c.Expiration,
-		Detectors:  common.JoinOracleTypeList(c.Detectors),
-		Status:     c.Status,
+		Id:                             c.Id,
+		Arguments:                      strings.Join(c.Arguments, ";"),
+		StartTime:                      c.StartTime,
+		Expiration:                     c.Expiration,
+		Detectors:                      common.JoinOracleTypeList(c.Detectors),
+		FuzzingType:                    c.FuzzingType,
+		AggregatedExecutedInstructions: strings.Join(c.AggregatedExecutedInstructions, ";"),
+		Status:                         c.Status,
 	}
 }
 
-func (m *taskMapper) ToDTO(c *entities.Task) *dto.TaskDTO {
+func (m *taskMapper) MapEntityToDTO(c *entities.Task) *dto.TaskDTO {
 	return &dto.TaskDTO{
-		Id:         c.Id,
-		ContractId: c.ContractId,
-		Arguments:  strings.Split(c.Arguments, ";"),
-		Expiration: c.Expiration,
-		Detectors:  common.SplitOracleTypeString(c.Detectors),
-		Status:     c.Status,
+		Id:                             c.Id,
+		Arguments:                      strings.Split(c.Arguments, ";"),
+		StartTime:                      c.StartTime,
+		Expiration:                     c.Expiration,
+		Detectors:                      common.SplitOracleTypeString(c.Detectors),
+		FuzzingType:                    c.FuzzingType,
+		AggregatedExecutedInstructions: strings.Split(c.AggregatedExecutedInstructions, ";"),
+		Status:                         c.Status,
 	}
 }

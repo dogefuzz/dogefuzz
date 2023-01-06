@@ -63,7 +63,7 @@ func (l *fuzzerListener) processEvent(evt bus.TaskInputRequestEvent) {
 		return
 	}
 
-	contract, err := l.contractService.Get(task.ContractId)
+	contract, err := l.contractService.FindByTaskId(task.Id)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when retrieving contract: %v", err)
 		return
@@ -75,7 +75,11 @@ func (l *fuzzerListener) processEvent(evt bus.TaskInputRequestEvent) {
 		return
 	}
 
-	functions := l.functionService.FindByContractId(task.ContractId)
+	functions, err := l.functionService.FindByContractId(contract.Id)
+	if err != nil {
+		l.logger.Sugar().Errorf("an error occurred when retrieving contract's functions> %v", err)
+		return
+	}
 	chosenFunction := chooseFunction(functions)
 
 	fuzzer, err := l.fuzzerLeader.GetFuzzer(task.FuzzingType)
@@ -101,6 +105,7 @@ func (l *fuzzerListener) processEvent(evt bus.TaskInputRequestEvent) {
 		}
 
 		transactionsDTO[idx] = &dto.NewTransactionDTO{
+			Timestamp:  time.Now(),
 			TaskId:     task.Id,
 			FunctionId: chosenFunction.Id,
 			Inputs:     serializedInputs,
@@ -138,7 +143,7 @@ func (l *fuzzerListener) processEvent(evt bus.TaskInputRequestEvent) {
 		transactionsByTransactionId[tx.Id] = tx
 	}
 
-	transactionHashesByTransactionId, err := l.gethService.BatchCall(context.Background(), l.contractMapper.ToCommon(contract), chosenFunction.Name, inputsByTransactionId)
+	transactionHashesByTransactionId, err := l.gethService.BatchCall(context.Background(), l.contractMapper.MapDTOToCommon(contract), chosenFunction.Name, inputsByTransactionId)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when sending the transactions: %v", err)
 		return

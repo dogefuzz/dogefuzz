@@ -1,14 +1,18 @@
 package dto
 
 type NewFunctionDTO struct {
-	Name         string
-	NumberOfArgs int64
-	Payable      bool
+	Name          string `json:"name"`
+	NumberOfArgs  int64  `json:"numberOfArgs"`
+	Payable       bool   `json:"payable"`
+	IsConstructor bool   `json:"isConstructor"`
+	ContractId    string `json:"contractId"`
 }
 
 type FunctionDTO struct {
-	Id           string
-	Name         string
-	NumberOfArgs int64
-	Payable      bool
+	Id            string `json:"id"`
+	Name          string `json:"name"`
+	NumberOfArgs  int64  `json:"numberOfArgs"`
+	Payable       bool   `json:"payable"`
+	IsConstructor bool   `json:"isConstrutor"`
+	ContractId    string `json:"contractId"`
 }

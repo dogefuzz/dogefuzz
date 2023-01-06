@@ -25,7 +25,11 @@ func (j *tasksCheckerJob) ID() string         { return "tasks-checker" }
 func (j *tasksCheckerJob) CronConfig() string { return "*/5 * * * *" }
 
 func (j *tasksCheckerJob) Handler() {
-	tasks := j.taskService.FindNotFinishedAndExpired()
+	tasks, err := j.taskService.FindNotFinishedAndExpired()
+	if err != nil {
+		j.logger.Sugar().Errorf("an error occured when retrieving tasks to be finished: %v", err)
+		return
+	}
 
 	for _, task := range tasks {
 		j.taskFinishTopic.Publish(bus.TaskFinishEvent{TaskId: task.Id})

@@ -23,7 +23,7 @@ func (s *ContractMapperTestSuite) TestToDomain() {
 	newContractDTO := generators.NewContractDTOGen()
 
 	m := NewContractMapper()
-	result := m.ToDomain(newContractDTO)
+	result := m.MapNewDTOToEntity(newContractDTO)
 
 	expectedResult := entities.Contract{
 		Name:   newContractDTO.Name,
@@ -36,7 +36,7 @@ func (s *ContractMapperTestSuite) TestToDTO() {
 	contract := generators.ContractGen()
 
 	m := NewContractMapper()
-	result := m.ToDTO(contract)
+	result := m.MapEntityToDTO(contract)
 
 	expectedResult := dto.ContractDTO{
 		Id:      contract.Id,

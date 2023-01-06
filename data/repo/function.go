@@ -1,38 +1,31 @@
 package repo
 
 import (
-	"database/sql"
 	"errors"
 
-	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/entities"
 	"github.com/google/uuid"
-	"github.com/mattn/go-sqlite3"
+	"gorm.io/gorm"
 )
 
 type FunctionRepo interface {
-	GetById(id string) (*entities.Function, error)
-	Create(function *entities.Function) error
+	Get(tx *gorm.DB, id string) (*entities.Function, error)
+	Create(tx *gorm.DB, function *entities.Function) error
+	FindByContractId(tx *gorm.DB, contractId string) ([]entities.Function, error)
+	FindConstructorByContractId(tx *gorm.DB, contractId string) (*entities.Function, error)
 }
 
 type functionRepo struct {
-	connection data.Connection
 }
 
 func NewFunctionRepo(e Env) *functionRepo {
-	return &functionRepo{connection: e.DbConnection()}
+	return &functionRepo{}
 }
 
-func (r *functionRepo) GetById(id string) (*entities.Function, error) {
-	row := r.connection.GetDB().QueryRow("SELECT * FROM functions WHERE id = ?", id)
-
+func (r *functionRepo) Get(tx *gorm.DB, id string) (*entities.Function, error) {
 	var function entities.Function
-	if err := row.Scan(
-		&function.Id,
-		&function.Name,
-		&function.NumberOfArgs,
-	); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+	if err := tx.First(&function, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotExists
 		}
 		return nil, err
@@ -40,17 +33,23 @@ func (r *functionRepo) GetById(id string) (*entities.Function, error) {
 	return &function, nil
 }
 
-func (r *functionRepo) Create(function *entities.Function) error {
+func (r *functionRepo) Create(tx *gorm.DB, function *entities.Function) error {
 	function.Id = uuid.NewString()
-	_, err := r.connection.GetDB().Exec("INSERT INTO functions(id, name, number_of_args) values(?, ?, ?)", function.Id, function.Name, function.NumberOfArgs)
-	if err != nil {
-		var sqliteErr sqlite3.Error
-		if errors.As(err, &sqliteErr) {
-			if errors.Is(sqliteErr.ExtendedCode, sqlite3.ErrConstraintUnique) {
-				return ErrDuplicate
-			}
-		}
-		return err
+	return tx.Create(function).Error
+}
+
+func (r *functionRepo) FindByContractId(tx *gorm.DB, contractId string) ([]entities.Function, error) {
+	var functions []entities.Function
+	if err := tx.Where("contract_id = ?").Find(&functions).Error; err != nil {
+		return nil, err
 	}
-	return nil
+	return functions, nil
+}
+
+func (r *functionRepo) FindConstructorByContractId(tx *gorm.DB, contractId string) (*entities.Function, error) {
+	var function entities.Function
+	if err := tx.Where("is_constructor = true").Where("contract_id = ?").First(&function).Error; err != nil {
+		return nil, err
+	}
+	return &function, nil
 }

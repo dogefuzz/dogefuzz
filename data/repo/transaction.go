@@ -1,90 +1,60 @@
 package repo
 
 import (
-	"database/sql"
 	"errors"
 
-	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/entities"
 	"github.com/google/uuid"
-	"github.com/mattn/go-sqlite3"
+	"gorm.io/gorm"
 )
 
 type TransactionRepo interface {
-	Create(transaction *entities.Transaction) error
-	Update(transaction *entities.Transaction) error
-	Find(id string) (*entities.Transaction, error)
-	FindByBlockchainHash(blockchainHash string) (*entities.Transaction, error)
-	FindTransactionsByTaskId(taskId string) ([]entities.Transaction, error)
-	Delete(id string) error
+	Get(tx *gorm.DB, id string) (*entities.Transaction, error)
+	Create(tx *gorm.DB, transaction *entities.Transaction) error
+	Update(tx *gorm.DB, transaction *entities.Transaction) error
+	FindByBlockchainHash(tx *gorm.DB, blockchainHash string) (*entities.Transaction, error)
+	FindByTaskId(tx *gorm.DB, taskId string) ([]entities.Transaction, error)
+	FindTransactionsByFunctionNameAndOrderByTimestamp(tx *gorm.DB, functionName string, limit int64) ([]entities.Transaction, error)
 }
 
 type transactionRepo struct {
-	connection data.Connection
 }
 
 func NewTransactionRepo(e Env) *transactionRepo {
-	return &transactionRepo{connection: e.DbConnection()}
+	return &transactionRepo{}
 }
 
-func (r *transactionRepo) Create(transaction *entities.Transaction) error {
+func (r *transactionRepo) Get(tx *gorm.DB, id string) (*entities.Transaction, error) {
+	var transaction entities.Transaction
+	if err := tx.First(&transaction, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotExists
+		}
+		return nil, err
+	}
+	return &transaction, nil
+}
+
+func (r *transactionRepo) Create(tx *gorm.DB, transaction *entities.Transaction) error {
 	transaction.Id = uuid.NewString()
-	_, err := r.connection.GetDB().Exec("INSERT INTO transactions(id) values(?)", transaction.Id)
-	if err != nil {
-		var sqliteErr sqlite3.Error
-		if errors.As(err, &sqliteErr) {
-			if errors.Is(sqliteErr.ExtendedCode, sqlite3.ErrConstraintUnique) {
-				return ErrDuplicate
-			}
-		}
-		return err
-	}
-	return nil
+	return tx.Create(transaction).Error
 }
 
-func (r *transactionRepo) Update(transaction *entities.Transaction) error {
-	query := `
-		UPDATE transactions 
-		SET 
-			blockchain_hash = $2,
-			task_id = $3,
-			transaction_id = $4,
-			detected_weaknesses = $5
-		WHERE id = $1
-	`
-	_, err := r.connection.GetDB().Exec(
-		query,
-		transaction.Id,
-		transaction.BlockchainHash,
-		transaction.TaskId,
-		transaction.FunctionId,
-		transaction.DetectedWeaknesses,
-	)
-
-	if err != nil {
-		var sqliteErr sqlite3.Error
-		if errors.As(err, &sqliteErr) {
-			if errors.Is(err, sql.ErrNoRows) {
-				return ErrNotExists
-			}
-		}
-		return err
-	}
-	return nil
-}
-
-func (r *transactionRepo) Find(id string) (*entities.Transaction, error) {
-	row := r.connection.GetDB().QueryRow("SELECT * FROM transactions WHERE id = ?", id)
-
+func (r *transactionRepo) Update(tx *gorm.DB, updatedTransaction *entities.Transaction) error {
 	var transaction entities.Transaction
-	if err := row.Scan(
-		&transaction.Id,
-		&transaction.BlockchainHash,
-		&transaction.TaskId,
-		&transaction.FunctionId,
-		&transaction.DetectedWeaknesses,
-	); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+	if err := tx.First(&transaction, updatedTransaction.Id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ErrNotExists
+		}
+		return err
+	}
+	return tx.Model(&transaction).Updates(updatedTransaction).Error
+}
+
+func (r *transactionRepo) FindByBlockchainHash(tx *gorm.DB, blockchainHash string) (*entities.Transaction, error) {
+	var transaction entities.Transaction
+	if err := tx.First(&transaction, "blockchain_hash = ?", blockchainHash).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotExists
 		}
 		return nil, err
@@ -92,64 +62,21 @@ func (r *transactionRepo) Find(id string) (*entities.Transaction, error) {
 	return &transaction, nil
 }
 
-func (r *transactionRepo) FindByBlockchainHash(blockchainHash string) (*entities.Transaction, error) {
-	row := r.connection.GetDB().QueryRow("SELECT * FROM transactions WHERE blockchain_hash = ?", blockchainHash)
-
-	var transaction entities.Transaction
-	if err := row.Scan(
-		&transaction.Id,
-		&transaction.BlockchainHash,
-		&transaction.TaskId,
-		&transaction.FunctionId,
-		&transaction.DetectedWeaknesses,
-	); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrNotExists
-		}
-		return nil, err
-	}
-	return &transaction, nil
-}
-
-func (r *transactionRepo) FindTransactionsByTaskId(taskId string) ([]entities.Transaction, error) {
-	rows, err := r.connection.GetDB().Query("SELECT * FROM transactions WHERE task_id = ?", taskId)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
+func (r *transactionRepo) FindByTaskId(tx *gorm.DB, taskId string) ([]entities.Transaction, error) {
 	var transactions []entities.Transaction
-	for rows.Next() {
-		var transaction entities.Transaction
-		if err := rows.Scan(
-			&transaction.Id,
-			&transaction.BlockchainHash,
-			&transaction.TaskId,
-			&transaction.FunctionId,
-			&transaction.DetectedWeaknesses,
-		); err != nil {
-			return nil, err
+	if err := tx.Where("task_id = ?", taskId).Find(&transactions).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotExists
 		}
-		transactions = append(transactions, transaction)
+		return nil, err
 	}
-
 	return transactions, nil
 }
 
-func (r *transactionRepo) Delete(id string) error {
-	res, err := r.connection.GetDB().Exec("DELETE FROM transactions WHERE id = ?", id)
-	if err != nil {
-		return err
+func (r *transactionRepo) FindTransactionsByFunctionNameAndOrderByTimestamp(tx *gorm.DB, functionName string, limit int64) ([]entities.Transaction, error) {
+	var transactions []entities.Transaction
+	if err := tx.Joins("Function", tx.Where(&entities.Function{Name: functionName})).Order("timestamp").Find(&transactions).Error; err != nil {
+		return nil, err
 	}
-
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-
-	if rowsAffected == 0 {
-		return ErrDeleteFailed
-	}
-
-	return err
+	return transactions, nil
 }

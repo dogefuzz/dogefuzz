@@ -77,18 +77,11 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		}
 	}
 
-	functionDTO := dto.NewFunctionDTO{Name: parsedABI.Constructor.Name, NumberOfArgs: int64(len(parsedABI.Constructor.Inputs))}
-	function, err := ctrl.functionService.Create(&functionDTO)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
-	}
-
 	contractDTO := dto.NewContractDTO{
 		Source:        request.Contract,
 		CompiledCode:  compiledContract.CompiledCode,
 		AbiDefinition: compiledContract.AbiDefinition,
 		Name:          compiledContract.Name,
-		ConstructorId: function.Id,
 	}
 	contract, err := ctrl.contractService.Create(&contractDTO)
 	if err != nil {
@@ -96,19 +89,40 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		return
 	}
 
+	now := time.Now()
 	taskDTO := dto.NewTaskDTO{
-		ContractId: contract.Id,
-		Expiration: time.Now().Add(duration),
-		Detectors:  common.GetUniqueSlice(request.Detectors),
-		Status:     common.TASK_RUNNING,
+		Arguments:   request.Arguments,
+		StartTime:   now,
+		Expiration:  now.Add(duration),
+		Detectors:   common.GetUniqueSlice(request.Detectors),
+		FuzzingType: request.FuzzingType,
+		Status:      common.TASK_RUNNING,
 	}
 	task, err := ctrl.taskService.Create(&taskDTO)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 	}
 
+	functionDTO := dto.NewFunctionDTO{
+		Name:          parsedABI.Constructor.Name,
+		NumberOfArgs:  int64(len(parsedABI.Constructor.Inputs)),
+		Payable:       parsedABI.Constructor.Payable,
+		IsConstructor: true,
+		ContractId:    contract.Id,
+	}
+	_, err = ctrl.functionService.Create(&functionDTO)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+	}
+
 	for _, method := range parsedABI.Methods {
-		functionDTO := dto.NewFunctionDTO{Name: method.Name, NumberOfArgs: int64(len(method.Inputs)), Payable: method.Payable}
+		functionDTO := dto.NewFunctionDTO{
+			Name:          method.Name,
+			NumberOfArgs:  int64(len(method.Inputs)),
+			Payable:       method.Payable,
+			IsConstructor: false,
+			ContractId:    contract.Id,
+		}
 		_, err := ctrl.functionService.Create(&functionDTO)
 		if err != nil {
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})

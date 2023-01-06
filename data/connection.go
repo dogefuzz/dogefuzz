@@ -1,29 +1,31 @@
 package data
 
 import (
-	"database/sql"
 	"fmt"
 	"os"
 
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/entities"
 	"go.uber.org/zap"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 type Connection interface {
 	Migrate() error
 	Clean() error
-	GetDB() *sql.DB
+	GetDB() *gorm.DB
 }
 
 type connection struct {
-	db           *sql.DB
+	db           *gorm.DB
 	databaseName string
 	logger       *zap.Logger
 }
 
 func NewConnection(cfg *config.Config, logger *zap.Logger) (*connection, error) {
 	logger.Info(fmt.Sprintf("Initializing database in \"%s\" file", cfg.DatabaseName))
-	db, err := sql.Open("sqlite3", cfg.DatabaseName)
+	db, err := gorm.Open(sqlite.Open(cfg.DatabaseName), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -40,11 +42,10 @@ func (m *connection) Clean() error {
 	return os.Remove(m.databaseName)
 }
 
-func (m *connection) GetDB() *sql.DB {
+func (m *connection) GetDB() *gorm.DB {
 	return m.db
 }
 
 func (m *connection) Migrate() error {
-	_, err := m.db.Exec(MIGRATION_QUERY)
-	return err
+	return m.db.AutoMigrate(&entities.Contract{}, &entities.Function{}, &entities.Task{}, &entities.Transaction{})
 }

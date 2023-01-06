@@ -3,13 +3,12 @@ package mapper
 import (
 	"github.com/dogefuzz/dogefuzz/entities"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
-	"github.com/google/uuid"
 )
 
 type FunctionMapper interface {
-	ToDomainForCreation(c *dto.NewFunctionDTO) *entities.Function
-	ToDomain(c *dto.FunctionDTO) *entities.Function
-	ToDTO(c *entities.Function) *dto.FunctionDTO
+	MapNewDTOToEntity(c *dto.NewFunctionDTO) *entities.Function
+	MapDTOToEntity(c *dto.FunctionDTO) *entities.Function
+	MapEntityToDTO(c *entities.Function) *dto.FunctionDTO
 }
 
 type functionMapper struct{}
@@ -18,28 +17,33 @@ func NewFunctionMapper() *functionMapper {
 	return &functionMapper{}
 }
 
-func (m *functionMapper) ToDomainForCreation(c *dto.NewFunctionDTO) *entities.Function {
+func (m *functionMapper) MapNewDTOToEntity(c *dto.NewFunctionDTO) *entities.Function {
 	return &entities.Function{
-		Id:           uuid.NewString(),
-		Name:         c.Name,
-		NumberOfArgs: c.NumberOfArgs,
-		Payable:      c.Payable,
+		Name:          c.Name,
+		NumberOfArgs:  c.NumberOfArgs,
+		Payable:       c.Payable,
+		IsConstructor: c.IsConstructor,
+		ContractId:    c.ContractId,
 	}
 }
 
-func (m *functionMapper) ToDomain(c *dto.FunctionDTO) *entities.Function {
+func (m *functionMapper) MapDTOToEntity(c *dto.FunctionDTO) *entities.Function {
 	return &entities.Function{
-		Id:           c.Id,
-		Name:         c.Name,
-		NumberOfArgs: c.NumberOfArgs,
-		Payable:      c.Payable,
+		Id:            c.Id,
+		Name:          c.Name,
+		NumberOfArgs:  c.NumberOfArgs,
+		Payable:       c.Payable,
+		IsConstructor: c.IsConstructor,
+		ContractId:    c.ContractId,
 	}
 }
 
-func (m *functionMapper) ToDTO(c *entities.Function) *dto.FunctionDTO {
+func (m *functionMapper) MapEntityToDTO(c *entities.Function) *dto.FunctionDTO {
 	return &dto.FunctionDTO{
-		Name:         c.Name,
-		NumberOfArgs: c.NumberOfArgs,
-		Payable:      c.Payable,
+		Name:          c.Name,
+		NumberOfArgs:  c.NumberOfArgs,
+		Payable:       c.Payable,
+		IsConstructor: c.IsConstructor,
+		ContractId:    c.ContractId,
 	}
 }

@@ -1,14 +1,14 @@
 package entities
 
 type Contract struct {
-	Id            string
-	Address       string
-	Source        string
-	CompiledCode  string
-	AbiDefinition string
-	Name          string
-	Args          string
-	ConstructorId string
+	Id            string `gorm:"primaryKey"`
+	TaskId        string `gorm:"not null"`
+	Address       string `gorm:"index;unique;not null"`
+	Source        string `gorm:"not null"`
+	CompiledCode  string `gorm:"not null"`
+	AbiDefinition string `gorm:"not null"`
+	Name          string `gorm:"not null"`
 	CFG           string
 	DistanceMap   string
+	Functions     []Function
 }

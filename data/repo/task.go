@@ -1,50 +1,34 @@
 package repo
 
 import (
-	"database/sql"
 	"errors"
+	"time"
 
-	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/entities"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/google/uuid"
-	"github.com/mattn/go-sqlite3"
+	"gorm.io/gorm"
 )
 
 type TaskRepo interface {
-	Create(task *entities.Task) error
-	Find(id string) (*entities.Task, error)
-	Delete(id string) error
+	Get(tx *gorm.DB, id string) (*entities.Task, error)
+	Create(tx *gorm.DB, task *entities.Task) error
+	Update(tx *gorm.DB, task *entities.Task) error
+	FindNotFinishedTasksThatDontHaveIncompletedTransactions(tx *gorm.DB) ([]entities.Task, error)
+	FindNotFinishedAndExpired(tx *gorm.DB) ([]entities.Task, error)
 }
 
 type taskRepo struct {
-	connection data.Connection
 }
 
 func NewTaskRepo(e Env) *taskRepo {
-	return &taskRepo{connection: e.DbConnection()}
+	return &taskRepo{}
 }
 
-func (r *taskRepo) Create(task *entities.Task) error {
-	task.Id = uuid.NewString()
-	_, err := r.connection.GetDB().Exec("INSERT INTO tasks(id) values(?)", task.Id)
-	if err != nil {
-		var sqliteErr sqlite3.Error
-		if errors.As(err, &sqliteErr) {
-			if errors.Is(sqliteErr.ExtendedCode, sqlite3.ErrConstraintUnique) {
-				return ErrDuplicate
-			}
-		}
-		return err
-	}
-	return nil
-}
-
-func (r *taskRepo) Find(id string) (*entities.Task, error) {
-	row := r.connection.GetDB().QueryRow("SELECT * FROM tasks WHERE id = ?", id)
-
+func (r *taskRepo) Get(tx *gorm.DB, id string) (*entities.Task, error) {
 	var task entities.Task
-	if err := row.Scan(&task.Id); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+	if err := tx.First(&task, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotExists
 		}
 		return nil, err
@@ -52,20 +36,34 @@ func (r *taskRepo) Find(id string) (*entities.Task, error) {
 	return &task, nil
 }
 
-func (r *taskRepo) Delete(id string) error {
-	res, err := r.connection.GetDB().Exec("DELETE FROM tasks WHERE id = ?", id)
-	if err != nil {
+func (r *taskRepo) Create(tx *gorm.DB, task *entities.Task) error {
+	task.Id = uuid.NewString()
+	return tx.Create(task).Error
+}
+
+func (r *taskRepo) Update(tx *gorm.DB, updatedTask *entities.Task) error {
+	var task entities.Task
+	if err := tx.First(&task, updatedTask.Id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ErrNotExists
+		}
 		return err
 	}
+	return tx.Model(&task).Updates(updatedTask).Error
+}
 
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return err
+func (r *taskRepo) FindNotFinishedTasksThatDontHaveIncompletedTransactions(tx *gorm.DB) ([]entities.Task, error) {
+	var tasks []entities.Task
+	if err := tx.Raw("SELECT * FROM tasks t WHERE NOT EXISTS (SELECT * FROM transactions WHERE task_id = t.id AND status = ?) AND status = ?", common.TRANSACTION_RUNNING, common.TASK_RUNNING).Scan(&tasks).Error; err != nil {
+		return nil, err
 	}
+	return tasks, nil
+}
 
-	if rowsAffected == 0 {
-		return ErrDeleteFailed
+func (r *taskRepo) FindNotFinishedAndExpired(tx *gorm.DB) ([]entities.Task, error) {
+	var tasks []entities.Task
+	if err := tx.Where("status = ?", common.TASK_RUNNING).Where("AND expiration < ?", time.Now()).Find(&tasks).Error; err != nil {
+		return nil, err
 	}
-
-	return err
+	return tasks, nil
 }

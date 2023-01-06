@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
@@ -24,6 +25,7 @@ type Env interface {
 	Deployer() geth.Deployer
 	Agent() geth.Agent
 	Config() *config.Config
+	DbConnection() data.Connection
 }
 
 func packArgsToVariadicFuncParameters(ctx context.Context, contract *common.Contract, args []interface{}) []interface{} {

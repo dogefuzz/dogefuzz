@@ -45,7 +45,7 @@ func (l *executionAnalyticsListener) processEvent(evt bus.InstrumentExecutionEve
 		return
 	}
 
-	constract, err := l.contractService.Get(task.ContractId)
+	constract, err := l.contractService.FindByTaskId(task.Id)
 	if err != nil {
 		l.logger.Sugar().Errorf("contract could not be retrieved: %v", err)
 		return

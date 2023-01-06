@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
 	"github.com/dogefuzz/dogefuzz/pkg/mapper"
@@ -24,6 +25,7 @@ type TestEnv struct {
 	functionRepo      repo.FunctionRepo
 	deployer          geth.Deployer
 	agent             geth.Agent
+	connection        data.Connection
 }
 
 func NewTestEnv(
@@ -84,6 +86,10 @@ func (e *TestEnv) FunctionRepo() repo.FunctionRepo {
 
 func (e *TestEnv) Agent() geth.Agent {
 	return e.agent
+}
+
+func (e *TestEnv) DbConnection() data.Connection {
+	return e.connection
 }
 
 func (e *TestEnv) Logger() *zap.Logger {
