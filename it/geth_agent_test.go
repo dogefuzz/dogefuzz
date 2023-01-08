@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 
 	"github.com/stretchr/testify/assert"
@@ -32,7 +33,7 @@ func (s *GethAgentIntegrationTestSuite) TestDeploy_ShouldDeployContractInGethNod
 	const solidityFile = `
 // SPDX-License-Identifier: MIT
 // compiler version must be greater than or equal to 0.8.13 and less than 0.9.0
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.26;
 
 contract HelloWorld {
 	string private name;
@@ -72,8 +73,9 @@ contract HelloWorld {
 	client, err := ethclient.Dial(GETH_CONFIG.NodeAddress)
 	assert.Nil(s.T(), err)
 
+	var receipt *types.Receipt
 	for {
-		_, err = client.TransactionReceipt(context.Background(), common.HexToHash(tx))
+		receipt, err = client.TransactionReceipt(context.Background(), common.HexToHash(tx))
 		if err != nil {
 			if err != ethereum.NotFound {
 				assert.Nil(s.T(), err)
@@ -84,6 +86,7 @@ contract HelloWorld {
 
 		time.Sleep(1 * time.Second)
 	}
+	assert.NotNil(s.T(), receipt)
 
 	parsedAbi, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 	assert.Nil(s.T(), err)

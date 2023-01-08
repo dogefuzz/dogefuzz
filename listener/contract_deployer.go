@@ -97,12 +97,11 @@ func (l *contractDeployerListener) processEvent(evt bus.TaskStartEvent) {
 		args = append(args, handler.GetValue())
 	}
 
-	address, err := l.gethService.Deploy(context.Background(), l.contractMapper.MapDTOToCommon(contract), args...)
+	_, err = l.gethService.Deploy(context.Background(), l.contractMapper.MapDTOToCommon(contract), args...)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when deploying contract: %v", err)
 		return
 	}
-	contract.Address = address
 
 	cfg, err := l.vandalService.GetCFG(context.Background(), l.contractMapper.MapDTOToCommon(contract))
 	if err != nil {

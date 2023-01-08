@@ -80,7 +80,7 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 const VALID_SOLIDITY_FILE_WITH_NO_CONSTRUCTOR = `
 // SPDX-License-Identifier: MIT
 // compiler version must be greater than or equal to 0.8.13 and less than 0.9.0
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.26;
 
 contract HelloWorld {
     string public greet = "Hello World!";
@@ -90,7 +90,7 @@ contract HelloWorld {
 const VALID_SOLIDITY_FILE_WITH_CONSTRUCTOR = `
 // SPDX-License-Identifier: MIT
 // compiler version must be greater than or equal to 0.8.13 and less than 0.9.0
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.26;
 
 contract HelloWorld {
 

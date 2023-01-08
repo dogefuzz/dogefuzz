@@ -85,5 +85,6 @@ func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args .
 
 		time.Sleep(1 * time.Second)
 	}
+	contract.Address = receipt.ContractAddress.Hex()
 	return receipt.ContractAddress.Hex(), nil
 }

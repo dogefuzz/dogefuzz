@@ -9,9 +9,8 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/ethclient"
-
 	gethcommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 type Agent interface {
@@ -70,6 +69,5 @@ func (d *agent) Send(ctx context.Context, contract *common.Contract, functionNam
 	if err != nil {
 		return "", err
 	}
-
 	return tx.Hash().Hex(), nil
 }
