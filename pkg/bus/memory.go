@@ -18,6 +18,10 @@ func (b *memoryEventBus) Subscribe(topic string, fn interface{}) {
 	b.internalBus.SubscribeAsync(topic, fn, true)
 }
 
+func (b *memoryEventBus) Unsubscribe(topic string, fn interface{}) {
+	b.internalBus.Unsubscribe(topic, fn)
+}
+
 func (b *memoryEventBus) SubscribeOnce(topic string, fn interface{}) {
 	b.internalBus.SubscribeOnceAsync(topic, fn)
 }

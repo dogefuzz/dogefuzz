@@ -21,3 +21,7 @@ func (t *instrumentExecutionTopic) Publish(e bus.InstrumentExecutionEvent) {
 func (t *instrumentExecutionTopic) Subscribe(fn interface{}) {
 	t.eventBus.Subscribe(INSTRUMENT_EXECUTION_TOPIC, fn)
 }
+
+func (t *instrumentExecutionTopic) Unsubscribe(fn interface{}) {
+	t.eventBus.Unsubscribe(INSTRUMENT_EXECUTION_TOPIC, fn)
+}

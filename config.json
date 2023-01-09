@@ -85,5 +85,8 @@
   },
   "job": {
     "enabledJobs": ["tasks-checker", "transactions-checker"]
+  },
+  "event": {
+    "enabledListeners": ["contract-deployer", "execution-analytics", "fuzzer", "reporter"]
   }
 }

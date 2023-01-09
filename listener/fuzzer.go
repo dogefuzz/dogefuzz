@@ -32,7 +32,7 @@ type fuzzerListener struct {
 	transactionService    service.TransactionService
 }
 
-func NewFuzzerListener(e env) *fuzzerListener {
+func NewFuzzerListener(e Env) *fuzzerListener {
 	return &fuzzerListener{
 		cfg:                   e.Config(),
 		logger:                e.Logger(),
@@ -47,11 +47,15 @@ func NewFuzzerListener(e env) *fuzzerListener {
 	}
 }
 
-func (l *fuzzerListener) StartListening() {
-	l.taskInputRequestTopic.Subscribe(l.processEvent)
+func (l *fuzzerListener) Name() string { return "fuzzer" }
+func (l *fuzzerListener) StartListening(ctx context.Context) {
+	handler := func(evt bus.TaskInputRequestEvent) { l.processEvent(ctx, evt) }
+	l.taskInputRequestTopic.Subscribe(handler)
+	<-ctx.Done()
+	l.taskInputRequestTopic.Unsubscribe(handler)
 }
 
-func (l *fuzzerListener) processEvent(evt bus.TaskInputRequestEvent) {
+func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequestEvent) {
 	task, err := l.taskService.Get(evt.TaskId)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when retrieving task: %v", err)
@@ -82,7 +86,7 @@ func (l *fuzzerListener) processEvent(evt bus.TaskInputRequestEvent) {
 	}
 	chosenFunction := chooseFunction(functions)
 
-	fuzzer, err := l.fuzzerLeader.GetFuzzer(task.FuzzingType)
+	fuzzer, err := l.fuzzerLeader.GetFuzzerStrategy(task.FuzzingType)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when getting the fuzzer instance for %s type: %v", task.FuzzingType, err)
 		return
@@ -90,7 +94,11 @@ func (l *fuzzerListener) processEvent(evt bus.TaskInputRequestEvent) {
 
 	transactionsDTO := make([]*dto.NewTransactionDTO, l.cfg.FuzzerConfig.BatchSize)
 	for idx := 0; idx < l.cfg.FuzzerConfig.BatchSize; idx++ {
-		inputs := fuzzer.GenerateInput(abiDefinition.Methods[chosenFunction.Name])
+		inputs, err := fuzzer.GenerateInput(abiDefinition.Methods[chosenFunction.Name])
+		if err != nil {
+			l.logger.Sugar().Errorf("an error ocurred when generating inputs: %v", err)
+			return
+		}
 
 		serializedInputs := make([]string, len(inputs))
 		abiFunction := abiDefinition.Methods[chosenFunction.Name]
@@ -143,7 +151,7 @@ func (l *fuzzerListener) processEvent(evt bus.TaskInputRequestEvent) {
 		transactionsByTransactionId[tx.Id] = tx
 	}
 
-	transactionHashesByTransactionId, err := l.gethService.BatchCall(context.Background(), l.contractMapper.MapDTOToCommon(contract), chosenFunction.Name, inputsByTransactionId)
+	transactionHashesByTransactionId, err := l.gethService.BatchCall(ctx, l.contractMapper.MapDTOToCommon(contract), chosenFunction.Name, inputsByTransactionId)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when sending the transactions: %v", err)
 		return

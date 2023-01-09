@@ -12,6 +12,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/api"
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/job"
+	"github.com/dogefuzz/dogefuzz/listener"
 )
 
 func main() {
@@ -34,13 +35,24 @@ func main() {
 	scheduler := job.NewJobScheduler(cfg)
 	scheduler.Start()
 
-	waitForInterrupt(server, scheduler)
+	// Run listener manager
+	listenerManager := listener.NewManager(cfg)
+	listenerManager.Start()
+
+	waitForInterrupt(server, scheduler, listenerManager)
 }
 
-func waitForInterrupt(svr api.Server, scheduler job.Scheduler) {
+func waitForInterrupt(svr api.Server, scheduler job.Scheduler, manager listener.Manager) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c
+
+	manager.Shutdown()
+	log.Println("shutting down listener manager")
+
+	ctx := scheduler.Shutdown()
+	<-ctx.Done()
+	log.Println("shutting down job scheduler")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -49,10 +61,6 @@ func waitForInterrupt(svr api.Server, scheduler job.Scheduler) {
 	}
 	<-ctx.Done()
 	log.Println("shutting down server")
-
-	ctx = scheduler.Shutdown()
-	<-ctx.Done()
-	log.Println("shutting down job scheduler")
 
 	os.Exit(0)
 }

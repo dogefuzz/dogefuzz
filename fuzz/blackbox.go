@@ -12,12 +12,12 @@ func NewBlackboxFuzzer() *blackboxFuzzer {
 	return &blackboxFuzzer{}
 }
 
-func (f *blackboxFuzzer) GenerateInput(method abi.Method) []interface{} {
+func (f *blackboxFuzzer) GenerateInput(method abi.Method) ([]interface{}, error) {
 	args := make([]interface{}, len(method.Inputs))
 	for _, input := range method.Inputs {
 		handler, _ := solidity.GetTypeHandler(input.Type)
 		handler.Generate()
 		args = append(args, handler.GetValue())
 	}
-	return args
+	return args, nil
 }

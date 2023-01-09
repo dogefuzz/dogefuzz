@@ -1,6 +1,7 @@
 package listener
 
 import (
+	"context"
 	"sort"
 	"time"
 
@@ -24,7 +25,7 @@ type reporterListener struct {
 	reporterService    service.ReporterService
 }
 
-func NewReporterListener(e env) *reporterListener {
+func NewReporterListener(e Env) *reporterListener {
 	return &reporterListener{
 		logger:             e.Logger(),
 		taskFinishTopic:    e.TaskFinishTopic(),
@@ -36,11 +37,15 @@ func NewReporterListener(e env) *reporterListener {
 	}
 }
 
-func (l *reporterListener) StartListening() {
-	l.taskFinishTopic.Subscribe(l.processEvent)
+func (l *reporterListener) Name() string { return "reporter" }
+func (l *reporterListener) StartListening(ctx context.Context) {
+	handler := func(evt bus.TaskFinishEvent) { l.processEvent(ctx, evt) }
+	l.taskFinishTopic.Subscribe(handler)
+	<-ctx.Done()
+	l.taskFinishTopic.Unsubscribe(handler)
 }
 
-func (l *reporterListener) processEvent(evt bus.TaskFinishEvent) {
+func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishEvent) {
 	task, err := l.taskService.Get(evt.TaskId)
 	if err != nil {
 		l.logger.Sugar().Errorf("task could not be retrieved: %v", err)

@@ -15,6 +15,7 @@ type Config struct {
 	FuzzerConfig  FuzzerConfig `json:"fuzzer"`
 	VandalConfig  VandalConfig `json:"vandal"`
 	JobConfig     JobConfig    `json:"job"`
+	EventConfig   EventConfig  `json:"event"`
 }
 
 func LoadConfig() (*Config, error) {

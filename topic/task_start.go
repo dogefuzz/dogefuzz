@@ -21,3 +21,7 @@ func (t *taskStartTopic) Publish(e bus.TaskStartEvent) {
 func (t *taskStartTopic) Subscribe(fn interface{}) {
 	t.eventBus.Subscribe(TASK_REQUEST_TOPIC, fn)
 }
+
+func (t *taskStartTopic) Unsubscribe(fn interface{}) {
+	t.eventBus.Unsubscribe(TASK_REQUEST_TOPIC, fn)
+}

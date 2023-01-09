@@ -28,7 +28,7 @@ type contractDeployerListener struct {
 	contractMapper        mapper.ContractMapper
 }
 
-func NewContractDeployerListener(e env) *contractDeployerListener {
+func NewContractDeployerListener(e Env) *contractDeployerListener {
 	return &contractDeployerListener{
 		cfg:                   e.Config(),
 		logger:                e.Logger(),
@@ -43,11 +43,15 @@ func NewContractDeployerListener(e env) *contractDeployerListener {
 	}
 }
 
-func (l *contractDeployerListener) StartListening() {
-	l.taskStartTopic.Subscribe(l.processEvent)
+func (l *contractDeployerListener) Name() string { return "contract-deployer" }
+func (l *contractDeployerListener) StartListening(ctx context.Context) {
+	handler := func(evt bus.TaskStartEvent) { l.processEvent(ctx, evt) }
+	l.taskStartTopic.Subscribe(handler)
+	<-ctx.Done()
+	l.taskStartTopic.Unsubscribe(handler)
 }
 
-func (l *contractDeployerListener) processEvent(evt bus.TaskStartEvent) {
+func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.TaskStartEvent) {
 	task, err := l.taskService.Get(evt.TaskId)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when retrieving task: %v", err)
@@ -97,13 +101,13 @@ func (l *contractDeployerListener) processEvent(evt bus.TaskStartEvent) {
 		args = append(args, handler.GetValue())
 	}
 
-	_, err = l.gethService.Deploy(context.Background(), l.contractMapper.MapDTOToCommon(contract), args...)
+	_, err = l.gethService.Deploy(ctx, l.contractMapper.MapDTOToCommon(contract), args...)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when deploying contract: %v", err)
 		return
 	}
 
-	cfg, err := l.vandalService.GetCFG(context.Background(), l.contractMapper.MapDTOToCommon(contract))
+	cfg, err := l.vandalService.GetCFG(ctx, l.contractMapper.MapDTOToCommon(contract))
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred while getting CFG from vandal service: %v", err)
 		return

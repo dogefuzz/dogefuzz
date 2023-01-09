@@ -21,3 +21,7 @@ func (t *taskInputRequestTopic) Publish(e bus.TaskInputRequestEvent) {
 func (t *taskInputRequestTopic) Subscribe(fn interface{}) {
 	t.eventBus.Subscribe(INSTRUMENT_EXECUTION_TOPIC, fn)
 }
+
+func (t *taskInputRequestTopic) Unsubscribe(fn interface{}) {
+	t.eventBus.Unsubscribe(INSTRUMENT_EXECUTION_TOPIC, fn)
+}

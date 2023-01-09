@@ -1,6 +1,8 @@
 package listener
 
 import (
+	"context"
+
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/coverage"
@@ -18,7 +20,7 @@ type executionAnalyticsListener struct {
 	taskService              service.TaskService
 }
 
-func NewExecutionAnalyticsListener(e env) *executionAnalyticsListener {
+func NewExecutionAnalyticsListener(e Env) *executionAnalyticsListener {
 	return &executionAnalyticsListener{
 		logger:                   e.Logger(),
 		instrumentExecutionTopic: e.InstrumentExecutionTopic(),
@@ -28,11 +30,15 @@ func NewExecutionAnalyticsListener(e env) *executionAnalyticsListener {
 	}
 }
 
-func (l *executionAnalyticsListener) StartListening() {
-	l.instrumentExecutionTopic.Subscribe(l.processEvent)
+func (l *executionAnalyticsListener) Name() string { return "execution-analytics" }
+func (l *executionAnalyticsListener) StartListening(ctx context.Context) {
+	handler := func(evt bus.InstrumentExecutionEvent) { l.processEvent(ctx, evt) }
+	l.instrumentExecutionTopic.Subscribe(handler)
+	<-ctx.Done()
+	l.instrumentExecutionTopic.Unsubscribe(handler)
 }
 
-func (l *executionAnalyticsListener) processEvent(evt bus.InstrumentExecutionEvent) {
+func (l *executionAnalyticsListener) processEvent(ctx context.Context, evt bus.InstrumentExecutionEvent) {
 	transaction, err := l.transactionService.Get(evt.TransactionId)
 	if err != nil {
 		l.logger.Sugar().Errorf("transaction could not be retrieved: %v", err)

@@ -3,7 +3,7 @@ package fuzz
 import "github.com/dogefuzz/dogefuzz/pkg/common"
 
 type FuzzerLeader interface {
-	GetFuzzer(typ common.FuzzingType) (Fuzzer, error)
+	GetFuzzerStrategy(typ common.FuzzingType) (Fuzzer, error)
 }
 
 type fuzzerLeader struct {

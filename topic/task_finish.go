@@ -21,3 +21,7 @@ func (t *taskFinishTopic) Publish(e bus.TaskFinishEvent) {
 func (t *taskFinishTopic) Subscribe(fn interface{}) {
 	t.eventBus.Subscribe(TASK_FINISH_TOPIC, fn)
 }
+
+func (t *taskFinishTopic) Unsubscribe(fn interface{}) {
+	t.eventBus.Unsubscribe(TASK_FINISH_TOPIC, fn)
+}

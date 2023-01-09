@@ -1,5 +1,8 @@
 package listener
 
+import "context"
+
 type Listener interface {
-	StartListening()
+	Name() string
+	StartListening(ctx context.Context)
 }

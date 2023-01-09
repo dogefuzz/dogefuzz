@@ -12,5 +12,5 @@ var (
 )
 
 type Fuzzer interface {
-	GenerateInput(method abi.Method) []interface{}
+	GenerateInput(method abi.Method) ([]interface{}, error)
 }
