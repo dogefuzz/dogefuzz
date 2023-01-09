@@ -31,7 +31,7 @@ func (s *GethServiceTestSuite) SetupTest() {
 	s.contractMapperMock = new(mocks.ContractMapperMock)
 	s.contractRepoMock = new(mocks.ContractRepoMock)
 	s.deployerMock = new(mocks.DeployerMock)
-	s.env = test.NewTestEnv(s.contractMapperMock, nil, nil, nil, nil, s.contractRepoMock, nil, nil, s.deployerMock, nil)
+	s.env = test.NewTestEnv(s.contractMapperMock, nil, nil, nil, nil, s.contractRepoMock, nil, nil, s.deployerMock, nil, nil)
 }
 
 func (s *GethServiceTestSuite) TestDeploy_ShouldReturnAddress_WhenProvideNoArgsAndDontOccurFailure() {

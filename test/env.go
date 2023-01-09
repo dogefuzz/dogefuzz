@@ -39,12 +39,14 @@ func NewTestEnv(
 	functionRepo repo.FunctionRepo,
 	deployer geth.Deployer,
 	agent geth.Agent,
+	connection data.Connection,
 ) *TestEnv {
 	return &TestEnv{
 		contractMapper: contractMapper,
 		contractRepo:   contractRepo,
 		deployer:       deployer,
 		agent:          agent,
+		connection: connection,
 	}
 }
 
