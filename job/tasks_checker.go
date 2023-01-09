@@ -13,7 +13,7 @@ type tasksCheckerJob struct {
 	taskFinishTopic topic.Topic[bus.TaskFinishEvent]
 }
 
-func NewTasksCheckerJob(e env) *tasksCheckerJob {
+func NewTasksCheckerJob(e Env) *tasksCheckerJob {
 	return &tasksCheckerJob{
 		logger:          e.Logger(),
 		taskService:     e.TaskService(),
@@ -21,7 +21,7 @@ func NewTasksCheckerJob(e env) *tasksCheckerJob {
 	}
 }
 
-func (j *tasksCheckerJob) ID() string         { return "tasks-checker" }
+func (j *tasksCheckerJob) Id() string         { return "tasks-checker" }
 func (j *tasksCheckerJob) CronConfig() string { return "*/5 * * * *" }
 
 func (j *tasksCheckerJob) Handler() {

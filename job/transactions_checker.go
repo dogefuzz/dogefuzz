@@ -13,7 +13,7 @@ type transactionsCheckerJob struct {
 	taskInputRequestTopic topic.Topic[bus.TaskInputRequestEvent]
 }
 
-func NewTransactionsCheckerJob(e env) *transactionsCheckerJob {
+func NewTransactionsCheckerJob(e Env) *transactionsCheckerJob {
 	return &transactionsCheckerJob{
 		logger:                e.Logger(),
 		taskService:           e.TaskService(),
@@ -21,7 +21,7 @@ func NewTransactionsCheckerJob(e env) *transactionsCheckerJob {
 	}
 }
 
-func (j *transactionsCheckerJob) ID() string         { return "transactions-checker" }
+func (j *transactionsCheckerJob) Id() string         { return "transactions-checker" }
 func (j *transactionsCheckerJob) CronConfig() string { return "*/5 * * * *" }
 
 func (j *transactionsCheckerJob) Handler() {

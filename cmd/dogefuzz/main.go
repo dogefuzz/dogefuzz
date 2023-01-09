@@ -11,6 +11,7 @@ import (
 
 	"github.com/dogefuzz/dogefuzz/api"
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/job"
 )
 
 func main() {
@@ -28,10 +29,15 @@ func main() {
 		log.Fatal("Couldn't start server")
 		panic(err)
 	}
-	waitForInterrupt(server)
+
+	// Run job scheduler
+	scheduler := job.NewJobScheduler(cfg)
+	scheduler.Start()
+
+	waitForInterrupt(server, scheduler)
 }
 
-func waitForInterrupt(svr api.Server) {
+func waitForInterrupt(svr api.Server, scheduler job.Scheduler) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c
@@ -39,10 +45,14 @@ func waitForInterrupt(svr api.Server) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := svr.Shutdown(ctx); err != nil {
-		log.Fatal("Server Shutdown error", err)
+		log.Fatal("server Shutdown error", err)
 	}
-
 	<-ctx.Done()
-	log.Println("Shutting down server")
+	log.Println("shutting down server")
+
+	ctx = scheduler.Shutdown()
+	<-ctx.Done()
+	log.Println("shutting down job scheduler")
+
 	os.Exit(0)
 }

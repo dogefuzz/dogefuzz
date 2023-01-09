@@ -1,7 +1,7 @@
 package job
 
 type CronJob interface {
-	Id()
+	Id() string
 	CronConfig() string
 	Handler()
 }
