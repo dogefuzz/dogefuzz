@@ -35,7 +35,7 @@ func (s *scheduler) Start() {
 	}
 
 	s.env.logger.Info("starting job scheduler")
-	s.scheduler.Run()
+	go s.scheduler.Run()
 }
 
 func (s *scheduler) Shutdown() context.Context {
