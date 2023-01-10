@@ -41,7 +41,7 @@ func MergeSortedSlices(a []string, b []string) []string {
 	}
 
 	for _, elem := range b {
-		if _, ok := m[elem]; !ok {
+		if _, ok := set[elem]; !ok {
 			set[elem] = true
 		}
 	}
