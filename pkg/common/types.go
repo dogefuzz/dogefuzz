@@ -61,6 +61,16 @@ type CFG struct {
 	Blocks map[string]CFGBlock `json:"blocks"`
 }
 
+func (g CFG) GetEdgesPCs() []string {
+	edgesPCs := make([]string, len(g.Blocks))
+	idx := 0
+	for pc := range g.Blocks {
+		edgesPCs[idx] = pc
+		idx++
+	}
+	return edgesPCs
+}
+
 type CFGBlock struct {
 	InitialPC       string            `json:"initialPC"`
 	Instructions    map[string]string `json:"instructions"`
