@@ -1,6 +1,9 @@
 package common
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 func GetUniqueSlice[T comparable](slice []T) []T {
 	keys := make(map[T]bool)
@@ -32,6 +35,9 @@ func SplitOracleTypeString(input string) []OracleType {
 }
 
 func MergeSortedSlices(a []string, b []string) []string {
-	// TODO: merge two sorted array and remove duplicated elements
-	return nil
+	result := make([]string, 0)
+	result = append(result, a...)
+	result = append(result, b...)
+	sort.Strings(result)
+	return result
 }
