@@ -85,7 +85,7 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 		Transactions:       transactionsReports,
 		DetectedWeaknesses: common.GetUniqueSlice(aggregatedWeakneses),
 	}
-	err = l.reporterService.SendReport(report)
+	err = l.reporterService.SendReport(ctx, report)
 	if err != nil {
 		l.logger.Sugar().Errorf("the report could not been sent: %v", err)
 		return

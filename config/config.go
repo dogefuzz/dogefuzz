@@ -8,14 +8,15 @@ import (
 )
 
 type Config struct {
-	StorageFolder string       `mapstructure:"storageFolder"`
-	DatabaseName  string       `mapstructure:"databaseName"`
-	ServerPort    int          `mapstructure:"serverPort"`
-	GethConfig    GethConfig   `mapstructure:"geth"`
-	FuzzerConfig  FuzzerConfig `mapstructure:"fuzzer"`
-	VandalConfig  VandalConfig `mapstructure:"vandal"`
-	JobConfig     JobConfig    `mapstructure:"job"`
-	EventConfig   EventConfig  `mapstructure:"event"`
+	StorageFolder  string         `mapstructure:"storageFolder"`
+	DatabaseName   string         `mapstructure:"databaseName"`
+	ServerPort     int            `mapstructure:"serverPort"`
+	GethConfig     GethConfig     `mapstructure:"geth"`
+	FuzzerConfig   FuzzerConfig   `mapstructure:"fuzzer"`
+	VandalConfig   VandalConfig   `mapstructure:"vandal"`
+	JobConfig      JobConfig      `mapstructure:"job"`
+	EventConfig    EventConfig    `mapstructure:"event"`
+	ReporterConfig ReporterConfig `mapstructure:"reporter"`
 }
 
 func LoadConfig() (*Config, error) {

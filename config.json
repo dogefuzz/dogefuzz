@@ -88,5 +88,9 @@
   },
   "event": {
     "enabledListeners": ["contract-deployer", "execution-analytics", "fuzzer", "reporter"]
+  },
+  "reporter": {
+    "type": "callback",
+    "callbackEndpoint": "http://localhost:3000"
   }
 }

@@ -1,11 +1,11 @@
 package reporter
 
+import (
+	"context"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
+)
+
 type Reporter interface {
-}
-
-type reporter struct {
-}
-
-func NewReporter() *reporter {
-	return &reporter{}
+	SendOutput(ctx context.Context, report common.TaskReport) error
 }
