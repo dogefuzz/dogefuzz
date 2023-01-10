@@ -10,7 +10,7 @@ import (
 
 type GethService interface {
 	Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error)
-	BatchCall(ctx context.Context, contract *common.Contract, functionName string, inputsByTransactionId map[string][]interface{}) (map[string]string, error)
+	BatchCall(ctx context.Context, contract *common.Contract, functionName string, inputsByTransactionId map[string][]interface{}) (map[string]string, map[string]error)
 }
 
 type gethService struct {
@@ -41,8 +41,17 @@ func (s *gethService) BatchCall(
 	contract *common.Contract,
 	functionName string,
 	inputsByTransactionId map[string][]interface{},
-) (map[string]string, error) {
-	// TODO: add logic to call geth multiple times
+) (map[string]string, map[string]error) {
+	hashesByTransactionId := make(map[string]string)
+	errorsByTransactionId := make(map[string]error)
+	for transactionId, inputs := range inputsByTransactionId {
+		hash, err := s.agent.Send(ctx, contract, functionName, inputs)
+		if err != nil {
+			errorsByTransactionId[transactionId] = err
+			continue
+		}
+		hashesByTransactionId[transactionId] = hash
+	}
 
-	return nil, nil
+	return hashesByTransactionId, errorsByTransactionId
 }

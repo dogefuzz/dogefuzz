@@ -117,7 +117,7 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 			TaskId:     task.Id,
 			FunctionId: chosenFunction.Id,
 			Inputs:     serializedInputs,
-			Status:     common.TRANSACTION_RUNNING,
+			Status:     common.TRANSACTION_CREATED,
 		}
 	}
 
@@ -151,15 +151,17 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 		transactionsByTransactionId[tx.Id] = tx
 	}
 
-	transactionHashesByTransactionId, err := l.gethService.BatchCall(ctx, l.contractMapper.MapDTOToCommon(contract), chosenFunction.Name, inputsByTransactionId)
-	if err != nil {
-		l.logger.Sugar().Errorf("an error ocurred when sending the transactions: %v", err)
-		return
+	transactionHashesByTransactionId, errorsByTransactionId := l.gethService.BatchCall(ctx, l.contractMapper.MapDTOToCommon(contract), chosenFunction.Name, inputsByTransactionId)
+	for transactionId, err := range errorsByTransactionId {
+		l.logger.Sugar().Warnf("failed to send transaction to node: %v", err)
+		transaction := transactionsByTransactionId[transactionId]
+		transaction.Status = common.TRANSACTION_SEND_ERROR
 	}
 
 	for transactionId, transactionHash := range transactionHashesByTransactionId {
 		transaction := transactionsByTransactionId[transactionId]
 		transaction.BlockchainHash = transactionHash
+		transaction.Status = common.TRANSACTION_RUNNING
 	}
 
 	err = l.transactionService.BulkUpdate(transactions)
