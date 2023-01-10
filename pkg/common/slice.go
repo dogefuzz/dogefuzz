@@ -35,9 +35,22 @@ func SplitOracleTypeString(input string) []OracleType {
 }
 
 func MergeSortedSlices(a []string, b []string) []string {
-	result := make([]string, 0)
-	result = append(result, a...)
-	result = append(result, b...)
+	set := make(map[string]bool)
+	for _, elem := range a {
+		set[elem] = true
+	}
+
+	for _, elem := range b {
+		if _, ok := m[elem]; !ok {
+			set[elem] = true
+		}
+	}
+
+	result := make([]string, 0, len(set))
+	for elem := range set {
+		result = append(result, elem)
+	}
+
 	sort.Strings(result)
 	return result
 }
