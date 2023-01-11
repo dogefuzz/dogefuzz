@@ -24,7 +24,7 @@ func NewFunctionRepo(e Env) *functionRepo {
 
 func (r *functionRepo) Get(tx *gorm.DB, id string) (*entities.Function, error) {
 	var function entities.Function
-	if err := tx.First(&function, id).Error; err != nil {
+	if err := tx.First(&function, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotExists
 		}
@@ -40,7 +40,7 @@ func (r *functionRepo) Create(tx *gorm.DB, function *entities.Function) error {
 
 func (r *functionRepo) FindByContractId(tx *gorm.DB, contractId string) ([]entities.Function, error) {
 	var functions []entities.Function
-	if err := tx.Where("contract_id = ?").Find(&functions).Error; err != nil {
+	if err := tx.Where("contract_id = ?", contractId).Find(&functions).Error; err != nil {
 		return nil, err
 	}
 	return functions, nil
@@ -48,7 +48,7 @@ func (r *functionRepo) FindByContractId(tx *gorm.DB, contractId string) ([]entit
 
 func (r *functionRepo) FindConstructorByContractId(tx *gorm.DB, contractId string) (*entities.Function, error) {
 	var function entities.Function
-	if err := tx.Where("is_constructor = true").Where("contract_id = ?").First(&function).Error; err != nil {
+	if err := tx.Where("is_constructor = ?", true).Where("contract_id = ?", contractId).First(&function).Error; err != nil {
 		return nil, err
 	}
 	return &function, nil

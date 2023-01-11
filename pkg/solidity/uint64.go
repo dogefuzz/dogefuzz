@@ -5,7 +5,8 @@ import (
 	"math"
 	"math/rand"
 	"strconv"
-	"time"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 const UINT64_BIT_SIZE = 64
@@ -46,7 +47,7 @@ func (h *uint64Handler) Deserialize(value string) error {
 }
 
 func (h *uint64Handler) Generate() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	h.value = rand.Uint64()
 }
 

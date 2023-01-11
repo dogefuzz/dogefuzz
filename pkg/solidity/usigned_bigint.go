@@ -4,7 +4,8 @@ import (
 	"errors"
 	"math/big"
 	"math/rand"
-	"time"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 var ErrInvalidUnsignedBigInt = errors.New("the provided json does not correspond to a boolean type")
@@ -55,7 +56,7 @@ func (h *unsignedBigIntHandler) Deserialize(value string) error {
 }
 
 func (h *unsignedBigIntHandler) Generate() {
-	rnd := rand.New(rand.NewSource(time.Now().Unix()))
+	rnd := rand.New(rand.NewSource(common.Now().Unix()))
 
 	base := big.NewInt(2)
 	exponent := big.NewInt(int64(h.bitSize))

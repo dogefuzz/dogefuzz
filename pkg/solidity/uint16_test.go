@@ -5,9 +5,9 @@ import (
 	"math/rand"
 	"strconv"
 	"testing"
-	"time"
 
 	"github.com/brianvoe/gofakeit"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/test/generators"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -49,7 +49,7 @@ func (s *Uint16HandlerTestSuite) TestDeserialize_ShouldReturnError_WhenReceivedO
 }
 
 func (s *Uint16HandlerTestSuite) TestDeserialize_ShouldReturnUint16_WhenReceivedAValidUint16() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	validUint16 := rand.Intn(math.MaxUint16)
 	validUint16AsString := strconv.Itoa(validUint16)
 	handler := NewUint16Handler()

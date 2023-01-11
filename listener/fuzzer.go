@@ -4,7 +4,6 @@ import (
 	"context"
 	"math/rand"
 	"strings"
-	"time"
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/fuzz"
@@ -113,7 +112,7 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 		}
 
 		transactionsDTO[idx] = &dto.NewTransactionDTO{
-			Timestamp:  time.Now(),
+			Timestamp:  common.Now(),
 			TaskId:     task.Id,
 			FunctionId: chosenFunction.Id,
 			Inputs:     serializedInputs,
@@ -179,7 +178,7 @@ func chooseFunction(functions []*dto.FunctionDTO) *dto.FunctionDTO {
 		}
 		payableFunctions[idx] = function
 	}
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	idx := rand.Intn(len(functions))
 	return payableFunctions[idx]
 }

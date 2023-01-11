@@ -5,7 +5,8 @@ import (
 	"math"
 	"math/rand"
 	"strconv"
-	"time"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 const UINT8_BIT_SIZE = 8
@@ -46,7 +47,7 @@ func (h *uint8Handler) Deserialize(value string) error {
 }
 
 func (h *uint8Handler) Generate() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	h.value = uint8(rand.Intn(2 << (UINT8_BIT_SIZE - 1)))
 }
 

@@ -29,17 +29,18 @@ func (r *contractRepo) Create(tx *gorm.DB, contract *entities.Contract) error {
 
 func (r *contractRepo) Update(tx *gorm.DB, updatedContract *entities.Contract) error {
 	var contract entities.Contract
-	if err := tx.First(&contract, updatedContract.Id).Error; err != nil {
+	if err := tx.First(&contract, "id = ?", updatedContract.Id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ErrNotExists
 		}
+		return err
 	}
 	return tx.Model(&contract).Updates(updatedContract).Error
 }
 
 func (r *contractRepo) Find(tx *gorm.DB, id string) (*entities.Contract, error) {
 	var contract entities.Contract
-	if err := tx.First(&contract, id).Error; err != nil {
+	if err := tx.First(&contract, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotExists
 		}

@@ -2,7 +2,6 @@ package repo
 
 import (
 	"errors"
-	"time"
 
 	"github.com/dogefuzz/dogefuzz/entities"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
@@ -27,7 +26,7 @@ func NewTaskRepo(e Env) *taskRepo {
 
 func (r *taskRepo) Get(tx *gorm.DB, id string) (*entities.Task, error) {
 	var task entities.Task
-	if err := tx.First(&task, id).Error; err != nil {
+	if err := tx.First(&task, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotExists
 		}
@@ -43,7 +42,7 @@ func (r *taskRepo) Create(tx *gorm.DB, task *entities.Task) error {
 
 func (r *taskRepo) Update(tx *gorm.DB, updatedTask *entities.Task) error {
 	var task entities.Task
-	if err := tx.First(&task, updatedTask.Id).Error; err != nil {
+	if err := tx.First(&task, "id = ?", updatedTask.Id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ErrNotExists
 		}
@@ -54,7 +53,7 @@ func (r *taskRepo) Update(tx *gorm.DB, updatedTask *entities.Task) error {
 
 func (r *taskRepo) FindNotFinishedTasksThatDontHaveIncompletedTransactions(tx *gorm.DB) ([]entities.Task, error) {
 	var tasks []entities.Task
-	if err := tx.Raw("SELECT * FROM tasks t WHERE NOT EXISTS (SELECT * FROM transactions WHERE task_id = t.id AND status = ?) AND status = ?", common.TRANSACTION_RUNNING, common.TASK_RUNNING).Scan(&tasks).Error; err != nil {
+	if err := tx.Raw("SELECT * FROM tasks t WHERE NOT EXISTS (SELECT * FROM transactions tx WHERE tx.task_id = t.id AND tx.status = ?) AND t.status = ?", common.TRANSACTION_RUNNING, common.TASK_RUNNING).Scan(&tasks).Error; err != nil {
 		return nil, err
 	}
 	return tasks, nil
@@ -62,7 +61,7 @@ func (r *taskRepo) FindNotFinishedTasksThatDontHaveIncompletedTransactions(tx *g
 
 func (r *taskRepo) FindNotFinishedAndExpired(tx *gorm.DB) ([]entities.Task, error) {
 	var tasks []entities.Task
-	if err := tx.Where("status = ?", common.TASK_RUNNING).Where("AND expiration < ?", time.Now()).Find(&tasks).Error; err != nil {
+	if err := tx.Where("status = ?", common.TASK_RUNNING).Where("expiration < ?", common.Now()).Find(&tasks).Error; err != nil {
 		return nil, err
 	}
 	return tasks, nil

@@ -4,9 +4,9 @@ import (
 	"math/rand"
 	"strconv"
 	"testing"
-	"time"
 
 	"github.com/brianvoe/gofakeit"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/test/generators"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -48,7 +48,7 @@ func (s *Int16HandlerTestSuite) TestDeserialize_ShouldReturnError_WhenReceivedOv
 }
 
 func (s *Int16HandlerTestSuite) TestDeserialize_ShouldReturnInt16_WhenReceivedAValidInt16() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	validInt16 := int16(generators.SignedBigIntGen(16).Int64())
 	validInt16AsString := strconv.Itoa(int(validInt16))
 	handler := NewInt16Handler()

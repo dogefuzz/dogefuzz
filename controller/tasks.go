@@ -89,7 +89,7 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		return
 	}
 
-	now := time.Now()
+	now := common.Now()
 	taskDTO := dto.NewTaskDTO{
 		Arguments:   request.Arguments,
 		StartTime:   now,

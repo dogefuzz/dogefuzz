@@ -47,5 +47,6 @@ func (m *connection) GetDB() *gorm.DB {
 }
 
 func (m *connection) Migrate() error {
+	m.logger.Info("migrating database...")
 	return m.db.AutoMigrate(&entities.Contract{}, &entities.Function{}, &entities.Task{}, &entities.Transaction{})
 }

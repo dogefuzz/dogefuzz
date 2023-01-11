@@ -1,4 +1,4 @@
-package it
+package geth
 
 import (
 	"context"
@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/dogefuzz/dogefuzz/pkg/geth"
 	"github.com/dogefuzz/dogefuzz/pkg/solc"
+	"github.com/dogefuzz/dogefuzz/test/it"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -52,10 +52,10 @@ contract HelloWorld {
 }
 `
 
-	deployer, err := geth.NewDeployer(GETH_CONFIG)
+	deployer, err := NewDeployer(it.GETH_CONFIG)
 	assert.Nil(s.T(), err)
 
-	compiler := solc.NewSolidityCompiler(SOLC_FOLDER)
+	compiler := solc.NewSolidityCompiler(it.SOLC_FOLDER)
 	contract, err := compiler.CompileSource(solidityFile)
 	assert.Nil(s.T(), err)
 
@@ -63,14 +63,14 @@ contract HelloWorld {
 	assert.Nil(s.T(), err)
 	assert.NotEmpty(s.T(), address)
 
-	agent, err := geth.NewAgent(GETH_CONFIG)
+	agent, err := NewAgent(it.GETH_CONFIG)
 	assert.Nil(s.T(), err)
 
 	newWord := gofakeit.Word()
 	tx, err := agent.Send(context.Background(), contract, "setName", newWord)
 	assert.Nil(s.T(), err)
 
-	client, err := ethclient.Dial(GETH_CONFIG.NodeAddress)
+	client, err := ethclient.Dial(it.GETH_CONFIG.NodeAddress)
 	assert.Nil(s.T(), err)
 
 	var receipt *types.Receipt

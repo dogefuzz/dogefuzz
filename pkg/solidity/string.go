@@ -3,7 +3,8 @@ package solidity
 import (
 	"errors"
 	"math/rand"
-	"time"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 var ErrInvalidString = errors.New("the provided json does not correspond to a string type")
@@ -38,7 +39,7 @@ func (h *stringHandler) Deserialize(value string) error {
 }
 
 func (h *stringHandler) Generate() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	var alphabet = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	length := rand.Intn(256)
 	wordSlice := make([]rune, length)

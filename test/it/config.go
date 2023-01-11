@@ -9,4 +9,9 @@ var GETH_CONFIG = config.GethConfig{
 	AgentPrivateKeyHex:    "39a7089e3f7e093b900bc8e98e6e5cba4639cd04d3e944ce1ddd2ca1595b7b87",
 }
 
+var CONFIG = config.Config{
+	DatabaseName: "test_dogefuzz",
+	GethConfig:   GETH_CONFIG,
+}
+
 const SOLC_FOLDER = "/tmp/solc"

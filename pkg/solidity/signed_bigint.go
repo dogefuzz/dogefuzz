@@ -4,7 +4,8 @@ import (
 	"errors"
 	"math/big"
 	"math/rand"
-	"time"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 var ErrInvalidSignedBigInt = errors.New("the provided json does not correspond to a Big.Int type")
@@ -63,7 +64,7 @@ func (h *signedBigIntHandler) Deserialize(value string) error {
 }
 
 func (h *signedBigIntHandler) Generate() {
-	rnd := rand.New(rand.NewSource(time.Now().Unix()))
+	rnd := rand.New(rand.NewSource(common.Now().Unix()))
 
 	base := big.NewInt(2)
 	exponent := big.NewInt(int64(h.bitSize / 2))

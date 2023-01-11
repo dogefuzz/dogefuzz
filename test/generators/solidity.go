@@ -5,12 +5,13 @@ import (
 	"math/big"
 	"math/rand"
 	"strings"
-	"time"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 func SmartContractGen() string {
 	const ADDRESS_LENGTH = 20
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(common.Now().UnixNano())
 
 	parts := make([]string, ADDRESS_LENGTH)
 	for idx := 0; idx < len(parts); idx++ {
@@ -37,7 +38,7 @@ func UnderflowedNumberAsStringGen(bitSize int) string {
 }
 
 func UnsignedBigIntGen(bitSize int) *big.Int {
-	rnd := rand.New(rand.NewSource(time.Now().Unix()))
+	rnd := rand.New(rand.NewSource(common.Now().Unix()))
 
 	base := big.NewInt(2)
 	exponent := big.NewInt(int64(bitSize))
@@ -51,7 +52,7 @@ func UnsignedBigIntGen(bitSize int) *big.Int {
 }
 
 func SignedBigIntGen(bitSize int) *big.Int {
-	rnd := rand.New(rand.NewSource(time.Now().Unix()))
+	rnd := rand.New(rand.NewSource(common.Now().Unix()))
 
 	base := big.NewInt(2)
 	exponent := big.NewInt(int64(bitSize / 2))

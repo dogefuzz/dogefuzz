@@ -1,4 +1,4 @@
-package it
+package geth
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/dogefuzz/dogefuzz/pkg/geth"
 	"github.com/dogefuzz/dogefuzz/pkg/solc"
+	"github.com/dogefuzz/dogefuzz/test/it"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -27,10 +27,10 @@ func TestGethDeployerIntegrationTestSuite(t *testing.T) {
 }
 
 func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGethNode_WhenProvidedAValidContractWithNoConstructor() {
-	deployer, err := geth.NewDeployer(GETH_CONFIG)
+	deployer, err := NewDeployer(it.GETH_CONFIG)
 	assert.Nil(s.T(), err)
 
-	compiler := solc.NewSolidityCompiler(SOLC_FOLDER)
+	compiler := solc.NewSolidityCompiler(it.SOLC_FOLDER)
 	contract, err := compiler.CompileSource(VALID_SOLIDITY_FILE_WITH_NO_CONSTRUCTOR)
 	assert.Nil(s.T(), err)
 
@@ -38,7 +38,7 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 	assert.Nil(s.T(), err)
 	assert.NotEmpty(s.T(), address)
 
-	client, err := ethclient.Dial(GETH_CONFIG.NodeAddress)
+	client, err := ethclient.Dial(it.GETH_CONFIG.NodeAddress)
 	assert.Nil(s.T(), err)
 
 	parsedAbi, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
@@ -52,10 +52,10 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 }
 
 func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGethNode_WhenProvidedAValidContractWithConstructor() {
-	deployer, err := geth.NewDeployer(GETH_CONFIG)
+	deployer, err := NewDeployer(it.GETH_CONFIG)
 	assert.Nil(s.T(), err)
 
-	compiler := solc.NewSolidityCompiler(SOLC_FOLDER)
+	compiler := solc.NewSolidityCompiler(it.SOLC_FOLDER)
 	contract, err := compiler.CompileSource(VALID_SOLIDITY_FILE_WITH_CONSTRUCTOR)
 	assert.Nil(s.T(), err)
 
@@ -64,7 +64,7 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 	assert.Nil(s.T(), err)
 	assert.NotEmpty(s.T(), address)
 
-	client, err := ethclient.Dial(GETH_CONFIG.NodeAddress)
+	client, err := ethclient.Dial(it.GETH_CONFIG.NodeAddress)
 	assert.Nil(s.T(), err)
 
 	parsedAbi, err := abi.JSON(strings.NewReader(contract.AbiDefinition))

@@ -5,7 +5,6 @@ import (
 	"math"
 	"math/rand"
 	"strconv"
-	"time"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
@@ -48,7 +47,7 @@ func (h *int32Handler) Deserialize(value string) error {
 }
 
 func (h *int32Handler) Generate() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	h.value = common.RandomChoice([]int32{1, -1}) * rand.Int31()
 }
 

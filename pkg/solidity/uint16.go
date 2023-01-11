@@ -5,7 +5,8 @@ import (
 	"math"
 	"math/rand"
 	"strconv"
-	"time"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 const UINT16_BIT_SIZE = 16
@@ -46,7 +47,7 @@ func (h *uint16Handler) Deserialize(value string) error {
 }
 
 func (h *uint16Handler) Generate() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	h.value = uint16(rand.Intn(2 << (UINT16_BIT_SIZE - 1)))
 }
 

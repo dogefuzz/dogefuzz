@@ -4,7 +4,6 @@ import (
 	"math/big"
 	"math/rand"
 	"testing"
-	"time"
 
 	"github.com/brianvoe/gofakeit"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
@@ -66,7 +65,7 @@ func (s *UnsignedBigIntHandlerTestSuite) TestDeserialize_ShouldReturnError_WhenR
 }
 
 func (s *SignedBigIntHandlerTestSuite) TestSequelize_ShouldReturnBigInt_WhenReceivedAValidUnsignedBigInt() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	exceptionSet := common.NewSet(8, 16, 32, 64)
 
 	for bitSize := 8; bitSize <= 256; bitSize += 8 {

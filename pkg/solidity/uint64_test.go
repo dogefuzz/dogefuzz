@@ -4,9 +4,9 @@ import (
 	"math/rand"
 	"strconv"
 	"testing"
-	"time"
 
 	"github.com/brianvoe/gofakeit"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/test/generators"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -48,7 +48,7 @@ func (s *Uint64HandlerTestSuite) TestDeserialize_ShouldReturnError_WhenReceivedO
 }
 
 func (s *Uint64HandlerTestSuite) TestDeserialize_ShouldFillValueWithValidUint64_WhenReceivedAValidUint64() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	validUint64 := rand.Uint64()
 	validUint64AsString := strconv.FormatUint(validUint64, 10)
 	handler := NewUint64Handler()

@@ -4,9 +4,9 @@ import (
 	"math/rand"
 	"strconv"
 	"testing"
-	"time"
 
 	"github.com/brianvoe/gofakeit"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/test/generators"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -48,7 +48,7 @@ func (s *Int8HandlerTestSuite) TestDeserialize_ShouldReturnError_WhenReceivedOve
 }
 
 func (s *Int8HandlerTestSuite) TestDeserialize_ShouldFillValueWithValidInt8_WhenReceivedAValidInt8() {
-	rand.Seed(time.Now().Unix())
+	rand.Seed(common.Now().Unix())
 	validInt8 := int8(generators.SignedBigIntGen(8).Int64())
 	validInt8AsString := strconv.Itoa(int(validInt8))
 	handler := NewInt8Handler()

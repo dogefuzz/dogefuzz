@@ -26,7 +26,7 @@ func NewTransactionRepo(e Env) *transactionRepo {
 
 func (r *transactionRepo) Get(tx *gorm.DB, id string) (*entities.Transaction, error) {
 	var transaction entities.Transaction
-	if err := tx.First(&transaction, id).Error; err != nil {
+	if err := tx.First(&transaction, "id = ?", id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotExists
 		}
@@ -42,7 +42,7 @@ func (r *transactionRepo) Create(tx *gorm.DB, transaction *entities.Transaction)
 
 func (r *transactionRepo) Update(tx *gorm.DB, updatedTransaction *entities.Transaction) error {
 	var transaction entities.Transaction
-	if err := tx.First(&transaction, updatedTransaction.Id).Error; err != nil {
+	if err := tx.First(&transaction, "id = ?", updatedTransaction.Id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ErrNotExists
 		}
@@ -74,8 +74,16 @@ func (r *transactionRepo) FindByTaskId(tx *gorm.DB, taskId string) ([]entities.T
 }
 
 func (r *transactionRepo) FindTransactionsByFunctionNameAndOrderByTimestamp(tx *gorm.DB, functionName string, limit int64) ([]entities.Transaction, error) {
+	var function entities.Function
+	if err := tx.Where("name = ?", functionName).Find(&function).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotExists
+		}
+		return nil, err
+	}
+
 	var transactions []entities.Transaction
-	if err := tx.Joins("Function", tx.Where(&entities.Function{Name: functionName})).Order("timestamp").Find(&transactions).Error; err != nil {
+	if err := tx.Where("function_id", function.Id).Order("timestamp").Find(&transactions).Error; err != nil {
 		return nil, err
 	}
 	return transactions, nil
