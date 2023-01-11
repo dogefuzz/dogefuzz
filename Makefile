@@ -8,7 +8,7 @@ docker.test.down:
 	docker compose -f ./infrastructure/docker-compose.test.yml down -v
 
 test.unit:
-	go test ./...
+	go test $(go list ./... | grep -v github.com/dogefuzz/dogefuzz/test) ./... -cover
 
 test.integration:
 	go test -tags=integration ./it -v -count=1
