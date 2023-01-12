@@ -83,14 +83,7 @@
       "string": ["foo", "bar"]
     }
   },
-  "job": {
-    "enabledJobs": ["tasks-checker", "transactions-checker"]
-  },
-  "event": {
-    "enabledListeners": ["contract-deployer", "execution-analytics", "fuzzer", "reporter"]
-  },
-  "reporter": {
-    "type": "callback",
-    "callbackEndpoint": "http://localhost:3000"
-  }
+  "job": { "enabledJobs": ["tasks-checker", "transactions-checker"] },
+  "event": { "enabledListeners": ["contract-deployer", "execution-analytics", "fuzzer", "reporter"] },
+  "reporter": { "type": "callback", "callbackEndpoint": "http://localhost:3000" }
 }

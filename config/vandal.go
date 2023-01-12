@@ -1,5 +1,5 @@
 package config
 
 type VandalConfig struct {
-	Endpoint string `json:"endpoint"`
+	Endpoint string `mapstructure:"endpoint"`
 }

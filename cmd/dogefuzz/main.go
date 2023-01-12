@@ -18,7 +18,7 @@ import (
 func main() {
 	flag.Parse()
 
-	cfg, err := config.LoadConfig()
+	cfg, err := config.LoadConfig(".")
 	if err != nil {
 		log.Fatal("Couldn't load config")
 		panic(err)

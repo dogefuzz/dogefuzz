@@ -1,0 +1,24 @@
+{
+  "databaseName": "<databaseName>",
+  "serverPort": 1001,
+  "vandal": {
+    "endpoint": "<endpoint>"
+  },
+  "geth": {
+    "nodeAddress": "<nodeAddress>",
+    "chainId": 1002,
+    "deployerPrivateKeyHex": "<deployerPrivateKeyHex>",
+    "agentPrivateKeyHex": "<agentPrivateKeyHex>"
+  },
+  "fuzzer": {
+    "criticalInstructions": ["<critical1>"],
+    "batchSize": 1003,
+    "seedsSize": 1004,
+    "seeds": {
+      "bool": ["true", "false"]
+    }
+  },
+  "job": { "enabledJobs": ["<job1>"] },
+  "event": { "enabledListeners": ["<listener1>"] },
+  "reporter": { "type": "console", "callbackEndpoint": "<endpoint>" }
+}
