@@ -1,8 +1,10 @@
 package common
 
 import (
+	"math/rand"
 	"sort"
 	"strings"
+	"time"
 )
 
 func GetUniqueSlice[T comparable](slice []T) []T {
@@ -53,4 +55,31 @@ func MergeSortedSlices(a []string, b []string) []string {
 
 	sort.Strings(result)
 	return result
+}
+
+func RandomSubSlice[T any](s []T) []T {
+	if len(s) == 0 {
+		return make([]T, 0)
+	}
+	rand.Seed(time.Now().UnixNano())
+	subSliceLength := rand.Intn(len(s))
+	subSlice := make([]T, subSliceLength)
+
+	leftIdx := 0
+	currentLength := subSliceLength
+	for i := 0; i < subSliceLength; i++ {
+		idx := rand.Intn(currentLength) + leftIdx
+		subSlice[i] = s[idx]
+		Swap(s, idx, leftIdx)
+		currentLength--
+		leftIdx++
+	}
+
+	return subSlice
+}
+
+func Swap[T any](s []T, i, j int) {
+	temp := s[i]
+	s[i] = s[j]
+	s[j] = temp
 }

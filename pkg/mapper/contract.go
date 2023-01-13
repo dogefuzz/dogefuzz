@@ -69,9 +69,9 @@ func (m *contractMapper) MapEntityToDTO(c *entities.Contract) *dto.ContractDTO {
 
 func (m *contractMapper) MapDTOToCommon(c *dto.ContractDTO) *common.Contract {
 	return &common.Contract{
-		Name:          c.Name,
+		Address:       c.Address,
 		AbiDefinition: c.AbiDefinition,
 		CompiledCode:  c.CompiledCode,
-		Address:       c.Address,
+		Name:          c.Name,
 	}
 }
