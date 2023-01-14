@@ -48,6 +48,7 @@ func (m *transactionMapper) MapDTOToEntity(c *dto.TransactionDTO) *entities.Tran
 func (m *transactionMapper) MapEntityToDTO(c *entities.Transaction) *dto.TransactionDTO {
 	return &dto.TransactionDTO{
 		Id:                   c.Id,
+		Timestamp:            c.Timestamp,
 		BlockchainHash:       c.BlockchainHash,
 		TaskId:               c.TaskId,
 		FunctionId:           c.FunctionId,
