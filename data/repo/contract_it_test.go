@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v6"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/test/generators"
 	"github.com/dogefuzz/dogefuzz/test/it"
 	"github.com/google/uuid"
@@ -16,7 +17,7 @@ type ContractRepoIntegrationTestSuite struct {
 	suite.Suite
 
 	env  *it.Env
-	repo ContractRepo
+	repo interfaces.ContractRepo
 }
 
 func TestContractRepoIntegrationTestSuite(t *testing.T) {

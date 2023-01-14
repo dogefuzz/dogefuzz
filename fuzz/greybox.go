@@ -2,12 +2,13 @@ package fuzz
 
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
 type greyboxFuzzer struct {
-	powerSchedule PowerSchedule
+	powerSchedule interfaces.PowerSchedule
 }
 
 func NewGreyboxFuzzer(e env) *greyboxFuzzer {

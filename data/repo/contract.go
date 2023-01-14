@@ -8,13 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type ContractRepo interface {
-	Create(tx *gorm.DB, contract *entities.Contract) error
-	Update(tx *gorm.DB, contract *entities.Contract) error
-	Find(tx *gorm.DB, id string) (*entities.Contract, error)
-	FindByTaskId(tx *gorm.DB, taskId string) (*entities.Contract, error)
-}
-
 type contractRepo struct {
 }
 

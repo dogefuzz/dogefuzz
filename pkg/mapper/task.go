@@ -8,12 +8,6 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 )
 
-type TaskMapper interface {
-	MapNewDTOToEntity(c *dto.NewTaskDTO) *entities.Task
-	MapDTOToEntity(c *dto.TaskDTO) *entities.Task
-	MapEntityToDTO(c *entities.Task) *dto.TaskDTO
-}
-
 type taskMapper struct{}
 
 func NewTaskMapper() *taskMapper {

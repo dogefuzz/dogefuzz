@@ -8,13 +8,6 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 )
 
-type ContractMapper interface {
-	MapNewDTOToEntity(d *dto.NewContractDTO) *entities.Contract
-	MapDTOToEntity(d *dto.ContractDTO) *entities.Contract
-	MapEntityToDTO(c *entities.Contract) *dto.ContractDTO
-	MapDTOToCommon(c *dto.ContractDTO) *common.Contract
-}
-
 type contractMapper struct{}
 
 func NewContractMapper() *contractMapper {

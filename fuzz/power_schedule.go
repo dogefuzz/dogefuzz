@@ -7,20 +7,16 @@ import (
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
-	"github.com/dogefuzz/dogefuzz/service"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
 var ErrInvalidStrategy = errors.New("the provided strategy is not valid")
 
-type PowerSchedule interface {
-	RequestSeeds(method abi.Method, strategy common.PowerScheduleStrategy) ([][]interface{}, error)
-}
-
 type powerSchedule struct {
 	cfg                *config.Config
-	transactionService service.TransactionService
+	transactionService interfaces.TransactionService
 }
 
 func NewPowerSchedule(e env) *powerSchedule {

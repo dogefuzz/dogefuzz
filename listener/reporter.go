@@ -10,19 +10,18 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/coverage"
 	"github.com/dogefuzz/dogefuzz/pkg/distance"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
-	"github.com/dogefuzz/dogefuzz/service"
-	"github.com/dogefuzz/dogefuzz/topic"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
 type reporterListener struct {
 	logger             *zap.Logger
-	taskFinishTopic    topic.Topic[bus.TaskFinishEvent]
-	transactionService service.TransactionService
-	taskService        service.TaskService
-	functionService    service.FunctionService
-	contractService    service.ContractService
-	reporterService    service.ReporterService
+	taskFinishTopic    interfaces.Topic[bus.TaskFinishEvent]
+	transactionService interfaces.TransactionService
+	taskService        interfaces.TaskService
+	functionService    interfaces.FunctionService
+	contractService    interfaces.ContractService
+	reporterService    interfaces.ReporterService
 }
 
 func NewReporterListener(e Env) *reporterListener {

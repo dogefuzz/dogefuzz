@@ -13,6 +13,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/job"
 	"github.com/dogefuzz/dogefuzz/listener"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 func main() {
@@ -42,7 +43,7 @@ func main() {
 	waitForInterrupt(server, scheduler, listenerManager)
 }
 
-func waitForInterrupt(svr api.Server, scheduler job.Scheduler, manager listener.Manager) {
+func waitForInterrupt(svr interfaces.Server, scheduler interfaces.Scheduler, manager interfaces.Manager) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c

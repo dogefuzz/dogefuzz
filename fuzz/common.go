@@ -2,14 +2,14 @@ package fuzz
 
 import (
 	"github.com/dogefuzz/dogefuzz/config"
-	"github.com/dogefuzz/dogefuzz/service"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 type env interface {
 	Config() *config.Config
-	BlackboxFuzzer() Fuzzer
-	GreyboxFuzzer() Fuzzer
-	DirectedGreyboxFuzzer() Fuzzer
-	PowerSchedule() PowerSchedule
-	TransactionService() service.TransactionService
+	BlackboxFuzzer() interfaces.Fuzzer
+	GreyboxFuzzer() interfaces.Fuzzer
+	DirectedGreyboxFuzzer() interfaces.Fuzzer
+	PowerSchedule() interfaces.PowerSchedule
+	TransactionService() interfaces.TransactionService
 }

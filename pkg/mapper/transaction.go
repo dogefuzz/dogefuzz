@@ -7,12 +7,6 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 )
 
-type TransactionMapper interface {
-	MapNewDTOToEntity(n *dto.NewTransactionDTO) *entities.Transaction
-	MapDTOToEntity(c *dto.TransactionDTO) *entities.Transaction
-	MapEntityToDTO(c *entities.Transaction) *dto.TransactionDTO
-}
-
 type transactionMapper struct{}
 
 func NewTransactionMapper() *transactionMapper {

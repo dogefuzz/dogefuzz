@@ -3,26 +3,17 @@ package service
 import (
 	"errors"
 
-	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
-	"github.com/dogefuzz/dogefuzz/pkg/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 var ErrTaskNotFound = errors.New("task not found")
 
-type TaskService interface {
-	Get(taskId string) (*dto.TaskDTO, error)
-	Create(task *dto.NewTaskDTO) (*dto.TaskDTO, error)
-	Update(task *dto.TaskDTO) error
-	FindNotFinishedTasksThatDontHaveIncompletedTransactions() ([]*dto.TaskDTO, error)
-	FindNotFinishedAndExpired() ([]*dto.TaskDTO, error)
-}
-
 type taskService struct {
-	taskRepo   repo.TaskRepo
-	taskMapper mapper.TaskMapper
-	connection data.Connection
+	taskRepo   interfaces.TaskRepo
+	taskMapper interfaces.TaskMapper
+	connection interfaces.Connection
 }
 
 func NewTaskService(e Env) *taskService {

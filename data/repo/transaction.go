@@ -8,15 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type TransactionRepo interface {
-	Get(tx *gorm.DB, id string) (*entities.Transaction, error)
-	Create(tx *gorm.DB, transaction *entities.Transaction) error
-	Update(tx *gorm.DB, transaction *entities.Transaction) error
-	FindByBlockchainHash(tx *gorm.DB, blockchainHash string) (*entities.Transaction, error)
-	FindByTaskId(tx *gorm.DB, taskId string) ([]entities.Transaction, error)
-	FindTransactionsByFunctionNameAndOrderByTimestamp(tx *gorm.DB, functionName string, limit int64) ([]entities.Transaction, error)
-}
-
 type transactionRepo struct {
 }
 

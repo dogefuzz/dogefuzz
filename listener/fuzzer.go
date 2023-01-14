@@ -6,14 +6,11 @@ import (
 	"strings"
 
 	"github.com/dogefuzz/dogefuzz/config"
-	"github.com/dogefuzz/dogefuzz/fuzz"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
-	"github.com/dogefuzz/dogefuzz/pkg/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
-	"github.com/dogefuzz/dogefuzz/service"
-	"github.com/dogefuzz/dogefuzz/topic"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"go.uber.org/zap"
 )
@@ -21,14 +18,14 @@ import (
 type fuzzerListener struct {
 	cfg                   *config.Config
 	logger                *zap.Logger
-	fuzzerLeader          fuzz.FuzzerLeader
-	contractMapper        mapper.ContractMapper
-	taskInputRequestTopic topic.Topic[bus.TaskInputRequestEvent]
-	taskService           service.TaskService
-	functionService       service.FunctionService
-	contractService       service.ContractService
-	gethService           service.GethService
-	transactionService    service.TransactionService
+	fuzzerLeader          interfaces.FuzzerLeader
+	contractMapper        interfaces.ContractMapper
+	taskInputRequestTopic interfaces.Topic[bus.TaskInputRequestEvent]
+	taskService           interfaces.TaskService
+	functionService       interfaces.FunctionService
+	contractService       interfaces.ContractService
+	gethService           interfaces.GethService
+	transactionService    interfaces.TransactionService
 }
 
 func NewFuzzerListener(e Env) *fuzzerListener {

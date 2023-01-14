@@ -2,20 +2,11 @@ package solidity
 
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
-type TypeHandler interface {
-	GetValue() interface{}
-	SetValue(value interface{})
-	GetType() TypeIdentifier
-	Serialize() string
-	Deserialize(value string) error
-	Generate() // Add Random provider to be mocked in tests
-	GetMutators() []func()
-}
-
-func GetTypeHandler(typ abi.Type) (TypeHandler, error) {
+func GetTypeHandler(typ abi.Type) (interfaces.TypeHandler, error) {
 	switch typ.GetType() {
 	case common.BoolT:
 		return NewBoolHandler(), nil

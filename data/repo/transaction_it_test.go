@@ -9,6 +9,7 @@ import (
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/dogefuzz/dogefuzz/entities"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/test/generators"
 	"github.com/dogefuzz/dogefuzz/test/it"
 	"github.com/google/uuid"
@@ -20,8 +21,8 @@ type TransactionRepoIntegrationTestSuite struct {
 	suite.Suite
 
 	env          *it.Env
-	repo         TransactionRepo
-	functionRepo FunctionRepo
+	repo         interfaces.TransactionRepo
+	functionRepo interfaces.FunctionRepo
 }
 
 func TestTransactionRepoIntegrationTestSuite(t *testing.T) {

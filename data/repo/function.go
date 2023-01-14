@@ -8,13 +8,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type FunctionRepo interface {
-	Get(tx *gorm.DB, id string) (*entities.Function, error)
-	Create(tx *gorm.DB, function *entities.Function) error
-	FindByContractId(tx *gorm.DB, contractId string) ([]entities.Function, error)
-	FindConstructorByContractId(tx *gorm.DB, contractId string) (*entities.Function, error)
-}
-
 type functionRepo struct {
 }
 

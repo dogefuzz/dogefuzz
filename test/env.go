@@ -5,43 +5,40 @@ import (
 	"log"
 
 	"github.com/dogefuzz/dogefuzz/config"
-	"github.com/dogefuzz/dogefuzz/data"
-	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
-	"github.com/dogefuzz/dogefuzz/pkg/geth"
-	"github.com/dogefuzz/dogefuzz/pkg/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
 type TestEnv struct {
 	cfg               *config.Config
 	logger            *zap.Logger
-	contractMapper    mapper.ContractMapper
-	transactionMapper mapper.TransactionMapper
-	taskMapper        mapper.TaskMapper
-	functionMapper    mapper.FunctionMapper
-	taskRepo          repo.TaskRepo
-	contractRepo      repo.ContractRepo
-	transactionRepo   repo.TransactionRepo
-	functionRepo      repo.FunctionRepo
-	deployer          geth.Deployer
-	agent             geth.Agent
-	connection        data.Connection
+	contractMapper    interfaces.ContractMapper
+	transactionMapper interfaces.TransactionMapper
+	taskMapper        interfaces.TaskMapper
+	functionMapper    interfaces.FunctionMapper
+	taskRepo          interfaces.TaskRepo
+	contractRepo      interfaces.ContractRepo
+	transactionRepo   interfaces.TransactionRepo
+	functionRepo      interfaces.FunctionRepo
+	deployer          interfaces.Deployer
+	agent             interfaces.Agent
+	connection        interfaces.Connection
 	eventBus          bus.EventBus
 }
 
 func NewTestEnv(
-	contractMapper mapper.ContractMapper,
-	transactionMapper mapper.TransactionMapper,
-	taskMapper mapper.TaskMapper,
-	functionMapper mapper.FunctionMapper,
-	taskRepo repo.TaskRepo,
-	contractRepo repo.ContractRepo,
-	transactionRepo repo.TransactionRepo,
-	functionRepo repo.FunctionRepo,
-	deployer geth.Deployer,
-	agent geth.Agent,
-	connection data.Connection,
+	contractMapper interfaces.ContractMapper,
+	transactionMapper interfaces.TransactionMapper,
+	taskMapper interfaces.TaskMapper,
+	functionMapper interfaces.FunctionMapper,
+	taskRepo interfaces.TaskRepo,
+	contractRepo interfaces.ContractRepo,
+	transactionRepo interfaces.TransactionRepo,
+	functionRepo interfaces.FunctionRepo,
+	deployer interfaces.Deployer,
+	agent interfaces.Agent,
+	connection interfaces.Connection,
 	eventBus bus.EventBus,
 ) *TestEnv {
 	return &TestEnv{
@@ -58,43 +55,47 @@ func (e *TestEnv) Config() *config.Config {
 	return e.cfg
 }
 
-func (e *TestEnv) ContractMapper() mapper.ContractMapper {
+func (e *TestEnv) ContractMapper() interfaces.ContractMapper {
 	return e.contractMapper
 }
 
-func (e *TestEnv) TransactionMapper() mapper.TransactionMapper {
+func (e *TestEnv) TransactionMapper() interfaces.TransactionMapper {
 	return e.transactionMapper
 }
 
-func (e *TestEnv) TaskMapper() mapper.TaskMapper {
+func (e *TestEnv) TaskMapper() interfaces.TaskMapper {
 	return e.taskMapper
 }
 
-func (e *TestEnv) FunctionMapper() mapper.FunctionMapper {
+func (e *TestEnv) FunctionMapper() interfaces.FunctionMapper {
 	return e.functionMapper
 }
 
-func (e *TestEnv) TaskRepo() repo.TaskRepo {
+func (e *TestEnv) TaskRepo() interfaces.TaskRepo {
 	return e.taskRepo
 }
 
-func (e *TestEnv) TransactionRepo() repo.TransactionRepo {
+func (e *TestEnv) TransactionRepo() interfaces.TransactionRepo {
 	return e.transactionRepo
 }
 
-func (e *TestEnv) ContractRepo() repo.ContractRepo {
+func (e *TestEnv) ContractRepo() interfaces.ContractRepo {
 	return e.contractRepo
 }
 
-func (e *TestEnv) FunctionRepo() repo.FunctionRepo {
+func (e *TestEnv) FunctionRepo() interfaces.FunctionRepo {
 	return e.functionRepo
 }
 
-func (e *TestEnv) Agent() geth.Agent {
+func (e *TestEnv) Agent() interfaces.Agent {
 	return e.agent
 }
 
-func (e *TestEnv) DbConnection() data.Connection {
+func (e *TestEnv) Deployer() interfaces.Deployer {
+	return e.deployer
+}
+
+func (e *TestEnv) DbConnection() interfaces.Connection {
 	return e.connection
 }
 
@@ -113,10 +114,6 @@ func (e *TestEnv) Logger() *zap.Logger {
 		e.logger = logger
 	}
 	return e.logger
-}
-
-func (e *TestEnv) Deployer() geth.Deployer {
-	return e.deployer
 }
 
 func initLogger() (*zap.Logger, error) {

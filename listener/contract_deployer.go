@@ -7,10 +7,8 @@ import (
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/distance"
-	"github.com/dogefuzz/dogefuzz/pkg/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
-	"github.com/dogefuzz/dogefuzz/service"
-	"github.com/dogefuzz/dogefuzz/topic"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"go.uber.org/zap"
 )
@@ -18,14 +16,14 @@ import (
 type contractDeployerListener struct {
 	cfg                   *config.Config
 	logger                *zap.Logger
-	taskStartTopic        topic.Topic[bus.TaskStartEvent]
-	taskInputRequestTopic topic.Topic[bus.TaskInputRequestEvent]
-	taskService           service.TaskService
-	gethService           service.GethService
-	vandalService         service.VandalService
-	contractService       service.ContractService
-	functionService       service.FunctionService
-	contractMapper        mapper.ContractMapper
+	taskStartTopic        interfaces.Topic[bus.TaskStartEvent]
+	taskInputRequestTopic interfaces.Topic[bus.TaskInputRequestEvent]
+	taskService           interfaces.TaskService
+	gethService           interfaces.GethService
+	vandalService         interfaces.VandalService
+	contractService       interfaces.ContractService
+	functionService       interfaces.FunctionService
+	contractMapper        interfaces.ContractMapper
 }
 
 func NewContractDeployerListener(e Env) *contractDeployerListener {

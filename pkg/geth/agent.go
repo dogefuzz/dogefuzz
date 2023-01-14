@@ -7,19 +7,16 @@ import (
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	gethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
-type Agent interface {
-	Send(ctx context.Context, contract *common.Contract, functionName string, args ...interface{}) (string, error)
-}
-
 type agent struct {
 	client *ethclient.Client
-	wallet Wallet
+	wallet interfaces.Wallet
 	cfg    config.GethConfig
 }
 

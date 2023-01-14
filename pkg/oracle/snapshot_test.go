@@ -3,6 +3,7 @@ package oracle
 import (
 	"testing"
 
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -34,7 +35,7 @@ func (suite *SnapshotTestSuite) TestEventsSnapshotCreationWithTrueValues() {
 		"HackerFreezingEther",
 	}
 
-	expectedSnapshot := EventsSnapshot{
+	expectedSnapshot := common.EventsSnapshot{
 		CallFailed:          true,
 		Reentrancy:          true,
 		RepeatedCall:        true,
@@ -60,7 +61,7 @@ func (suite *SnapshotTestSuite) TestEventsSnapshotCreationWithTrueValues() {
 func (suite *SnapshotTestSuite) TestEventsSnapshotCreationWithFalseValues() {
 	oracles := []dto.OracleEvent{}
 
-	expectedSnapshot := EventsSnapshot{
+	expectedSnapshot := common.EventsSnapshot{
 		CallFailed:          false,
 		Reentrancy:          false,
 		RepeatedCall:        false,

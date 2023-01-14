@@ -1,4 +1,4 @@
-package topic
+package interfaces
 
 type Topic[E any] interface {
 	Publish(e E)

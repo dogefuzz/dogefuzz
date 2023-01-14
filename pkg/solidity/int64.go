@@ -29,7 +29,7 @@ func (h *int64Handler) SetValue(value interface{}) {
 	h.value = value.(int64)
 }
 
-func (h *int64Handler) GetType() TypeIdentifier {
+func (h *int64Handler) GetType() common.TypeIdentifier {
 	return INT64
 }
 

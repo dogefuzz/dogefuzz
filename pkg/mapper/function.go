@@ -5,12 +5,6 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 )
 
-type FunctionMapper interface {
-	MapNewDTOToEntity(c *dto.NewFunctionDTO) *entities.Function
-	MapDTOToEntity(c *dto.FunctionDTO) *entities.Function
-	MapEntityToDTO(c *entities.Function) *dto.FunctionDTO
-}
-
 type functionMapper struct{}
 
 func NewFunctionMapper() *functionMapper {

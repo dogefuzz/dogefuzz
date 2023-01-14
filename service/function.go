@@ -3,25 +3,17 @@ package service
 import (
 	"errors"
 
-	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
-	"github.com/dogefuzz/dogefuzz/pkg/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 var ErrFunctionNotFound = errors.New("function not found")
 
-type FunctionService interface {
-	Get(functionId string) (*dto.FunctionDTO, error)
-	Create(task *dto.NewFunctionDTO) (*dto.FunctionDTO, error)
-	FindByContractId(contractId string) ([]*dto.FunctionDTO, error)
-	FindConstructorByContractId(contractId string) (*dto.FunctionDTO, error)
-}
-
 type functionService struct {
-	connection     data.Connection
-	functionRepo   repo.FunctionRepo
-	functionMapper mapper.FunctionMapper
+	connection     interfaces.Connection
+	functionRepo   interfaces.FunctionRepo
+	functionMapper interfaces.FunctionMapper
 }
 
 func NewFunctionService(e Env) *functionService {

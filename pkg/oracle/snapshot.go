@@ -1,6 +1,9 @@
 package oracle
 
-import "github.com/dogefuzz/dogefuzz/pkg/dto"
+import (
+	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/dto"
+)
 
 const (
 	CALLFAILED               = "HackerRootCallFailed"
@@ -23,28 +26,8 @@ const (
 	FREEZINGETHER            = "HackerFreezingEther"
 )
 
-type EventsSnapshot struct {
-	CallFailed          bool
-	Reentrancy          bool
-	RepeatedCall        bool
-	EtherTransfer       bool
-	EtherTransferFailed bool
-	CallEtherFailed     bool
-	GaslessSend         bool
-	Delegate            bool
-	ExceptionDisorder   bool
-	SendOp              bool
-	CallOp              bool
-	CallException       bool
-	UnknowCall          bool
-	StorageChanged      bool
-	Timestamp           bool
-	BlockHash           bool
-	BlockNumber         bool
-}
-
-func NewEventsSnapshot(oracles []dto.OracleEvent) EventsSnapshot {
-	snapshot := EventsSnapshot{}
+func NewEventsSnapshot(oracles []dto.OracleEvent) common.EventsSnapshot {
+	snapshot := common.EventsSnapshot{}
 	for _, oracle := range oracles {
 		if oracle == CALLFAILED {
 			snapshot.CallFailed = true

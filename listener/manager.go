@@ -4,12 +4,8 @@ import (
 	"context"
 
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
-
-type Manager interface {
-	Start()
-	Shutdown()
-}
 
 type manager struct {
 	cfg    *config.Config
@@ -40,8 +36,8 @@ func (m *manager) Shutdown() {
 	m.cancel()
 }
 
-func (m *manager) getAvailableListeners() map[string]Listener {
-	return map[string]Listener{
+func (m *manager) getAvailableListeners() map[string]interfaces.Listener {
+	return map[string]interfaces.Listener{
 		m.env.ContractDeployerListener().Name():   m.env.ContractDeployerListener(),
 		m.env.ExecutionAnalyticsListener().Name(): m.env.ExecutionAnalyticsListener(),
 		m.env.FuzzerListener().Name():             m.env.FuzzerListener(),

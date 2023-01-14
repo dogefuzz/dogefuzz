@@ -8,6 +8,6 @@ func (o NumberDependencyOracle) Name() common.OracleType {
 	return common.NUMBER_DEPENDENCY_ORACLE
 }
 
-func (o NumberDependencyOracle) Detect(snapshot EventsSnapshot) bool {
+func (o NumberDependencyOracle) Detect(snapshot common.EventsSnapshot) bool {
 	return snapshot.BlockNumber && (snapshot.StorageChanged || snapshot.EtherTransfer || snapshot.SendOp)
 }

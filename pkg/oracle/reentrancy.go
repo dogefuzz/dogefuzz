@@ -8,6 +8,6 @@ func (o ReentrancyOracle) Name() common.OracleType {
 	return common.REENTRANCY_ORACLE
 }
 
-func (o ReentrancyOracle) Detect(snapshot EventsSnapshot) bool {
+func (o ReentrancyOracle) Detect(snapshot common.EventsSnapshot) bool {
 	return snapshot.Reentrancy && (snapshot.StorageChanged || snapshot.EtherTransfer || snapshot.SendOp)
 }

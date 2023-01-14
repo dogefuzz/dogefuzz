@@ -11,12 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type Connection interface {
-	Migrate() error
-	Clean() error
-	GetDB() *gorm.DB
-}
-
 type connection struct {
 	db           *gorm.DB
 	databaseName string

@@ -3,6 +3,7 @@ package oracle
 import (
 	"testing"
 
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -13,7 +14,7 @@ type ExceptionDisorderOracleTestSuite struct {
 
 // test detection of exception disorder call weakness with correct case
 func (suite *ExceptionDisorderOracleTestSuite) TestDetectCorrectCase() {
-	snapshot := EventsSnapshot{
+	snapshot := common.EventsSnapshot{
 		ExceptionDisorder: true,
 	}
 
@@ -23,7 +24,7 @@ func (suite *ExceptionDisorderOracleTestSuite) TestDetectCorrectCase() {
 
 // test detection of exception disorder call weakness with wrong case
 func (suite *ExceptionDisorderOracleTestSuite) TestDetectWrongCase() {
-	snapshot := EventsSnapshot{
+	snapshot := common.EventsSnapshot{
 		ExceptionDisorder: false,
 	}
 

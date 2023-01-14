@@ -3,11 +3,11 @@ package repo
 import (
 	"errors"
 
-	"github.com/dogefuzz/dogefuzz/data"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 type Env interface {
-	DbConnection() data.Connection
+	DbConnection() interfaces.Connection
 }
 
 var (

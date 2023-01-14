@@ -10,26 +10,20 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
-	"github.com/dogefuzz/dogefuzz/pkg/solc"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
-	"github.com/dogefuzz/dogefuzz/service"
-	"github.com/dogefuzz/dogefuzz/topic"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
-type TasksController interface {
-	Start(c *gin.Context)
-}
-
 type tasksController struct {
 	logger           *zap.Logger
-	taskService      service.TaskService
-	contractService  service.ContractService
-	functionService  service.FunctionService
-	taskStartTopic   topic.Topic[bus.TaskStartEvent]
-	solidityCompiler solc.SolidityCompiler
+	taskService      interfaces.TaskService
+	contractService  interfaces.ContractService
+	functionService  interfaces.FunctionService
+	taskStartTopic   interfaces.Topic[bus.TaskStartEvent]
+	solidityCompiler interfaces.SolidityCompiler
 }
 
 func NewTasksController(e Env) *tasksController {

@@ -8,16 +8,14 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 const DELIMITER = "================================"
 
 type VandalDecompileRequest struct {
 	Source string `json:"source"`
-}
-
-type VandalClient interface {
-	Decompile(ctx context.Context, source string) ([]Block, []Function, error)
 }
 
 type vandalClient struct {
@@ -28,7 +26,7 @@ func NewVandalClient(vandalEndpoint string) *vandalClient {
 	return &vandalClient{endpoint: vandalEndpoint}
 }
 
-func (c *vandalClient) Decompile(ctx context.Context, source string) ([]Block, []Function, error) {
+func (c *vandalClient) Decompile(ctx context.Context, source string) ([]common.Block, []common.Function, error) {
 	body, err := json.Marshal(VandalDecompileRequest{Source: source})
 	if err != nil {
 		return nil, nil, err
@@ -54,7 +52,7 @@ func (c *vandalClient) Decompile(ctx context.Context, source string) ([]Block, [
 	scanner := bufio.NewScanner(res.Body)
 	scanner.Split(bufio.ScanLines)
 
-	blocks := make([]Block, 0)
+	blocks := make([]common.Block, 0)
 	currentBlock := make([]string, 0)
 	for scanner.Scan() {
 		value := scanner.Text()
@@ -70,7 +68,7 @@ func (c *vandalClient) Decompile(ctx context.Context, source string) ([]Block, [
 		currentBlock = append(currentBlock, value)
 	}
 
-	functions := make([]Function, 0)
+	functions := make([]common.Function, 0)
 	currentFunction := make([]string, 0)
 	for _, line := range currentBlock {
 		regexFunction := regexp.MustCompile("Function (.*):")

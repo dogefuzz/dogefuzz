@@ -2,15 +2,14 @@ package job
 
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
-	"github.com/dogefuzz/dogefuzz/service"
-	"github.com/dogefuzz/dogefuzz/topic"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
 type transactionsCheckerJob struct {
 	logger                *zap.Logger
-	taskService           service.TaskService
-	taskInputRequestTopic topic.Topic[bus.TaskInputRequestEvent]
+	taskService           interfaces.TaskService
+	taskInputRequestTopic interfaces.Topic[bus.TaskInputRequestEvent]
 }
 
 func NewTransactionsCheckerJob(e Env) *transactionsCheckerJob {

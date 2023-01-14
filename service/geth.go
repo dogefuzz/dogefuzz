@@ -4,19 +4,14 @@ import (
 	"context"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
-	"github.com/dogefuzz/dogefuzz/pkg/geth"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
-type GethService interface {
-	Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error)
-	BatchCall(ctx context.Context, contract *common.Contract, functionName string, inputsByTransactionId map[string][]interface{}) (map[string]string, map[string]error)
-}
-
 type gethService struct {
 	logger   *zap.Logger
-	deployer geth.Deployer
-	agent    geth.Agent
+	deployer interfaces.Deployer
+	agent    interfaces.Agent
 }
 
 func NewGethService(e Env) *gethService {

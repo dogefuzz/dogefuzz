@@ -3,28 +3,17 @@ package service
 import (
 	"errors"
 
-	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
-	"github.com/dogefuzz/dogefuzz/pkg/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 var ErrTransactionNotFound = errors.New("transaction not found")
 
-type TransactionService interface {
-	Get(transactionId string) (*dto.TransactionDTO, error)
-	Update(transaction *dto.TransactionDTO) error
-	BulkCreate(newTransactions []*dto.NewTransactionDTO) ([]*dto.TransactionDTO, error)
-	BulkUpdate(updatedTransactions []*dto.TransactionDTO) error
-	FindByHash(hash string) (*dto.TransactionDTO, error)
-	FindByTaskId(taskId string) ([]*dto.TransactionDTO, error)
-	FindTransactionsByFunctionNameAndOrderByTimestamp(functionName string, limit int64) ([]*dto.TransactionDTO, error)
-}
-
 type transactionService struct {
-	transactionRepo   repo.TransactionRepo
-	transactionMapper mapper.TransactionMapper
-	connection        data.Connection
+	transactionRepo   interfaces.TransactionRepo
+	transactionMapper interfaces.TransactionMapper
+	connection        interfaces.Connection
 }
 
 func NewTransactionService(e Env) *transactionService {

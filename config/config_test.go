@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v6"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/reporter"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/stretchr/testify/assert"
@@ -36,7 +37,7 @@ func (s *ConfigTestSuite) TestLoadConfig_WhenPassingAValidPath_ReturnAValidConfi
 			CritialInstructions: []string{"<critical1>"},
 			BatchSize:           1003,
 			SeedsSize:           1004,
-			Seeds: map[solidity.TypeIdentifier][]string{
+			Seeds: map[common.TypeIdentifier][]string{
 				solidity.BOOL: {"true", "false"},
 			},
 		},

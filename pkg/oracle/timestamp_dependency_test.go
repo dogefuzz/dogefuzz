@@ -3,6 +3,7 @@ package oracle
 import (
 	"testing"
 
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -13,7 +14,7 @@ type TimestampDependencyOracleTestSuite struct {
 
 // test detection of exception disorder call weakness with correct case 1
 func (suite *TimestampDependencyOracleTestSuite) TestDetectCorrectCase1() {
-	snapshot := EventsSnapshot{
+	snapshot := common.EventsSnapshot{
 		Timestamp:      true,
 		StorageChanged: true,
 	}
@@ -24,7 +25,7 @@ func (suite *TimestampDependencyOracleTestSuite) TestDetectCorrectCase1() {
 
 // test detection of exception disorder call weakness with correct case 2
 func (suite *TimestampDependencyOracleTestSuite) TestDetectCorrectCase2() {
-	snapshot := EventsSnapshot{
+	snapshot := common.EventsSnapshot{
 		Timestamp:     true,
 		EtherTransfer: true,
 	}
@@ -35,7 +36,7 @@ func (suite *TimestampDependencyOracleTestSuite) TestDetectCorrectCase2() {
 
 // test detection of exception disorder call weakness with correct case 3
 func (suite *TimestampDependencyOracleTestSuite) TestDetectCorrectCase3() {
-	snapshot := EventsSnapshot{
+	snapshot := common.EventsSnapshot{
 		Timestamp: true,
 		SendOp:    true,
 	}
@@ -46,7 +47,7 @@ func (suite *TimestampDependencyOracleTestSuite) TestDetectCorrectCase3() {
 
 // test detection of exception disorder call weakness with wrong case 1
 func (suite *TimestampDependencyOracleTestSuite) TestDetectWrongCase1() {
-	snapshot := EventsSnapshot{
+	snapshot := common.EventsSnapshot{
 		Timestamp:      false,
 		StorageChanged: true,
 		EtherTransfer:  true,
@@ -59,7 +60,7 @@ func (suite *TimestampDependencyOracleTestSuite) TestDetectWrongCase1() {
 
 // test detection of exception disorder call weakness with wrong case 2
 func (suite *TimestampDependencyOracleTestSuite) TestDetectWrongCase2() {
-	snapshot := EventsSnapshot{
+	snapshot := common.EventsSnapshot{
 		Timestamp:      true,
 		StorageChanged: false,
 		EtherTransfer:  false,

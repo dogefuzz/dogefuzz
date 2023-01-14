@@ -29,7 +29,7 @@ func (h *uint16Handler) SetValue(value interface{}) {
 	h.value = value.(uint16)
 }
 
-func (h *uint16Handler) GetType() TypeIdentifier {
+func (h *uint16Handler) GetType() common.TypeIdentifier {
 	return UINT16
 }
 

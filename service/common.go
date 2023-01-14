@@ -4,28 +4,25 @@ import (
 	"context"
 
 	"github.com/dogefuzz/dogefuzz/config"
-	"github.com/dogefuzz/dogefuzz/data"
-	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
-	"github.com/dogefuzz/dogefuzz/pkg/geth"
-	"github.com/dogefuzz/dogefuzz/pkg/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
 type Env interface {
-	ContractMapper() mapper.ContractMapper
-	TransactionMapper() mapper.TransactionMapper
-	TaskMapper() mapper.TaskMapper
-	FunctionMapper() mapper.FunctionMapper
-	TaskRepo() repo.TaskRepo
-	ContractRepo() repo.ContractRepo
-	TransactionRepo() repo.TransactionRepo
-	FunctionRepo() repo.FunctionRepo
+	ContractMapper() interfaces.ContractMapper
+	TransactionMapper() interfaces.TransactionMapper
+	TaskMapper() interfaces.TaskMapper
+	FunctionMapper() interfaces.FunctionMapper
+	TaskRepo() interfaces.TaskRepo
+	ContractRepo() interfaces.ContractRepo
+	TransactionRepo() interfaces.TransactionRepo
+	FunctionRepo() interfaces.FunctionRepo
 	Logger() *zap.Logger
-	Deployer() geth.Deployer
-	Agent() geth.Agent
+	Deployer() interfaces.Deployer
+	Agent() interfaces.Agent
 	Config() *config.Config
-	DbConnection() data.Connection
+	DbConnection() interfaces.Connection
 }
 
 func packArgsToVariadicFuncParameters(ctx context.Context, contract *common.Contract, args []interface{}) []interface{} {

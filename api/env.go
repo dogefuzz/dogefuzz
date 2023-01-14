@@ -11,6 +11,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/mapper"
 	"github.com/dogefuzz/dogefuzz/pkg/solc"
 	"github.com/dogefuzz/dogefuzz/service"
@@ -20,57 +21,57 @@ import (
 
 type Env interface {
 	Logger() *zap.Logger
-	DbConnection() data.Connection
+	DbConnection() interfaces.Connection
 	EventBus() bus.EventBus
-	SolidityCompiler() solc.SolidityCompiler
-	ContractMapper() mapper.ContractMapper
-	TransactionMapper() mapper.TransactionMapper
-	TaskMapper() mapper.TaskMapper
-	FunctionMapper() mapper.FunctionMapper
-	TaskRepo() repo.TaskRepo
-	TransactionRepo() repo.TransactionRepo
-	ContractRepo() repo.ContractRepo
-	FunctionRepo() repo.FunctionRepo
-	ContractService() service.ContractService
-	TransactionService() service.TransactionService
-	TaskService() service.TaskService
-	FunctionService() service.FunctionService
-	TasksController() controller.TasksController
-	TransactionsController() controller.TransactionsController
-	InstrumentExecutionTopic() topic.Topic[bus.InstrumentExecutionEvent]
-	TaskFinishTopic() topic.Topic[bus.TaskFinishEvent]
-	TaskInputRequestTopic() topic.Topic[bus.TaskInputRequestEvent]
-	TaskStartTopic() topic.Topic[bus.TaskStartEvent]
-	Deployer() geth.Deployer
-	Agent() geth.Agent
+	SolidityCompiler() interfaces.SolidityCompiler
+	ContractMapper() interfaces.ContractMapper
+	TransactionMapper() interfaces.TransactionMapper
+	TaskMapper() interfaces.TaskMapper
+	FunctionMapper() interfaces.FunctionMapper
+	TaskRepo() interfaces.TaskRepo
+	TransactionRepo() interfaces.TransactionRepo
+	ContractRepo() interfaces.ContractRepo
+	FunctionRepo() interfaces.FunctionRepo
+	ContractService() interfaces.ContractService
+	TransactionService() interfaces.TransactionService
+	TaskService() interfaces.TaskService
+	FunctionService() interfaces.FunctionService
+	TasksController() interfaces.TasksController
+	TransactionsController() interfaces.TransactionsController
+	InstrumentExecutionTopic() interfaces.Topic[bus.InstrumentExecutionEvent]
+	TaskFinishTopic() interfaces.Topic[bus.TaskFinishEvent]
+	TaskInputRequestTopic() interfaces.Topic[bus.TaskInputRequestEvent]
+	TaskStartTopic() interfaces.Topic[bus.TaskStartEvent]
+	Deployer() interfaces.Deployer
+	Agent() interfaces.Agent
 }
 
 type env struct {
 	cfg                      *config.Config
 	logger                   *zap.Logger
-	dbConnection             data.Connection
+	dbConnection             interfaces.Connection
 	eventBus                 bus.EventBus
-	solidityCompiler         solc.SolidityCompiler
-	contractMapper           mapper.ContractMapper
-	transactionMapper        mapper.TransactionMapper
-	taskMapper               mapper.TaskMapper
-	functionMapper           mapper.FunctionMapper
-	taskRepo                 repo.TaskRepo
-	transactionRepo          repo.TransactionRepo
-	contractRepo             repo.ContractRepo
-	functionRepo             repo.FunctionRepo
-	contractService          service.ContractService
-	transactionService       service.TransactionService
-	taskService              service.TaskService
-	functionService          service.FunctionService
-	tasksController          controller.TasksController
-	transactionsController   controller.TransactionsController
-	instrumentExecutionTopic topic.Topic[bus.InstrumentExecutionEvent]
-	taskFinishTopic          topic.Topic[bus.TaskFinishEvent]
-	taskInputRequestTopic    topic.Topic[bus.TaskInputRequestEvent]
-	taskStartTopic           topic.Topic[bus.TaskStartEvent]
-	deployer                 geth.Deployer
-	agent                    geth.Agent
+	solidityCompiler         interfaces.SolidityCompiler
+	contractMapper           interfaces.ContractMapper
+	transactionMapper        interfaces.TransactionMapper
+	taskMapper               interfaces.TaskMapper
+	functionMapper           interfaces.FunctionMapper
+	taskRepo                 interfaces.TaskRepo
+	transactionRepo          interfaces.TransactionRepo
+	contractRepo             interfaces.ContractRepo
+	functionRepo             interfaces.FunctionRepo
+	contractService          interfaces.ContractService
+	transactionService       interfaces.TransactionService
+	taskService              interfaces.TaskService
+	functionService          interfaces.FunctionService
+	tasksController          interfaces.TasksController
+	transactionsController   interfaces.TransactionsController
+	instrumentExecutionTopic interfaces.Topic[bus.InstrumentExecutionEvent]
+	taskFinishTopic          interfaces.Topic[bus.TaskFinishEvent]
+	taskInputRequestTopic    interfaces.Topic[bus.TaskInputRequestEvent]
+	taskStartTopic           interfaces.Topic[bus.TaskStartEvent]
+	deployer                 interfaces.Deployer
+	agent                    interfaces.Agent
 }
 
 func NewEnv(cfg *config.Config) *env {
@@ -103,7 +104,7 @@ func (e *env) Logger() *zap.Logger {
 	return e.logger
 }
 
-func (e *env) DbConnection() data.Connection {
+func (e *env) DbConnection() interfaces.Connection {
 	if e.dbConnection == nil {
 		dbConnection, err := data.NewConnection(e.cfg, e.logger)
 		if err != nil {
@@ -122,140 +123,140 @@ func (e *env) EventBus() bus.EventBus {
 	return e.eventBus
 }
 
-func (e *env) SolidityCompiler() solc.SolidityCompiler {
+func (e *env) SolidityCompiler() interfaces.SolidityCompiler {
 	if e.solidityCompiler == nil {
 		e.solidityCompiler = solc.NewSolidityCompiler(e.cfg.StorageFolder)
 	}
 	return e.solidityCompiler
 }
 
-func (e *env) ContractMapper() mapper.ContractMapper {
+func (e *env) ContractMapper() interfaces.ContractMapper {
 	if e.contractMapper == nil {
 		e.contractMapper = mapper.NewContractMapper()
 	}
 	return e.contractMapper
 }
 
-func (e *env) TransactionMapper() mapper.TransactionMapper {
+func (e *env) TransactionMapper() interfaces.TransactionMapper {
 	if e.transactionMapper == nil {
 		e.transactionMapper = mapper.NewTransactionMapper()
 	}
 	return e.transactionMapper
 }
 
-func (e *env) TaskMapper() mapper.TaskMapper {
+func (e *env) TaskMapper() interfaces.TaskMapper {
 	if e.taskMapper == nil {
 		e.taskMapper = mapper.NewTaskMapper()
 	}
 	return e.taskMapper
 }
 
-func (e *env) FunctionMapper() mapper.FunctionMapper {
+func (e *env) FunctionMapper() interfaces.FunctionMapper {
 	if e.functionMapper == nil {
 		e.functionMapper = mapper.NewFunctionMapper()
 	}
 	return e.functionMapper
 }
 
-func (e *env) TaskRepo() repo.TaskRepo {
+func (e *env) TaskRepo() interfaces.TaskRepo {
 	if e.taskRepo == nil {
 		e.taskRepo = repo.NewTaskRepo(e)
 	}
 	return e.taskRepo
 }
 
-func (e *env) TransactionRepo() repo.TransactionRepo {
+func (e *env) TransactionRepo() interfaces.TransactionRepo {
 	if e.transactionRepo == nil {
 		e.transactionRepo = repo.NewTransactionRepo(e)
 	}
 	return e.transactionRepo
 }
 
-func (e *env) ContractRepo() repo.ContractRepo {
+func (e *env) ContractRepo() interfaces.ContractRepo {
 	if e.contractRepo == nil {
 		e.contractRepo = repo.NewContractRepo(e)
 	}
 	return e.contractRepo
 }
 
-func (e *env) FunctionRepo() repo.FunctionRepo {
+func (e *env) FunctionRepo() interfaces.FunctionRepo {
 	if e.functionRepo == nil {
 		e.functionRepo = repo.NewFunctionRepo(e)
 	}
 	return e.functionRepo
 }
 
-func (e *env) ContractService() service.ContractService {
+func (e *env) ContractService() interfaces.ContractService {
 	if e.contractService == nil {
 		e.contractService = service.NewContractService(e)
 	}
 	return e.contractService
 }
 
-func (e *env) TransactionService() service.TransactionService {
+func (e *env) TransactionService() interfaces.TransactionService {
 	if e.transactionService == nil {
 		e.transactionService = service.NewTransactionService(e)
 	}
 	return e.transactionService
 }
 
-func (e *env) TaskService() service.TaskService {
+func (e *env) TaskService() interfaces.TaskService {
 	if e.taskService == nil {
 		e.taskService = service.NewTaskService(e)
 	}
 	return e.taskService
 }
 
-func (e *env) FunctionService() service.FunctionService {
+func (e *env) FunctionService() interfaces.FunctionService {
 	if e.functionService == nil {
 		e.functionService = service.NewFunctionService(e)
 	}
 	return e.functionService
 }
 
-func (e *env) TasksController() controller.TasksController {
+func (e *env) TasksController() interfaces.TasksController {
 	if e.tasksController == nil {
 		e.tasksController = controller.NewTasksController(e)
 	}
 	return e.tasksController
 }
 
-func (e *env) TransactionsController() controller.TransactionsController {
+func (e *env) TransactionsController() interfaces.TransactionsController {
 	if e.transactionsController == nil {
 		e.transactionsController = controller.NewTransactionsController(e)
 	}
 	return e.transactionsController
 }
 
-func (e *env) InstrumentExecutionTopic() topic.Topic[bus.InstrumentExecutionEvent] {
+func (e *env) InstrumentExecutionTopic() interfaces.Topic[bus.InstrumentExecutionEvent] {
 	if e.instrumentExecutionTopic == nil {
 		e.instrumentExecutionTopic = topic.NewInstrumentExecutionTopic(e)
 	}
 	return e.instrumentExecutionTopic
 }
 
-func (e *env) TaskFinishTopic() topic.Topic[bus.TaskFinishEvent] {
+func (e *env) TaskFinishTopic() interfaces.Topic[bus.TaskFinishEvent] {
 	if e.taskFinishTopic == nil {
 		e.taskFinishTopic = topic.NewTaskFinishTopic(e)
 	}
 	return e.taskFinishTopic
 }
 
-func (e *env) TaskInputRequestTopic() topic.Topic[bus.TaskInputRequestEvent] {
+func (e *env) TaskInputRequestTopic() interfaces.Topic[bus.TaskInputRequestEvent] {
 	if e.taskInputRequestTopic == nil {
 		e.taskInputRequestTopic = topic.NewTaskInputRequestTopic(e)
 	}
 	return e.taskInputRequestTopic
 }
 
-func (e *env) TaskStartTopic() topic.Topic[bus.TaskStartEvent] {
+func (e *env) TaskStartTopic() interfaces.Topic[bus.TaskStartEvent] {
 	if e.taskStartTopic == nil {
 		e.taskStartTopic = topic.NewTaskStartTopic(e)
 	}
 	return e.taskStartTopic
 }
 
-func (e *env) Deployer() geth.Deployer {
+func (e *env) Deployer() interfaces.Deployer {
 	if e.deployer == nil {
 		deployer, err := geth.NewDeployer(e.cfg.GethConfig)
 		if err != nil {
@@ -266,7 +267,7 @@ func (e *env) Deployer() geth.Deployer {
 	return e.deployer
 }
 
-func (e *env) Agent() geth.Agent {
+func (e *env) Agent() interfaces.Agent {
 	if e.agent == nil {
 		agent, err := geth.NewAgent(e.cfg.GethConfig)
 		if err != nil {

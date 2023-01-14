@@ -7,17 +7,16 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/coverage"
 	"github.com/dogefuzz/dogefuzz/pkg/distance"
-	"github.com/dogefuzz/dogefuzz/service"
-	"github.com/dogefuzz/dogefuzz/topic"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
 type executionAnalyticsListener struct {
 	logger                   *zap.Logger
-	instrumentExecutionTopic topic.Topic[bus.InstrumentExecutionEvent]
-	contractService          service.ContractService
-	transactionService       service.TransactionService
-	taskService              service.TaskService
+	instrumentExecutionTopic interfaces.Topic[bus.InstrumentExecutionEvent]
+	contractService          interfaces.ContractService
+	transactionService       interfaces.TransactionService
+	taskService              interfaces.TaskService
 }
 
 func NewExecutionAnalyticsListener(e Env) *executionAnalyticsListener {

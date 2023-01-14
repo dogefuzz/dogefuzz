@@ -8,6 +8,7 @@ import (
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -17,13 +18,9 @@ import (
 	gethcommon "github.com/ethereum/go-ethereum/common"
 )
 
-type Deployer interface {
-	Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error)
-}
-
 type deployer struct {
 	client *ethclient.Client
-	wallet Wallet
+	wallet interfaces.Wallet
 	cfg    config.GethConfig
 }
 

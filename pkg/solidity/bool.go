@@ -25,7 +25,7 @@ func (h *boolHandler) SetValue(value interface{}) {
 	h.value = value.(bool)
 }
 
-func (h *boolHandler) GetType() TypeIdentifier {
+func (h *boolHandler) GetType() common.TypeIdentifier {
 	return BOOL
 }
 

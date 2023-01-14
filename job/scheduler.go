@@ -4,13 +4,9 @@ import (
 	"context"
 
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	cron "github.com/robfig/cron/v3"
 )
-
-type Scheduler interface {
-	Start()
-	Shutdown() context.Context
-}
 
 type scheduler struct {
 	scheduler *cron.Cron
@@ -43,8 +39,8 @@ func (s *scheduler) Shutdown() context.Context {
 	return s.scheduler.Stop()
 }
 
-func (s *scheduler) getAvailableJobs() map[string]CronJob {
-	return map[string]CronJob{
+func (s *scheduler) getAvailableJobs() map[string]interfaces.CronJob {
+	return map[string]interfaces.CronJob{
 		s.env.TasksCheckerJob().Id():        s.env.TasksCheckerJob(),
 		s.env.TransactionsCheckerJob().Id(): s.env.TransactionsCheckerJob(),
 	}

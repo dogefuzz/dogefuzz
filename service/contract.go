@@ -3,25 +3,17 @@ package service
 import (
 	"errors"
 
-	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
-	"github.com/dogefuzz/dogefuzz/pkg/mapper"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 var ErrContractNotFound = errors.New("the contract was not found")
 
-type ContractService interface {
-	Get(contractId string) (*dto.ContractDTO, error)
-	FindByTaskId(taskId string) (*dto.ContractDTO, error)
-	Create(ctr *dto.NewContractDTO) (*dto.ContractDTO, error)
-	Update(ctr *dto.ContractDTO) error
-}
-
 type contractService struct {
-	contractMapper mapper.ContractMapper
-	contractRepo   repo.ContractRepo
-	connection     data.Connection
+	contractMapper interfaces.ContractMapper
+	contractRepo   interfaces.ContractRepo
+	connection     interfaces.Connection
 }
 
 func NewContractService(e Env) *contractService {

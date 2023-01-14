@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/test/generators"
 	"github.com/dogefuzz/dogefuzz/test/it"
 	"github.com/google/uuid"
@@ -17,8 +18,8 @@ type TaskRepoIntegrationTestSuite struct {
 	suite.Suite
 
 	env             *it.Env
-	repo            TaskRepo
-	transactionRepo TransactionRepo
+	repo            interfaces.TaskRepo
+	transactionRepo interfaces.TransactionRepo
 }
 
 func TestTaskRepoIntegrationTestSuite(t *testing.T) {

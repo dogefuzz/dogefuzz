@@ -3,6 +3,7 @@ package oracle
 import (
 	"testing"
 
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -13,7 +14,7 @@ type DelegateOracleTestSuite struct {
 
 // test detection of delegate call weakness with correct case
 func (suite *DelegateOracleTestSuite) TestDetectCorrectCase() {
-	snapshot := EventsSnapshot{
+	snapshot := common.EventsSnapshot{
 		Delegate: true,
 	}
 
@@ -23,7 +24,7 @@ func (suite *DelegateOracleTestSuite) TestDetectCorrectCase() {
 
 // test detection of delegate call weakness with wrong case
 func (suite *DelegateOracleTestSuite) TestDetectWrongCase() {
-	snapshot := EventsSnapshot{
+	snapshot := common.EventsSnapshot{
 		Delegate: false,
 	}
 

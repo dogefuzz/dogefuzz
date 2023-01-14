@@ -4,17 +4,13 @@ import (
 	"errors"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
-
-type Oracle interface {
-	Name() common.OracleType
-	Detect(snapshot EventsSnapshot) bool
-}
 
 var ErrOracleDoesntExist = errors.New("oracle doesn't exist")
 
-func GetOracles(oracleNames []common.OracleType) []Oracle {
-	oracles := make([]Oracle, len(oracleNames))
+func GetOracles(oracleNames []common.OracleType) []interfaces.Oracle {
+	oracles := make([]interfaces.Oracle, len(oracleNames))
 
 	for _, oracleName := range oracleNames {
 		oracle, err := GetOracleFromName(oracleName)
@@ -26,7 +22,7 @@ func GetOracles(oracleNames []common.OracleType) []Oracle {
 	return oracles
 }
 
-func GetOracleFromName(name common.OracleType) (Oracle, error) {
+func GetOracleFromName(name common.OracleType) (interfaces.Oracle, error) {
 	switch name {
 	case common.DELEGATE_ORACLE:
 		return DelegateOracle{}, nil

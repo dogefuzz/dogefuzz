@@ -29,7 +29,7 @@ func (h *int32Handler) SetValue(value interface{}) {
 	h.value = value.(int32)
 }
 
-func (h *int32Handler) GetType() TypeIdentifier {
+func (h *int32Handler) GetType() common.TypeIdentifier {
 	return INT32
 }
 

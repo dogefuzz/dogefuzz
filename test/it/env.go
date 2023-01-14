@@ -5,13 +5,14 @@ import (
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/data"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
 type Env struct {
 	cfg          *config.Config
 	logger       *zap.Logger
-	dbConnection data.Connection
+	dbConnection interfaces.Connection
 }
 
 func NewEnv(cfg *config.Config) *Env {
@@ -38,7 +39,7 @@ func (e *Env) Logger() *zap.Logger {
 	return e.logger
 }
 
-func (e *Env) DbConnection() data.Connection {
+func (e *Env) DbConnection() interfaces.Connection {
 	if e.dbConnection == nil {
 		dbConnection, err := data.NewConnection(e.Config(), e.Logger())
 		if err != nil {

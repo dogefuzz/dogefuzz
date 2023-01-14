@@ -2,15 +2,14 @@ package job
 
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
-	"github.com/dogefuzz/dogefuzz/service"
-	"github.com/dogefuzz/dogefuzz/topic"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
 type tasksCheckerJob struct {
 	logger          *zap.Logger
-	taskService     service.TaskService
-	taskFinishTopic topic.Topic[bus.TaskFinishEvent]
+	taskService     interfaces.TaskService
+	taskFinishTopic interfaces.Topic[bus.TaskFinishEvent]
 }
 
 func NewTasksCheckerJob(e Env) *tasksCheckerJob {

@@ -1,15 +1,14 @@
 package fuzz
 
-import "github.com/dogefuzz/dogefuzz/pkg/common"
-
-type FuzzerLeader interface {
-	GetFuzzerStrategy(typ common.FuzzingType) (Fuzzer, error)
-}
+import (
+	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
+)
 
 type fuzzerLeader struct {
-	blackboxFuzzer        Fuzzer
-	greyboxFuzzer         Fuzzer
-	directedGreyboxFuzzer Fuzzer
+	blackboxFuzzer        interfaces.Fuzzer
+	greyboxFuzzer         interfaces.Fuzzer
+	directedGreyboxFuzzer interfaces.Fuzzer
 }
 
 func NewFuzzerLeader(e env) *fuzzerLeader {
@@ -20,7 +19,7 @@ func NewFuzzerLeader(e env) *fuzzerLeader {
 	}
 }
 
-func (l *fuzzerLeader) GetFuzzerStrategy(typ common.FuzzingType) (Fuzzer, error) {
+func (l *fuzzerLeader) GetFuzzerStrategy(typ common.FuzzingType) (interfaces.Fuzzer, error) {
 	switch typ {
 	case common.BLACKBOX_FUZZING:
 		return l.blackboxFuzzer, nil

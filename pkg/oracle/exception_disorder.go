@@ -8,6 +8,6 @@ func (o ExceptionDisorderOracle) Name() common.OracleType {
 	return common.EXCEPTION_DISORDER_ORACLE
 }
 
-func (o ExceptionDisorderOracle) Detect(snapshot EventsSnapshot) bool {
+func (o ExceptionDisorderOracle) Detect(snapshot common.EventsSnapshot) bool {
 	return snapshot.ExceptionDisorder
 }

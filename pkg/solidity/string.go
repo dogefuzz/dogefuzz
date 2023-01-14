@@ -25,7 +25,7 @@ func (h *stringHandler) SetValue(value interface{}) {
 	h.value = value.(string)
 }
 
-func (h *stringHandler) GetType() TypeIdentifier {
+func (h *stringHandler) GetType() common.TypeIdentifier {
 	return STRING
 }
 

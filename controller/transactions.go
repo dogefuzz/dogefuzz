@@ -8,23 +8,18 @@ import (
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/oracle"
 	"github.com/dogefuzz/dogefuzz/service"
-	"github.com/dogefuzz/dogefuzz/topic"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
-type TransactionsController interface {
-	StoreDetectedWeaknesses(c *gin.Context)
-	StoreTransactionExecution(c *gin.Context)
-}
-
 type transactionsController struct {
 	logger                   *zap.Logger
-	transactionService       service.TransactionService
-	taskService              service.TaskService
-	instrumentExecutionTopic topic.Topic[bus.InstrumentExecutionEvent]
+	transactionService       interfaces.TransactionService
+	taskService              interfaces.TaskService
+	instrumentExecutionTopic interfaces.Topic[bus.InstrumentExecutionEvent]
 }
 
 func NewTransactionsController(e Env) *transactionsController {

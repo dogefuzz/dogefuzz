@@ -12,14 +12,6 @@ import (
 var ErrInvalidPublicKey = errors.New("could not parse the private key from the provided hex string")
 var ErrCouldNotDerivePublicKey = errors.New("could not derive public key from private key")
 
-type Wallet interface {
-	GetPrivateKey() *ecdsa.PrivateKey
-	GetPrivateKeyHex() string
-	GetPublicKey() *ecdsa.PublicKey
-	GetPublicKeyHex() string
-	GetAddress() common.Address
-}
-
 type wallet struct {
 	privateKey *ecdsa.PrivateKey
 	publicKey  *ecdsa.PublicKey

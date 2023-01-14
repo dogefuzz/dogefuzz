@@ -9,14 +9,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type TaskRepo interface {
-	Get(tx *gorm.DB, id string) (*entities.Task, error)
-	Create(tx *gorm.DB, task *entities.Task) error
-	Update(tx *gorm.DB, task *entities.Task) error
-	FindNotFinishedTasksThatDontHaveIncompletedTransactions(tx *gorm.DB) ([]entities.Task, error)
-	FindNotFinishedAndExpired(tx *gorm.DB) ([]entities.Task, error)
-}
-
 type taskRepo struct {
 }
 

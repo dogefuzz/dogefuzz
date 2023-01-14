@@ -29,7 +29,7 @@ func (h *uint8Handler) SetValue(value interface{}) {
 	h.value = value.(uint8)
 }
 
-func (h *uint8Handler) GetType() TypeIdentifier {
+func (h *uint8Handler) GetType() common.TypeIdentifier {
 	return UINT8
 }
 

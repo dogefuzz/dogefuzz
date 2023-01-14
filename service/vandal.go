@@ -5,16 +5,12 @@ import (
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/vandal"
 )
-
-type VandalService interface {
-	GetCFG(ctx context.Context, contract *common.Contract) (*common.CFG, error)
-}
-
 type vandalService struct {
 	cfg    config.VandalConfig
-	client vandal.VandalClient
+	client interfaces.VandalClient
 }
 
 func NewVandalService(e Env) *vandalService {
@@ -53,7 +49,7 @@ func (s *vandalService) GetCFG(ctx context.Context, contract *common.Contract) (
 	return cfg, nil
 }
 
-func (s *vandalService) getClient() vandal.VandalClient {
+func (s *vandalService) getClient() interfaces.VandalClient {
 	if s.client != nil {
 		s.client = vandal.NewVandalClient(s.cfg.Endpoint)
 	}

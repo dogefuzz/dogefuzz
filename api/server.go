@@ -9,11 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Server interface {
-	Start() error
-	Shutdown(ctx context.Context) error
-}
-
 type server struct {
 	server *http.Server
 	router *gin.Engine

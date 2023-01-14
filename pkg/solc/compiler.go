@@ -21,10 +21,6 @@ import (
 var ErrEmptySourceFile = errors.New("solc: empty source string")
 var ErrSolidityBinaryCouldNotBeDownloaded = errors.New("the solidity binary could not be downloaded externally")
 
-type SolidityCompiler interface {
-	CompileSource(source string) (*common.Contract, error)
-}
-
 type solidityCompiler struct {
 	storageFolder string
 }

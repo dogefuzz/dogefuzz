@@ -2,19 +2,17 @@ package controller
 
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
-	"github.com/dogefuzz/dogefuzz/pkg/solc"
-	"github.com/dogefuzz/dogefuzz/service"
-	"github.com/dogefuzz/dogefuzz/topic"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
 type Env interface {
 	Logger() *zap.Logger
-	ContractService() service.ContractService
-	TransactionService() service.TransactionService
-	TaskService() service.TaskService
-	FunctionService() service.FunctionService
-	SolidityCompiler() solc.SolidityCompiler
-	InstrumentExecutionTopic() topic.Topic[bus.InstrumentExecutionEvent]
-	TaskStartTopic() topic.Topic[bus.TaskStartEvent]
+	ContractService() interfaces.ContractService
+	TransactionService() interfaces.TransactionService
+	TaskService() interfaces.TaskService
+	FunctionService() interfaces.FunctionService
+	SolidityCompiler() interfaces.SolidityCompiler
+	InstrumentExecutionTopic() interfaces.Topic[bus.InstrumentExecutionEvent]
+	TaskStartTopic() interfaces.Topic[bus.TaskStartEvent]
 }

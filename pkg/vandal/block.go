@@ -3,36 +3,14 @@ package vandal
 import (
 	"regexp"
 	"strings"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 const SECTION_DELIMITER = "---"
 
-type Block struct {
-	PC               string                 `json:"pc"`
-	Range            BlockRange             `json:"range"`
-	Predecessors     []string               `json:"predecessors"`
-	Successors       []string               `json:"successors"`
-	EntryStack       []string               `json:"entryStack"`
-	StackPops        uint64                 `json:"stackPops"`
-	StackAdditions   []string               `json:"stackAdditions"`
-	ExitStack        []string               `json:"exitStack"`
-	Instructions     map[string]Instruction `json:"instructions"`
-	InstructionOrder []string               `json:"instructionOrder"`
-}
-
-type BlockRange struct {
-	From string `json:"from"`
-	To   string `json:"to"`
-}
-
-type Instruction struct {
-	Op      string   `json:"op"`
-	Args    []string `json:"args"`
-	StackOp string   `json:"stackOp"`
-}
-
-func NewBlockFromLines(lines []string) Block {
-	block := Block{}
+func NewBlockFromLines(lines []string) common.Block {
+	block := common.Block{}
 	blockSections := make([][]string, 0)
 	section := make([]string, 0)
 	for _, line := range lines {
@@ -53,19 +31,19 @@ func NewBlockFromLines(lines []string) Block {
 	return block
 }
 
-func readHeadSection(lines []string, block *Block) {
+func readHeadSection(lines []string, block *common.Block) {
 	regexBlockPc := regexp.MustCompile("Block (.*)")
 	matchBlockPc := regexBlockPc.FindStringSubmatch(lines[0])
 	regexBlockRange := regexp.MustCompile(`\[(.*):(.*)\]`)
 	matchBlockRange := regexBlockRange.FindStringSubmatch(lines[1])
 	block.PC = matchBlockPc[1]
-	block.Range = BlockRange{
+	block.Range = common.BlockRange{
 		matchBlockRange[1],
 		matchBlockRange[2],
 	}
 }
 
-func readGraphSection(lines []string, block *Block) {
+func readGraphSection(lines []string, block *common.Block) {
 	regexPredecessors := regexp.MustCompile(`Predecessors: \[(.*)\]`)
 	matchPredecessors := regexPredecessors.FindStringSubmatch(lines[0])
 	predecessors := strings.Split(matchPredecessors[1], ",")
@@ -89,9 +67,9 @@ func readGraphSection(lines []string, block *Block) {
 	}
 }
 
-func readOpsSection(lines []string, block *Block) {
+func readOpsSection(lines []string, block *common.Block) {
 	block.InstructionOrder = make([]string, 0)
-	block.Instructions = make(map[string]Instruction)
+	block.Instructions = make(map[string]common.Instruction)
 	for _, line := range lines {
 		spaceIdx := strings.Index(line, " ")
 		pc := line[0:spaceIdx]
@@ -99,14 +77,14 @@ func readOpsSection(lines []string, block *Block) {
 
 		opWithArgs := line[spaceIdx+1:]
 		opWithArgsList := strings.Split(opWithArgs, " ")
-		block.Instructions[pc] = Instruction{
+		block.Instructions[pc] = common.Instruction{
 			Op:   opWithArgsList[0],
 			Args: opWithArgsList[1:],
 		}
 	}
 }
 
-func readStackOpsSection(lines []string, block *Block) {
+func readStackOpsSection(lines []string, block *common.Block) {
 	for _, line := range lines {
 		dividerIdx := strings.Index(line, ": ")
 		pc := line[0:dividerIdx]
@@ -116,7 +94,7 @@ func readStackOpsSection(lines []string, block *Block) {
 	}
 }
 
-func readFooterSection(lines []string, block *Block) {
+func readFooterSection(lines []string, block *common.Block) {
 	block.EntryStack = readSlicePropertyLine("Entry stack", lines[0])
 	block.StackPops = readIntPropertyLine("Stack pops", lines[1])
 	block.StackAdditions = readSlicePropertyLine("Stack additions", lines[2])
