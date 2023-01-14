@@ -15,13 +15,13 @@ func NewTaskInputRequestTopic(e env) *taskInputRequestTopic {
 }
 
 func (t *taskInputRequestTopic) Publish(e bus.TaskInputRequestEvent) {
-	t.eventBus.Publish(INSTRUMENT_EXECUTION_TOPIC, e)
+	t.eventBus.Publish(TASK_INPUT_REQUEST_TOPIC, e)
 }
 
 func (t *taskInputRequestTopic) Subscribe(fn interface{}) {
-	t.eventBus.Subscribe(INSTRUMENT_EXECUTION_TOPIC, fn)
+	t.eventBus.Subscribe(TASK_INPUT_REQUEST_TOPIC, fn)
 }
 
 func (t *taskInputRequestTopic) Unsubscribe(fn interface{}) {
-	t.eventBus.Unsubscribe(INSTRUMENT_EXECUTION_TOPIC, fn)
+	t.eventBus.Unsubscribe(TASK_INPUT_REQUEST_TOPIC, fn)
 }

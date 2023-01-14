@@ -31,7 +31,7 @@ func (s *ContractServiceTestSuite) SetupTest() {
 	s.contractRepoMock = new(mocks.ContractRepoMock)
 	s.deployerMock = new(mocks.DeployerMock)
 	s.connectionMock = new(mocks.ConnectionMock)
-	s.env = test.NewTestEnv(s.contractMapperMock, nil, nil, nil, nil, s.contractRepoMock, nil, nil, s.deployerMock, nil, s.connectionMock)
+	s.env = test.NewTestEnv(s.contractMapperMock, nil, nil, nil, nil, s.contractRepoMock, nil, nil, s.deployerMock, nil, s.connectionMock, nil)
 }
 
 func (s *ContractServiceTestSuite) TestCreate_ShouldReturnCreatedContract_WhenDontOccurFailureDuringCreation() {

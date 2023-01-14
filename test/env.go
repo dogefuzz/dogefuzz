@@ -7,6 +7,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/data/repo"
+	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
 	"github.com/dogefuzz/dogefuzz/pkg/mapper"
 	"go.uber.org/zap"
@@ -26,6 +27,7 @@ type TestEnv struct {
 	deployer          geth.Deployer
 	agent             geth.Agent
 	connection        data.Connection
+	eventBus          bus.EventBus
 }
 
 func NewTestEnv(
@@ -40,13 +42,15 @@ func NewTestEnv(
 	deployer geth.Deployer,
 	agent geth.Agent,
 	connection data.Connection,
+	eventBus bus.EventBus,
 ) *TestEnv {
 	return &TestEnv{
 		contractMapper: contractMapper,
 		contractRepo:   contractRepo,
 		deployer:       deployer,
 		agent:          agent,
-		connection: connection,
+		connection:     connection,
+		eventBus:       eventBus,
 	}
 }
 
@@ -92,6 +96,10 @@ func (e *TestEnv) Agent() geth.Agent {
 
 func (e *TestEnv) DbConnection() data.Connection {
 	return e.connection
+}
+
+func (e *TestEnv) EventBus() bus.EventBus {
+	return e.eventBus
 }
 
 func (e *TestEnv) Logger() *zap.Logger {
