@@ -1,6 +1,10 @@
 package distance
 
-import "github.com/dogefuzz/dogefuzz/pkg/common"
+import (
+	"math"
+
+	"github.com/dogefuzz/dogefuzz/pkg/common"
+)
 
 func ComputeDeltaMinDistance(distanceMap common.DistanceMap, instructionsExecutedInTransaction []string, instructionsExecutedInTask []string) int64 {
 	currentMinDistance := ComputeMinDistance(distanceMap, instructionsExecutedInTask)
@@ -13,6 +17,41 @@ func ComputeDeltaMinDistance(distanceMap common.DistanceMap, instructionsExecute
 }
 
 func ComputeMinDistance(distanceMap common.DistanceMap, instructions []string) int64 {
-	// TODO: Add logic to compute the min distance
-	return 0
+	executedBlocks := findExecutedBlocks(distanceMap, instructions)
+	minDistances := computeMinDistancesFromExecutedBlocks(distanceMap, executedBlocks)
+
+	var sum int64 = 0
+	for _, distance := range minDistances {
+		sum += distance
+	}
+	return sum
+}
+
+func findExecutedBlocks(distanceMap common.DistanceMap, instructions []string) []string {
+	blockPCs := make([]string, 0)
+	for pc := range distanceMap {
+		blockPCs = append(blockPCs, pc)
+	}
+
+	executedBlockPcs := make([]string, 0)
+	for _, instr := range instructions {
+		if common.Contains(blockPCs, instr) {
+			executedBlockPcs = append(executedBlockPcs, instr)
+		}
+	}
+	return executedBlockPcs
+}
+
+func computeMinDistancesFromExecutedBlocks(distanceMap common.DistanceMap, executedBlock []string) map[string]int64 {
+	minDistances := make(map[string]int64)
+	for _, block := range executedBlock {
+		for pc, distance := range distanceMap[block] {
+			if _, ok := minDistances[pc]; ok {
+				minDistances[pc] = int64(math.Max(float64(minDistances[pc]), float64(distance)))
+			} else {
+				minDistances[pc] = distance
+			}
+		}
+	}
+	return minDistances
 }

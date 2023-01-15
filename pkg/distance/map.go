@@ -7,25 +7,25 @@ import (
 )
 
 func ComputeDistanceMap(cfg common.CFG, targetInstructions []string) common.DistanceMap {
-	targetNodes := findNodesContainingTargetInstructions(cfg, targetInstructions)
+	targetBlocks := findBlocksContainingTargetInstructions(cfg, targetInstructions)
 	reversedCFG := cfg.GetReverseGraph()
 	distanceMap := make(common.DistanceMap)
-	for cfgNodePC := range cfg.Graph {
-		distanceMap[cfgNodePC] = make(map[string]int64)
-		for _, targetNode := range targetNodes {
-			distanceMap[cfgNodePC][targetNode] = math.MaxInt64
+	for cfgBlockPC := range cfg.Graph {
+		distanceMap[cfgBlockPC] = make(map[string]int64)
+		for _, targetBlock := range targetBlocks {
+			distanceMap[cfgBlockPC][targetBlock] = math.MaxInt64
 		}
 	}
 
-	for _, targetNode := range targetNodes {
-		distanceMap[targetNode][targetNode] = 0
-		queue := []string{targetNode}
+	for _, targetBlock := range targetBlocks {
+		distanceMap[targetBlock][targetBlock] = 0
+		queue := []string{targetBlock}
 		for len(queue) > 0 {
 			current := queue[0]
 			queue = queue[1:]
 			for _, edge := range reversedCFG[current] {
-				if distanceMap[edge][targetNode] == math.MaxInt64 {
-					distanceMap[edge][targetNode] = distanceMap[current][targetNode] + 1
+				if distanceMap[edge][targetBlock] == math.MaxInt64 {
+					distanceMap[edge][targetBlock] = distanceMap[current][targetBlock] + 1
 					queue = append(queue, edge)
 				}
 			}
@@ -35,15 +35,15 @@ func ComputeDistanceMap(cfg common.CFG, targetInstructions []string) common.Dist
 	return distanceMap
 }
 
-func findNodesContainingTargetInstructions(cfg common.CFG, targetInstructions []string) []string {
-	targetNodes := make([]string, 0)
-	for nodePC, block := range cfg.Blocks {
+func findBlocksContainingTargetInstructions(cfg common.CFG, targetInstructions []string) []string {
+	targetBlocks := make([]string, 0)
+	for blockPC, block := range cfg.Blocks {
 		for _, instr := range block.Instructions {
 			if common.Contains(targetInstructions, instr) {
-				targetNodes = append(targetNodes, nodePC)
+				targetBlocks = append(targetBlocks, blockPC)
 				break
 			}
 		}
 	}
-	return targetNodes
+	return targetBlocks
 }
