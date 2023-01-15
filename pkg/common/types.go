@@ -56,27 +56,6 @@ const (
 	TIMESTAMP_DEPENDENCY_ORACLE OracleType = "timestamp-dependency"
 )
 
-type CFG struct {
-	Graph  map[string][]string `json:"graph"`
-	Blocks map[string]CFGBlock `json:"blocks"`
-}
-
-func (g CFG) GetEdgesPCs() []string {
-	edgesPCs := make([]string, len(g.Blocks))
-	idx := 0
-	for pc := range g.Blocks {
-		edgesPCs[idx] = pc
-		idx++
-	}
-	return edgesPCs
-}
-
-type CFGBlock struct {
-	InitialPC       string            `json:"initialPC"`
-	Instructions    map[string]string `json:"instructions"`
-	InstructionsPCs []string          `json:"instructionsPCs"`
-}
-
 type DistanceMap map[string]map[string]int64 // blockPC => instruction => distance
 
 type PowerScheduleStrategy string

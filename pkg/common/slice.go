@@ -83,3 +83,12 @@ func Swap[T any](s []T, i, j int) {
 	s[i] = s[j]
 	s[j] = temp
 }
+
+func Contains[T comparable](s []T, target T) bool {
+	for _, element := range s {
+		if element == target {
+			return true
+		}
+	}
+	return false
+}
