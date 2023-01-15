@@ -22,7 +22,7 @@ import (
 type Env interface {
 	Logger() *zap.Logger
 	DbConnection() interfaces.Connection
-	EventBus() bus.EventBus
+	EventBus() interfaces.EventBus
 	SolidityCompiler() interfaces.SolidityCompiler
 	ContractMapper() interfaces.ContractMapper
 	TransactionMapper() interfaces.TransactionMapper
@@ -50,7 +50,7 @@ type env struct {
 	cfg                      *config.Config
 	logger                   *zap.Logger
 	dbConnection             interfaces.Connection
-	eventBus                 bus.EventBus
+	eventBus                 interfaces.EventBus
 	solidityCompiler         interfaces.SolidityCompiler
 	contractMapper           interfaces.ContractMapper
 	transactionMapper        interfaces.TransactionMapper
@@ -116,7 +116,7 @@ func (e *env) DbConnection() interfaces.Connection {
 	return e.dbConnection
 }
 
-func (e *env) EventBus() bus.EventBus {
+func (e *env) EventBus() interfaces.EventBus {
 	if e.eventBus == nil {
 		e.eventBus = bus.NewMemoryEventBus()
 	}

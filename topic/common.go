@@ -1,7 +1,7 @@
 package topic
 
-import "github.com/dogefuzz/dogefuzz/pkg/bus"
+import "github.com/dogefuzz/dogefuzz/pkg/interfaces"
 
 type env interface {
-	EventBus() bus.EventBus
+	EventBus() interfaces.EventBus
 }

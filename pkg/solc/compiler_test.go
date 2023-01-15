@@ -39,6 +39,20 @@ func (s *SolidityCompilerTestSuite) TestCompileSource() {
 	assert.Equal(s.T(), expectedAbiDefinition2, contract2.AbiDefinition)
 }
 
+// func (s *SolidityCompilerTestSuite) TestDecompile_WithBenchmarkContracts() {
+
+// 	folder := "/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts"
+// 	solidityFiles, _ := ioutil.ReadDir(folder)
+// 	for _, file := range solidityFiles {
+
+// 		f, _ := ioutil.ReadFile("/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts/" + file.Name())
+// 		compiler := NewSolidityCompiler("/tmp/dogefuzz/")
+// 		contract, err := compiler.CompileSource(string(f))
+// 		assert.Nil(s.T(), err)
+// 		assert.NotEqual(s.T(), "0x", contract.CompiledCode)
+// 	}
+// }
+
 const CONTRACT1 = `
 pragma solidity ^0.8.13;
 

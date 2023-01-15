@@ -41,7 +41,7 @@ type env struct {
 	cfg                    *config.Config
 	logger                 *zap.Logger
 	dbConnection           interfaces.Connection
-	eventBus               bus.EventBus
+	eventBus               interfaces.EventBus
 	contractMapper         interfaces.ContractMapper
 	functionMapper         interfaces.FunctionMapper
 	taskMapper             interfaces.TaskMapper
@@ -101,7 +101,7 @@ func (e *env) DbConnection() interfaces.Connection {
 	return e.dbConnection
 }
 
-func (e *env) EventBus() bus.EventBus {
+func (e *env) EventBus() interfaces.EventBus {
 	if e.eventBus == nil {
 		e.eventBus = bus.NewMemoryEventBus()
 	}

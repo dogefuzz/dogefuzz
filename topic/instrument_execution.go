@@ -2,12 +2,13 @@ package topic
 
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 const INSTRUMENT_EXECUTION_TOPIC = "instrument:execution"
 
 type instrumentExecutionTopic struct {
-	eventBus bus.EventBus
+	eventBus interfaces.EventBus
 }
 
 func NewInstrumentExecutionTopic(e env) *instrumentExecutionTopic {

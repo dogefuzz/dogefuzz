@@ -2,12 +2,13 @@ package topic
 
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 const TASK_START_TOPIC = "task:start"
 
 type taskStartTopic struct {
-	eventBus bus.EventBus
+	eventBus interfaces.EventBus
 }
 
 func NewTaskStartTopic(e env) *taskStartTopic {

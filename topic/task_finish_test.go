@@ -24,7 +24,7 @@ func TestTaskFinishTestSuite(t *testing.T) {
 
 func (s *TaskFinishTestSuite) SetupTest() {
 	s.eventBusMock = new(mocks.EventBusMock)
-	s.env = test.NewTestEnv(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, s.eventBusMock)
+	s.env = test.NewTestEnv(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, s.eventBusMock, nil, nil, nil)
 }
 
 func (s *TaskFinishTestSuite) TestPublish_ShouldCallEventBusPublishMethod_WhenReceiveAValidEvent() {

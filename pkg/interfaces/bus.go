@@ -1,4 +1,4 @@
-package bus
+package interfaces
 
 type EventBus interface {
 	Subscribe(topic string, fn interface{})

@@ -2,12 +2,13 @@ package topic
 
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 const TASK_INPUT_REQUEST_TOPIC = "task:input_request"
 
 type taskInputRequestTopic struct {
-	eventBus bus.EventBus
+	eventBus interfaces.EventBus
 }
 
 func NewTaskInputRequestTopic(e env) *taskInputRequestTopic {

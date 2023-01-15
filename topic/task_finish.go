@@ -2,12 +2,13 @@ package topic
 
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 const TASK_FINISH_TOPIC = "task:finish"
 
 type taskFinishTopic struct {
-	eventBus bus.EventBus
+	eventBus interfaces.EventBus
 }
 
 func NewTaskFinishTopic(e env) *taskFinishTopic {

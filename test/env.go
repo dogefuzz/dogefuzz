@@ -1,9 +1,6 @@
 package test
 
 import (
-	"encoding/json"
-	"log"
-
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
@@ -11,20 +8,25 @@ import (
 )
 
 type TestEnv struct {
-	cfg               *config.Config
-	logger            *zap.Logger
-	contractMapper    interfaces.ContractMapper
-	transactionMapper interfaces.TransactionMapper
-	taskMapper        interfaces.TaskMapper
-	functionMapper    interfaces.FunctionMapper
-	taskRepo          interfaces.TaskRepo
-	contractRepo      interfaces.ContractRepo
-	transactionRepo   interfaces.TransactionRepo
-	functionRepo      interfaces.FunctionRepo
-	deployer          interfaces.Deployer
-	agent             interfaces.Agent
-	connection        interfaces.Connection
-	eventBus          bus.EventBus
+	cfg                    *config.Config
+	logger                 *zap.Logger
+	contractMapper         interfaces.ContractMapper
+	transactionMapper      interfaces.TransactionMapper
+	taskMapper             interfaces.TaskMapper
+	functionMapper         interfaces.FunctionMapper
+	taskRepo               interfaces.TaskRepo
+	contractRepo           interfaces.ContractRepo
+	transactionRepo        interfaces.TransactionRepo
+	functionRepo           interfaces.FunctionRepo
+	deployer               interfaces.Deployer
+	agent                  interfaces.Agent
+	connection             interfaces.Connection
+	eventBus               interfaces.EventBus
+	taskService            interfaces.TaskService
+	taskInputRequestTopic  interfaces.Topic[bus.TaskInputRequestEvent]
+	taskFinishTopic        interfaces.Topic[bus.TaskFinishEvent]
+	tasksCheckerJob        interfaces.CronJob
+	transactionsCheckerJob interfaces.CronJob
 }
 
 func NewTestEnv(
@@ -39,15 +41,21 @@ func NewTestEnv(
 	deployer interfaces.Deployer,
 	agent interfaces.Agent,
 	connection interfaces.Connection,
-	eventBus bus.EventBus,
+	eventBus interfaces.EventBus,
+	taskService interfaces.TaskService,
+	taskFinishTopic interfaces.Topic[bus.TaskFinishEvent],
+	taskInputRequestTopic interfaces.Topic[bus.TaskInputRequestEvent],
 ) *TestEnv {
 	return &TestEnv{
-		contractMapper: contractMapper,
-		contractRepo:   contractRepo,
-		deployer:       deployer,
-		agent:          agent,
-		connection:     connection,
-		eventBus:       eventBus,
+		contractMapper:        contractMapper,
+		contractRepo:          contractRepo,
+		deployer:              deployer,
+		agent:                 agent,
+		connection:            connection,
+		eventBus:              eventBus,
+		taskService:           taskService,
+		taskFinishTopic:       taskFinishTopic,
+		taskInputRequestTopic: taskInputRequestTopic,
 	}
 }
 
@@ -87,6 +95,26 @@ func (e *TestEnv) FunctionRepo() interfaces.FunctionRepo {
 	return e.functionRepo
 }
 
+func (e *TestEnv) TaskService() interfaces.TaskService {
+	return e.taskService
+}
+
+func (e *TestEnv) TaskInputRequestTopic() interfaces.Topic[bus.TaskInputRequestEvent] {
+	return e.taskInputRequestTopic
+}
+
+func (e *TestEnv) TaskFinishTopic() interfaces.Topic[bus.TaskFinishEvent] {
+	return e.taskFinishTopic
+}
+
+func (e *TestEnv) TasksCheckerJob() interfaces.CronJob {
+	return e.tasksCheckerJob
+}
+
+func (e *TestEnv) TransactionsCheckerJob() interfaces.CronJob {
+	return e.transactionsCheckerJob
+}
+
 func (e *TestEnv) Agent() interfaces.Agent {
 	return e.agent
 }
@@ -99,43 +127,13 @@ func (e *TestEnv) DbConnection() interfaces.Connection {
 	return e.connection
 }
 
-func (e *TestEnv) EventBus() bus.EventBus {
+func (e *TestEnv) EventBus() interfaces.EventBus {
 	return e.eventBus
 }
 
 func (e *TestEnv) Logger() *zap.Logger {
 	if e.logger == nil {
-		logger, err := initLogger()
-		if err != nil {
-			log.Panicf("Error while loading zap logger: %s", err)
-			return nil
-		}
-
-		e.logger = logger
+		e.logger = zap.NewNop()
 	}
 	return e.logger
-}
-
-func initLogger() (*zap.Logger, error) {
-	rawJSON := []byte(`{
-		"level": "debug",
-		"encoding": "json",
-		"outputPaths": ["stdout", "/tmp/logs"],
-		"errorOutputPaths": ["stderr"],
-		"encoderConfig": {
-			"messageKey": "message",
-			"levelKey": "level",
-			"levelEncoder": "lowercase"
-		}
-	}`)
-
-	var cfg zap.Config
-	if err := json.Unmarshal(rawJSON, &cfg); err != nil {
-		return nil, err
-	}
-	l, err := cfg.Build()
-	if err != nil {
-		return nil, err
-	}
-	return l, nil
 }

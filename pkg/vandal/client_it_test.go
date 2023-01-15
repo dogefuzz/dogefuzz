@@ -45,3 +45,21 @@ contract HelloWorld {
 	assert.Equal(s.T(), 1, len(functions))
 	assert.Nil(s.T(), err)
 }
+
+// func (s *VandalClientIntegrationTestSuite) TestDecompile_WithBenchmarkContracts() {
+
+// 	folder := "/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts"
+// 	solidityFiles, _ := ioutil.ReadDir(folder)
+// 	for _, file := range solidityFiles {
+
+// 		f, _ := ioutil.ReadFile("/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts/" + file.Name())
+// 		compiler := solc.NewSolidityCompiler("/tmp/dogefuzz/")
+// 		contract, _ := compiler.CompileSource(string(f))
+
+// 		c := NewVandalClient("http://localhost:51243")
+// 		blocks, functions, err := c.Decompile(context.Background(), contract.CompiledCode)
+// 		assert.Greater(s.T(), len(blocks), 0)
+// 		assert.Greater(s.T(), len(functions), 0)
+// 		assert.Nil(s.T(), err)
+// 	}
+// }
