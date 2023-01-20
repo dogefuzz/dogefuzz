@@ -81,6 +81,9 @@ func (c *vandalClient) Decompile(ctx context.Context, source string) ([]common.B
 		}
 		currentFunction = append(currentFunction, line)
 	}
+	if len(currentFunction) > 0 {
+		functions = append(functions, NewFunctionFromLines(currentFunction))
+	}
 
 	return blocks, functions, nil
 }

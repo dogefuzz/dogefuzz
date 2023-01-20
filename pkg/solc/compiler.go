@@ -20,6 +20,7 @@ import (
 
 var ErrEmptySourceFile = errors.New("solc: empty source string")
 var ErrSolidityBinaryCouldNotBeDownloaded = errors.New("the solidity binary could not be downloaded externally")
+var ErrContractNotFound = errors.New("the contract was not found in compiled code")
 
 type solidityCompiler struct {
 	storageFolder string
@@ -29,12 +30,12 @@ func NewSolidityCompiler(storageFolder string) *solidityCompiler {
 	return &solidityCompiler{storageFolder: storageFolder}
 }
 
-func (c *solidityCompiler) CompileSource(source string) (*common.Contract, error) {
-	if len(source) == 0 {
+func (c *solidityCompiler) CompileSource(contractName string, contractSource string) (*common.Contract, error) {
+	if len(contractSource) == 0 {
 		return nil, ErrEmptySourceFile
 	}
 
-	solcVersion, err := getIdealSolcVersionBasedOnSource(source)
+	solcVersion, err := getIdealSolcVersionBasedOnSource(contractSource)
 	if err != nil {
 		return nil, err
 	}
@@ -46,22 +47,29 @@ func (c *solidityCompiler) CompileSource(source string) (*common.Contract, error
 
 	args := append(buildArgs(solcVersion), "--")
 	cmd := exec.Command(solcBinaryLocation, append(args, "-")...)
-	cmd.Stdin = strings.NewReader(source)
-	contracts, err := run(cmd, source, solcVersion)
+	cmd.Stdin = strings.NewReader(contractSource)
+	contracts, err := run(cmd, contractSource, solcVersion)
 	if err != nil {
 		return nil, err
 	}
 
-	contractNameKey := common.GetFirstStringKeyFromMap(contracts)
-	contract := contracts[contractNameKey]
-	abiDefinition, err := json.Marshal(contract.Info.AbiDefinition)
+	var compiledContract *compiler.Contract
+	for name, contract := range contracts {
+		parsedName := parseStdinSolidityContractName(name)
+		if parsedName == contractName {
+			compiledContract = contract
+			break
+		}
+	}
+	if compiledContract == nil {
+		return nil, ErrContractNotFound
+	}
+
+	abiDefinition, err := json.Marshal(compiledContract.Info.AbiDefinition)
 	if err != nil {
 		return nil, err
 	}
-	compiledCode := contract.Code
-	contractName := parseStdinSolidityContractName(contractNameKey)
-
-	return common.NewContract(contractName, string(abiDefinition), compiledCode), nil
+	return common.NewContract(contractName, string(abiDefinition), compiledContract.Code), nil
 }
 
 func (c *solidityCompiler) downloadSolcBinaryBasedOnVersion(version *semver.Version) (string, error) {
@@ -103,7 +111,7 @@ func (c *solidityCompiler) downloadSolcBinaryBasedOnVersion(version *semver.Vers
 
 func buildArgs(version *semver.Version) []string {
 	p := []string{
-		"--combined-json", "bin,bin-runtime,srcmap,srcmap-runtime,abi,userdoc,devdoc",
+		"--combined-json", "ast,bin,bin-runtime,srcmap,srcmap-runtime,abi,userdoc,devdoc",
 		"--optimize",                  // code optimizer switched on
 		"--allow-paths", "., ./, ../", // default to support relative path： ./  ../  .
 	}

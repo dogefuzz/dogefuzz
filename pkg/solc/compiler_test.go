@@ -19,7 +19,7 @@ func TestSolidityCompilerTestSuite(t *testing.T) {
 func (s *SolidityCompilerTestSuite) TestCompileSource() {
 	compiler := NewSolidityCompiler("/tmp/dogefuzz")
 
-	contract1, err := compiler.CompileSource(CONTRACT1)
+	contract1, err := compiler.CompileSource("HelloWorld", CONTRACT1)
 	if err != nil {
 		s.Fail(fmt.Sprintf("And error occurred: %s", err))
 	}
@@ -29,7 +29,7 @@ func (s *SolidityCompilerTestSuite) TestCompileSource() {
 	const expectedAbiDefinition1 = "[{\"inputs\":[],\"name\":\"greet\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]"
 	assert.Equal(s.T(), expectedAbiDefinition1, contract1.AbiDefinition)
 
-	contract2, err := compiler.CompileSource(CONTRACT2)
+	contract2, err := compiler.CompileSource("HashForEther", CONTRACT2)
 	if err != nil {
 		s.Fail(fmt.Sprintf("And error occurred: %s", err))
 	}
@@ -47,7 +47,8 @@ func (s *SolidityCompilerTestSuite) TestCompileSource() {
 
 // 		f, _ := ioutil.ReadFile("/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts/" + file.Name())
 // 		compiler := NewSolidityCompiler("/tmp/dogefuzz/")
-// 		contract, err := compiler.CompileSource(string(f))
+// 		fileWithoutExtension := file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]
+// 		contract, err := compiler.CompileSource(fileWithoutExtension, string(f))
 // 		assert.Nil(s.T(), err)
 // 		assert.NotEqual(s.T(), "0x", contract.CompiledCode)
 // 	}

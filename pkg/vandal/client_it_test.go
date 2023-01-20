@@ -37,7 +37,7 @@ contract HelloWorld {
 }
 `
 	compiler := solc.NewSolidityCompiler("/tmp/dogefuzz/")
-	contract, _ := compiler.CompileSource(VALID_SOLIDITY_FILE)
+	contract, _ := compiler.CompileSource("HelloWorld", VALID_SOLIDITY_FILE)
 
 	c := NewVandalClient("http://localhost:51243")
 	blocks, functions, err := c.Decompile(context.Background(), contract.CompiledCode)
@@ -54,12 +54,13 @@ contract HelloWorld {
 
 // 		f, _ := ioutil.ReadFile("/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts/" + file.Name())
 // 		compiler := solc.NewSolidityCompiler("/tmp/dogefuzz/")
-// 		contract, _ := compiler.CompileSource(string(f))
+// 		fileWithoutExtension := file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]
+// 		contract, _ := compiler.CompileSource(fileWithoutExtension, string(f))
 
 // 		c := NewVandalClient("http://localhost:51243")
 // 		blocks, functions, err := c.Decompile(context.Background(), contract.CompiledCode)
-// 		assert.Greater(s.T(), len(blocks), 0)
-// 		assert.Greater(s.T(), len(functions), 0)
+// 		assert.Greater(s.T(), len(blocks), 0, fmt.Sprintf("the contract %s should have more than one block", fileWithoutExtension))
+// 		assert.Greater(s.T(), len(functions), 0, fmt.Sprintf("the contract %s should have more than one function", fileWithoutExtension))
 // 		assert.Nil(s.T(), err)
 // 	}
 // }

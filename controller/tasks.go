@@ -51,7 +51,7 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		return
 	}
 
-	compiledContract, err := ctrl.solidityCompiler.CompileSource(request.Contract)
+	compiledContract, err := ctrl.solidityCompiler.CompileSource(request.ContractName, request.ContractSource)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -72,7 +72,7 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	}
 
 	contractDTO := dto.NewContractDTO{
-		Source:        request.Contract,
+		Source:        request.ContractSource,
 		CompiledCode:  compiledContract.CompiledCode,
 		AbiDefinition: compiledContract.AbiDefinition,
 		Name:          compiledContract.Name,

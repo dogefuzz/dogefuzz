@@ -8,3 +8,15 @@ func GetFirstStringKeyFromMap[V any](input map[string]V) string {
 	}
 	return firstKey
 }
+
+func GetLastStringKeyFromMap[V any](input map[string]V) string {
+	var lastKey string
+	inputSize := len(input)
+	for key := range input {
+		if inputSize == 1 {
+			lastKey = key
+		}
+		inputSize--
+	}
+	return lastKey
+}

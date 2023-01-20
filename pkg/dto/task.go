@@ -7,11 +7,12 @@ import (
 )
 
 type StartTaskRequest struct {
-	Contract    string              `json:"contract"`
-	Arguments   []string            `json:"arguments"`
-	Duration    string              `json:"duration"`
-	Detectors   []common.OracleType `json:"detectors"`
-	FuzzingType common.FuzzingType  `json:"fuzzingType"`
+	ContractSource string              `json:"contractSource"`
+	ContractName   string              `json:"contractName"`
+	Arguments      []string            `json:"arguments"`
+	Duration       string              `json:"duration"`
+	Detectors      []common.OracleType `json:"detectors"`
+	FuzzingType    common.FuzzingType  `json:"fuzzingType"`
 }
 
 type StartTaskResponse struct {

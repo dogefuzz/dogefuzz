@@ -56,7 +56,7 @@ contract HelloWorld {
 	assert.Nil(s.T(), err)
 
 	compiler := solc.NewSolidityCompiler(it.SOLC_FOLDER)
-	contract, err := compiler.CompileSource(solidityFile)
+	contract, err := compiler.CompileSource("HelloWorld", solidityFile)
 	assert.Nil(s.T(), err)
 
 	address, err := deployer.Deploy(context.Background(), contract, gofakeit.Word())
