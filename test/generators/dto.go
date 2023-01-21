@@ -160,16 +160,16 @@ func TransactionDTOGen() *dto.TransactionDTO {
 	}
 
 	return &dto.TransactionDTO{
-		Id:             gofakeit.LetterN(255),
-		Timestamp:      gofakeit.Date(),
-		BlockchainHash: gofakeit.LetterN(255),
-		TaskId:         gofakeit.LetterN(255),
-		FunctionId:     gofakeit.LetterN(255),
-		Inputs:         inputs,
-		DetectedWeaknesses: detectedWeaknesses,
+		Id:                   gofakeit.LetterN(255),
+		Timestamp:            gofakeit.Date(),
+		BlockchainHash:       gofakeit.LetterN(255),
+		TaskId:               gofakeit.LetterN(255),
+		FunctionId:           gofakeit.LetterN(255),
+		Inputs:               inputs,
+		DetectedWeaknesses:   detectedWeaknesses,
 		ExecutedInstructions: executedInstructions,
-		DeltaCoverage: gofakeit.Int64(),
-		DeltaMinDistance: gofakeit.Int64(),
-		Status:         common.RandomChoice([]common.TransactionStatus{common.TRANSACTION_DONE, common.TRANSACTION_RUNNING, common.TRANSACTION_CREATED}),
+		DeltaCoverage:        gofakeit.Int64(),
+		DeltaMinDistance:     gofakeit.Int64(),
+		Status:               common.RandomChoice([]common.TransactionStatus{common.TRANSACTION_DONE, common.TRANSACTION_RUNNING, common.TRANSACTION_CREATED}),
 	}
 }

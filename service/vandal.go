@@ -8,6 +8,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/vandal"
 )
+
 type vandalService struct {
 	cfg    config.VandalConfig
 	client interfaces.VandalClient
