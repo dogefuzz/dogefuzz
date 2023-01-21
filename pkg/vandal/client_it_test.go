@@ -42,7 +42,7 @@ contract HelloWorld {
 	c := NewVandalClient("http://localhost:51243")
 	blocks, functions, err := c.Decompile(context.Background(), contract.CompiledCode)
 	assert.Equal(s.T(), 30, len(blocks))
-	assert.Equal(s.T(), 1, len(functions))
+	assert.Equal(s.T(), 2, len(functions))
 	assert.Nil(s.T(), err)
 }
 
