@@ -8,7 +8,7 @@ docker.test.down:
 	docker compose -f ./infrastructure/docker-compose.test.yml down -v
 
 test.unit:
-	go test $$(go list ./... | grep -v github.com/dogefuzz/dogefuzz/test) -cover
+	go test $$(go list ./... | grep -v github.com/dogefuzz/dogefuzz/test) -coverprofile=coverage.out
 
 test.unit.coverage: test.unit
 	@echo "Total Coverage: $$(go tool cover -func=coverage.out | grep total: | grep -Eo '[0-9]+\.[0-9]+')%"

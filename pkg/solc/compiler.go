@@ -40,9 +40,14 @@ func (c *solidityCompiler) CompileSource(contractName string, contractSource str
 		return nil, err
 	}
 
-	solcBinaryLocation, err := c.downloadSolcBinaryBasedOnVersion(solcVersion)
-	if err != nil {
-		return nil, err
+	var solcBinaryLocation string
+	if location, ok := c.getSolcBinaryLocationIfExists(solcVersion); ok {
+		solcBinaryLocation = location
+	} else {
+		solcBinaryLocation, err = c.downloadSolcBinaryBasedOnVersion(solcVersion)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	args := append(buildArgs(solcVersion), "--")
@@ -72,6 +77,20 @@ func (c *solidityCompiler) CompileSource(contractName string, contractSource str
 	return common.NewContract(contractName, string(abiDefinition), compiledContract.Code), nil
 }
 
+func (c *solidityCompiler) getSolcBinaryLocationIfExists(version *semver.Version) (string, bool) {
+	solcDestinationFolder := path.Join(c.storageFolder, "solc")
+	solcBinaryName := fmt.Sprintf("solcV%s", getSimplifiedVersionString(version))
+	solcBinaryAbsolutePath := path.Join(solcDestinationFolder, solcBinaryName)
+	info, err := os.Stat(solcBinaryAbsolutePath)
+	if os.IsNotExist(err) {
+		return "", false
+	}
+	if info.IsDir() {
+		return "", false
+	}
+	return solcBinaryAbsolutePath, true
+}
+
 func (c *solidityCompiler) downloadSolcBinaryBasedOnVersion(version *semver.Version) (string, error) {
 	solcDestinationFolder := path.Join(c.storageFolder, "solc")
 	if err := os.MkdirAll(solcDestinationFolder, os.ModePerm); err != nil {
@@ -80,6 +99,7 @@ func (c *solidityCompiler) downloadSolcBinaryBasedOnVersion(version *semver.Vers
 
 	solcBinaryName := fmt.Sprintf("solcV%s", getSimplifiedVersionString(version))
 	solcBinaryAbsolutePath := path.Join(solcDestinationFolder, solcBinaryName)
+
 	solcFile, err := os.Create(solcBinaryAbsolutePath)
 	if err != nil {
 		return "", err
