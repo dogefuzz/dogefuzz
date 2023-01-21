@@ -38,8 +38,8 @@ func readHeadSection(lines []string, block *common.Block) {
 	matchBlockRange := regexBlockRange.FindStringSubmatch(lines[1])
 	block.PC = matchBlockPc[1]
 	block.Range = common.BlockRange{
-		matchBlockRange[1],
-		matchBlockRange[2],
+		From: matchBlockRange[1],
+		To:   matchBlockRange[2],
 	}
 }
 

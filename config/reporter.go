@@ -1,8 +1,13 @@
 package config
 
-import "github.com/dogefuzz/dogefuzz/pkg/reporter"
+import (
+	"time"
+
+	"github.com/dogefuzz/dogefuzz/pkg/reporter"
+)
 
 type ReporterConfig struct {
-	Type             reporter.ReporterType `mapstructure:"type"`
-	CallbackEndpoint string                `mapstructure:"callbackEndpoint"`
+	Type            reporter.ReporterType `mapstructure:"type"`
+	WebhookEndpoint string                `mapstructure:"webhookEndpoint"`
+	WebhookTimeout  time.Duration         `mapstructure:"webhookTimeout"`
 }

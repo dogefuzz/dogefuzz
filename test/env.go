@@ -9,6 +9,7 @@ import (
 
 type TestEnv struct {
 	cfg                    *config.Config
+	client                 interfaces.HttpClient
 	logger                 *zap.Logger
 	contractMapper         interfaces.ContractMapper
 	transactionMapper      interfaces.TransactionMapper
@@ -61,6 +62,10 @@ func NewTestEnv(
 
 func (e *TestEnv) Config() *config.Config {
 	return e.cfg
+}
+
+func (e *TestEnv) Client() interfaces.HttpClient {
+	return e.client
 }
 
 func (e *TestEnv) ContractMapper() interfaces.ContractMapper {

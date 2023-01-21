@@ -3,27 +3,29 @@ package reporter
 import (
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
 type consoleReporter struct {
+	writer io.Writer
 }
 
-func NewConsoleReporter() *consoleReporter {
-	return &consoleReporter{}
+func NewConsoleReporter(writer io.Writer) *consoleReporter {
+	return &consoleReporter{writer: writer}
 }
 
 func (r *consoleReporter) SendOutput(ctx context.Context, report common.TaskReport) error {
-	fmt.Println("********** FUZZING EXECUTION RESULT **********")
-	fmt.Printf("Time Elapsed: %v\n", report.TimeElapsed)
-	fmt.Printf("Contract Name: %s\n", report.ContractName)
-	fmt.Printf("Coverage: %d\n", report.Coverage)
-	fmt.Printf("Min Distance: %d\n", report.MinDistance)
-	fmt.Printf("Transactions: %d\n", len(report.Transactions))
-	fmt.Printf("Weakneses Found:\n")
+	fmt.Fprintln(r.writer, "********** FUZZING EXECUTION RESULT **********")
+	fmt.Fprintf(r.writer, "Time Elapsed: %v\n", report.TimeElapsed)
+	fmt.Fprintf(r.writer, "Contract Name: %s\n", report.ContractName)
+	fmt.Fprintf(r.writer, "Coverage: %d\n", report.Coverage)
+	fmt.Fprintf(r.writer, "Min Distance: %d\n", report.MinDistance)
+	fmt.Fprintf(r.writer, "Transactions: %d\n", len(report.Transactions))
+	fmt.Fprintln(r.writer, "Weakneses Found:")
 	for _, weakness := range report.DetectedWeaknesses {
-		fmt.Printf("\t- %s\n", weakness)
+		fmt.Fprintf(r.writer, "\t- %s\n", weakness)
 	}
 	return nil
 }

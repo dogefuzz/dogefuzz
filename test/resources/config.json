@@ -20,5 +20,5 @@
   },
   "job": { "enabledJobs": ["<job1>"] },
   "event": { "enabledListeners": ["<listener1>"] },
-  "reporter": { "type": "console", "callbackEndpoint": "<endpoint>" }
+  "reporter": { "type": "console", "webhookEndpoint": "<endpoint>", "webhookTimeout": "30s" }
 }

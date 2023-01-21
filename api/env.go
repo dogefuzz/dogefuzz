@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/controller"
@@ -21,6 +22,8 @@ import (
 
 type Env interface {
 	Logger() *zap.Logger
+	Client() interfaces.HttpClient
+	Config() *config.Config
 	DbConnection() interfaces.Connection
 	EventBus() interfaces.EventBus
 	SolidityCompiler() interfaces.SolidityCompiler
@@ -49,6 +52,7 @@ type Env interface {
 type env struct {
 	cfg                      *config.Config
 	logger                   *zap.Logger
+	client                   interfaces.HttpClient
 	dbConnection             interfaces.Connection
 	eventBus                 interfaces.EventBus
 	solidityCompiler         interfaces.SolidityCompiler
@@ -102,6 +106,13 @@ func (e *env) Logger() *zap.Logger {
 		e.logger = logger
 	}
 	return e.logger
+}
+
+func (e *env) Client() interfaces.HttpClient {
+	if e.client == nil {
+		e.client = new(http.Client)
+	}
+	return e.client
 }
 
 func (e *env) DbConnection() interfaces.Connection {

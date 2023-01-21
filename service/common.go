@@ -23,6 +23,7 @@ type Env interface {
 	Agent() interfaces.Agent
 	Config() *config.Config
 	DbConnection() interfaces.Connection
+	Client() interfaces.HttpClient
 }
 
 func packArgsToVariadicFuncParameters(ctx context.Context, contract *common.Contract, args []interface{}) []interface{} {

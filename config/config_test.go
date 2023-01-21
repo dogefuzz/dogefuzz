@@ -5,6 +5,7 @@ import (
 	"path"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
@@ -51,8 +52,9 @@ func (s *ConfigTestSuite) TestLoadConfig_WhenPassingAValidPath_ReturnAValidConfi
 			EnabledListeners: []string{"<listener1>"},
 		},
 		ReporterConfig: ReporterConfig{
-			Type:             reporter.CONSOLE_REPORTER,
-			CallbackEndpoint: "<endpoint>",
+			Type:            reporter.CONSOLE_REPORTER,
+			WebhookEndpoint: "<endpoint>",
+			WebhookTimeout:  30 * time.Second,
 		},
 	}
 

@@ -85,5 +85,5 @@
   },
   "job": { "enabledJobs": ["tasks-checker", "transactions-checker"] },
   "event": { "enabledListeners": ["contract-deployer", "execution-analytics", "fuzzer", "reporter"] },
-  "reporter": { "type": "callback", "callbackEndpoint": "http://localhost:3000" }
+  "reporter": { "type": "webhook", "webhookEndpoint": "http://localhost:3000", "webhookTimeout": "30s" }
 }

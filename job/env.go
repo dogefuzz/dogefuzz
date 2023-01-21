@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/data"
@@ -18,8 +19,9 @@ import (
 )
 
 type Env interface {
-	Config() *config.Config
 	Logger() *zap.Logger
+	Client() interfaces.HttpClient
+	Config() *config.Config
 	ContractMapper() interfaces.ContractMapper
 	FunctionMapper() interfaces.FunctionMapper
 	TaskMapper() interfaces.TaskMapper
@@ -38,8 +40,9 @@ type Env interface {
 }
 
 type env struct {
-	cfg                    *config.Config
 	logger                 *zap.Logger
+	client                 interfaces.HttpClient
+	cfg                    *config.Config
 	dbConnection           interfaces.Connection
 	eventBus               interfaces.EventBus
 	contractMapper         interfaces.ContractMapper
@@ -87,6 +90,13 @@ func (e *env) Logger() *zap.Logger {
 		e.logger = logger
 	}
 	return e.logger
+}
+
+func (e *env) Client() interfaces.HttpClient {
+	if e.client == nil {
+		e.client = new(http.Client)
+	}
+	return e.client
 }
 
 func (e *env) DbConnection() interfaces.Connection {
