@@ -4,21 +4,27 @@ import (
 	"math/big"
 	"reflect"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var (
-	Uint8T  = reflect.TypeOf(uint8(0))
-	Uint16T = reflect.TypeOf(uint16(0))
-	Uint32T = reflect.TypeOf(uint32(0))
-	Uint64T = reflect.TypeOf(uint64(0))
-	Int8T   = reflect.TypeOf(int8(0))
-	Int16T  = reflect.TypeOf(int16(0))
-	Int32T  = reflect.TypeOf(int32(0))
-	Int64T  = reflect.TypeOf(int64(0))
-	BigIntT = reflect.TypeOf(&big.Int{})
-	BoolT   = reflect.TypeOf(false)
-	StringT = reflect.TypeOf("")
-	SliceT  = func(typ reflect.Type) reflect.Type { return reflect.SliceOf(typ) }
+	Uint8T      = reflect.TypeOf(uint8(0))
+	Uint16T     = reflect.TypeOf(uint16(0))
+	Uint32T     = reflect.TypeOf(uint32(0))
+	Uint64T     = reflect.TypeOf(uint64(0))
+	Int8T       = reflect.TypeOf(int8(0))
+	Int16T      = reflect.TypeOf(int16(0))
+	Int32T      = reflect.TypeOf(int32(0))
+	Int64T      = reflect.TypeOf(int64(0))
+	BigIntT     = reflect.TypeOf(&big.Int{})
+	BoolT       = reflect.TypeOf(false)
+	StringT     = reflect.TypeOf("")
+	AddressT    = reflect.TypeOf(common.Address{})
+	SliceT      = func(typ reflect.Type) reflect.Type { return reflect.SliceOf(typ) }
+	ArrayT      = func(size int, typ reflect.Type) reflect.Type { return reflect.ArrayOf(size, typ) }
+	FixedBytesT = func(size int) reflect.Type { return reflect.ArrayOf(size, reflect.TypeOf(byte(0))) }
+	BytesT      = reflect.SliceOf(reflect.TypeOf(byte(0)))
 )
 
 type FuzzingType string
@@ -143,3 +149,5 @@ type Function struct {
 	ExitBlock  string   `json:"exitBlock"`
 	Body       []string `json:"body"`
 }
+
+type Seeds = map[TypeIdentifier][]string

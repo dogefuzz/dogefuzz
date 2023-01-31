@@ -97,3 +97,80 @@ contract HelloWorld {
 	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), fmt.Sprintf("Hello, %s!", newWord), results[0].(string))
 }
+
+// func (s *GethAgentIntegrationTestSuite) TestSend_WithBenchmarkContracts() {
+
+// 	folder := "/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts"
+// 	solidityFiles, _ := ioutil.ReadDir(folder)
+
+// 	deployer, err := NewDeployer(it.GETH_CONFIG)
+// 	assert.Nil(s.T(), err)
+
+// 	for _, file := range solidityFiles {
+
+// 		f, _ := ioutil.ReadFile("/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts/" + file.Name())
+// 		compiler := solc.NewSolidityCompiler("/tmp/dogefuzz/")
+// 		fileWithoutExtension := file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]
+// 		contract, err := compiler.CompileSource(fileWithoutExtension, string(f))
+// 		assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s", file.Name()))
+// 		assert.NotEqual(s.T(), "0x", contract.CompiledCode)
+
+// 		parsedAbi, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
+// 		assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s", file.Name()))
+
+// 		inputs := make([]interface{}, 0)
+// 		for _, parameter := range parsedAbi.Constructor.Inputs {
+// 			handler, err := solidity.GetTypeHandler(parameter.Type)
+// 			assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s", file.Name()))
+
+// 			handler.Generate()
+// 			inputs = append(inputs, handler.GetValue())
+// 		}
+// 		address, err := deployer.Deploy(context.Background(), contract, inputs...)
+// 		assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s", file.Name()))
+// 		assert.NotEmpty(s.T(), address)
+
+// 		agent, err := NewAgent(it.GETH_CONFIG)
+// 		assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s", file.Name()))
+
+// 		for _, method := range parsedAbi.Methods {
+// 			if !method.Payable {
+// 				continue
+// 			}
+// 			inputs = make([]interface{}, 0)
+// 			for _, parameter := range method.Inputs {
+// 				handler, err := solidity.GetTypeHandler(parameter.Type)
+// 				assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s", file.Name()))
+
+// 				handler.Generate()
+// 				inputs = append(inputs, handler.GetValue())
+// 			}
+
+// 			tx, err := agent.Send(context.Background(), contract, method.Name, inputs...)
+// 			assert.NotEmpty(s.T(), tx, fmt.Sprintf("error on contract %s in method %s", file.Name(), method.Name))
+// 			assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s in method %s", file.Name(), method.Name))
+
+// 			client, err := ethclient.Dial(it.GETH_CONFIG.NodeAddress)
+// 			assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s in method %s", file.Name(), method.Name))
+
+// 			if tx != "" {
+// 				var receipt *types.Receipt
+// 				for {
+// 					receipt, err = client.TransactionReceipt(context.Background(), common.HexToHash(tx))
+// 					if err != nil {
+// 						if err != ethereum.NotFound {
+// 							assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s in method %s", file.Name(), method.Name))
+// 						}
+// 					} else {
+// 						break
+// 					}
+
+// 					time.Sleep(1 * time.Second)
+// 				}
+// 				assert.NotNil(s.T(), receipt)
+// 			} else {
+// 				break
+// 			}
+// 		}
+// 	}
+// }

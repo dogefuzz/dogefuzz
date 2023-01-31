@@ -29,8 +29,10 @@ func (h *uint16Handler) SetValue(value interface{}) {
 	h.value = value.(uint16)
 }
 
-func (h *uint16Handler) GetType() common.TypeIdentifier {
-	return UINT16
+func (h *uint16Handler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
+	addressSeeds := seeds[UINT16]
+	chosenSeed := common.RandomChoice(addressSeeds)
+	return h.Deserialize(chosenSeed)
 }
 
 func (h *uint16Handler) Serialize() string {

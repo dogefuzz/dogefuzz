@@ -79,34 +79,21 @@ func (s *powerSchedule) completeSeedsWithPreConfiguredSeeds(method abi.Method, s
 	for icr := 0; icr < int(seedsAmountToBeAdded); icr++ {
 		functionSeeds := make([]interface{}, len(method.Inputs))
 		for inputsIdx, input := range method.Inputs {
-			seed, err := s.chooseInputSeeds(input)
-			if err != nil {
-				return nil, err
-			}
-
 			handler, err := solidity.GetTypeHandler(input.Type)
 			if err != nil {
 				return nil, err
 			}
 
-			err = handler.Deserialize(seed)
+			err = handler.LoadSeedsAndChooseOneRandomly(s.cfg.FuzzerConfig.Seeds)
 			if err != nil {
 				return nil, err
 			}
+
 			functionSeeds[inputsIdx] = handler.GetValue()
 		}
 		result[icr+len(seeds)] = functionSeeds
 	}
 	return result, nil
-}
-
-func (s *powerSchedule) chooseInputSeeds(input abi.Argument) (string, error) {
-	handler, err := solidity.GetTypeHandler(input.Type)
-	if err != nil {
-		return "", err
-	}
-	seeds := s.cfg.FuzzerConfig.Seeds[handler.GetType()]
-	return common.RandomChoice(seeds), nil
 }
 
 func deserializeSeedsList(method abi.Method, seedsList [][]string) ([][]interface{}, error) {

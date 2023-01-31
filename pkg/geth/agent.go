@@ -59,7 +59,7 @@ func (d *agent) Send(ctx context.Context, contract *common.Contract, functionNam
 
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(999999)
+	auth.GasLimit = uint64(2000000)
 	auth.GasPrice = gasPrice
 
 	tx, err := boundContract.Transact(auth, functionName, args...)

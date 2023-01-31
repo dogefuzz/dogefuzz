@@ -43,13 +43,13 @@ func (s *SolidityCompilerTestSuite) TestCompileSource() {
 
 // 	folder := "/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts"
 // 	solidityFiles, _ := ioutil.ReadDir(folder)
-// 	for _, file := range solidityFiles {
 
+// 	for _, file := range solidityFiles {
 // 		f, _ := ioutil.ReadFile("/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts/" + file.Name())
 // 		compiler := NewSolidityCompiler("/tmp/dogefuzz/")
 // 		fileWithoutExtension := file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]
 // 		contract, err := compiler.CompileSource(fileWithoutExtension, string(f))
-// 		assert.Nil(s.T(), err)
+// 		assert.Nil(s.T(), err, "error on "+file.Name())
 // 		assert.NotEqual(s.T(), "0x", contract.CompiledCode)
 // 	}
 // }

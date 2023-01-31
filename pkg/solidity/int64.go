@@ -29,8 +29,10 @@ func (h *int64Handler) SetValue(value interface{}) {
 	h.value = value.(int64)
 }
 
-func (h *int64Handler) GetType() common.TypeIdentifier {
-	return INT64
+func (h *int64Handler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
+	addressSeeds := seeds[INT64]
+	chosenSeed := common.RandomChoice(addressSeeds)
+	return h.Deserialize(chosenSeed)
 }
 
 func (h *int64Handler) Serialize() string {

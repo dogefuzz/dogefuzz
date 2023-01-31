@@ -25,8 +25,10 @@ func (h *stringHandler) SetValue(value interface{}) {
 	h.value = value.(string)
 }
 
-func (h *stringHandler) GetType() common.TypeIdentifier {
-	return STRING
+func (h *stringHandler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
+	addressSeeds := seeds[STRING]
+	chosenSeed := common.RandomChoice(addressSeeds)
+	return h.Deserialize(chosenSeed)
 }
 
 func (h *stringHandler) Serialize() string {

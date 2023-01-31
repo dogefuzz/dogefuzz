@@ -77,7 +77,7 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 	assert.Equal(s.T(), fmt.Sprintf("Hello, %s!", arg), results[0].(string))
 }
 
-// func (s *GethDeployerIntegrationTestSuite) TestDecompile_WithBenchmarkContracts() {
+// func (s *GethDeployerIntegrationTestSuite) TestDeploy_WithBenchmarkContracts() {
 
 // 	folder := "/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts"
 // 	solidityFiles, _ := ioutil.ReadDir(folder)
@@ -91,22 +91,22 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 // 		compiler := solc.NewSolidityCompiler("/tmp/dogefuzz/")
 // 		fileWithoutExtension := file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]
 // 		contract, err := compiler.CompileSource(fileWithoutExtension, string(f))
-// 		assert.Nil(s.T(), err)
+// 		assert.Nil(s.T(), err, fmt.Sprintf("error on %s", file.Name()))
 // 		assert.NotEqual(s.T(), "0x", contract.CompiledCode)
 
 // 		parsedAbi, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
-// 		assert.Nil(s.T(), err)
+// 		assert.Nil(s.T(), err, fmt.Sprintf("error on %s", file.Name()))
 
 // 		inputs := make([]interface{}, 0)
 // 		for _, parameter := range parsedAbi.Constructor.Inputs {
 // 			handler, err := solidity.GetTypeHandler(parameter.Type)
-// 			assert.Nil(s.T(), err)
+// 			assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s", file.Name()))
 
 // 			handler.Generate()
 // 			inputs = append(inputs, handler.GetValue())
 // 		}
 // 		address, err := deployer.Deploy(context.Background(), contract, inputs...)
-// 		assert.Nil(s.T(), err)
+// 		assert.Nil(s.T(), err, fmt.Sprintf("error on %s", file.Name()))
 // 		assert.NotEmpty(s.T(), address)
 // 	}
 // }

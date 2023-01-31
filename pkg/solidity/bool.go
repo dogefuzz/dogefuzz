@@ -25,8 +25,10 @@ func (h *boolHandler) SetValue(value interface{}) {
 	h.value = value.(bool)
 }
 
-func (h *boolHandler) GetType() common.TypeIdentifier {
-	return BOOL
+func (h *boolHandler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
+	addressSeeds := seeds[BOOL]
+	chosenSeed := common.RandomChoice(addressSeeds)
+	return h.Deserialize(chosenSeed)
 }
 
 func (h *boolHandler) Serialize() string {

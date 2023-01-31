@@ -27,9 +27,12 @@ func (h *signedBigIntHandler) SetValue(value interface{}) {
 	h.value = value.(*big.Int)
 }
 
-func (h *signedBigIntHandler) GetType() common.TypeIdentifier {
+func (h *signedBigIntHandler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
 	options := []common.TypeIdentifier{INT8, INT16, INT24, INT32, INT40, INT48, INT56, INT64, INT72, INT80, INT88, INT96, INT104, INT112, INT120, INT128, INT136, INT144, INT152, INT160, INT168, INT176, INT184, INT192, INT200, INT208, INT216, INT224, INT232, INT240, INT248, INT256}
-	return options[h.bitSize/8-1]
+	typ := options[h.bitSize/8-1]
+	addressSeeds := seeds[typ]
+	chosenSeed := common.RandomChoice(addressSeeds)
+	return h.Deserialize(chosenSeed)
 }
 
 func (h *signedBigIntHandler) Serialize() string {

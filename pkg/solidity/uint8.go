@@ -29,8 +29,10 @@ func (h *uint8Handler) SetValue(value interface{}) {
 	h.value = value.(uint8)
 }
 
-func (h *uint8Handler) GetType() common.TypeIdentifier {
-	return UINT8
+func (h *uint8Handler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
+	addressSeeds := seeds[UINT8]
+	chosenSeed := common.RandomChoice(addressSeeds)
+	return h.Deserialize(chosenSeed)
 }
 
 func (h *uint8Handler) Serialize() string {

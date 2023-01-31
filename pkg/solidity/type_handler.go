@@ -7,6 +7,17 @@ import (
 )
 
 func GetTypeHandler(typ abi.Type) (interfaces.TypeHandler, error) {
+	if typ.Elem != nil {
+		switch typ.GetType() {
+		case common.SliceT(typ.Elem.GetType()):
+			return NewSliceHandler(typ)
+		case common.ArrayT(typ.Size, typ.Elem.GetType()):
+			return NewArrayHandler(typ.Size, typ)
+		default:
+			return nil, ErrNotImplementedType(typ.GetType())
+		}
+	}
+
 	switch typ.GetType() {
 	case common.BoolT:
 		return NewBoolHandler(), nil
@@ -33,6 +44,13 @@ func GetTypeHandler(typ abi.Type) (interfaces.TypeHandler, error) {
 		return NewSignedBigIntHandler(typ.Size), nil
 	case common.StringT:
 		return NewStringHandler(), nil
+	case common.AddressT:
+		return NewAddressHandler(), nil
+	case common.FixedBytesT(typ.Size):
+		return NewFixedBytesHandler(typ)
+	case common.BytesT:
+		return NewBytesHandler(typ)
+	default:
+		return nil, ErrNotImplementedType(typ.GetType())
 	}
-	return nil, ErrNotImplementedType(typ.GetType())
 }

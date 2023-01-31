@@ -69,4 +69,5 @@ const (
 	INT248  common.TypeIdentifier = "int248"
 	INT256  common.TypeIdentifier = "int256"
 	STRING  common.TypeIdentifier = "string"
+	ADDRESS common.TypeIdentifier = "address"
 )
