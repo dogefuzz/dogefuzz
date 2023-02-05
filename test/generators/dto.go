@@ -36,22 +36,22 @@ func ContractDTOGen() *dto.ContractDTO {
 
 func NewFunctionDTOGen() *dto.NewFunctionDTO {
 	return &dto.NewFunctionDTO{
-		Name:          gofakeit.LetterN(255),
-		NumberOfArgs:  gofakeit.Int64(),
-		Payable:       gofakeit.Bool(),
-		IsConstructor: gofakeit.Bool(),
-		ContractId:    gofakeit.LetterN(255),
+		Name:                    gofakeit.LetterN(255),
+		NumberOfArgs:            gofakeit.Int64(),
+		IsChangingContractState: gofakeit.Bool(),
+		IsConstructor:           gofakeit.Bool(),
+		ContractId:              gofakeit.LetterN(255),
 	}
 }
 
 func FunctionDTOGen() *dto.FunctionDTO {
 	return &dto.FunctionDTO{
-		Id:            gofakeit.LetterN(255),
-		Name:          gofakeit.LetterN(255),
-		NumberOfArgs:  gofakeit.Int64(),
-		Payable:       gofakeit.Bool(),
-		IsConstructor: gofakeit.Bool(),
-		ContractId:    gofakeit.LetterN(255),
+		Id:                      gofakeit.LetterN(255),
+		Name:                    gofakeit.LetterN(255),
+		NumberOfArgs:            gofakeit.Int64(),
+		IsChangingContractState: gofakeit.Bool(),
+		IsConstructor:           gofakeit.Bool(),
+		ContractId:              gofakeit.LetterN(255),
 	}
 }
 

@@ -21,7 +21,7 @@ func NewTransactionsCheckerJob(e Env) *transactionsCheckerJob {
 }
 
 func (j *transactionsCheckerJob) Id() string         { return "transactions-checker" }
-func (j *transactionsCheckerJob) CronConfig() string { return "*/5 * * * *" }
+func (j *transactionsCheckerJob) CronConfig() string { return "*/5 * * * * *" }
 
 func (j *transactionsCheckerJob) Handler() {
 	tasks, err := j.taskService.FindNotFinishedTasksThatDontHaveIncompletedTransactions()

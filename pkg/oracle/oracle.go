@@ -12,12 +12,12 @@ var ErrOracleDoesntExist = errors.New("oracle doesn't exist")
 func GetOracles(oracleNames []common.OracleType) []interfaces.Oracle {
 	oracles := make([]interfaces.Oracle, len(oracleNames))
 
-	for _, oracleName := range oracleNames {
+	for idx, oracleName := range oracleNames {
 		oracle, err := GetOracleFromName(oracleName)
 		if err != nil {
 			continue
 		}
-		oracles = append(oracles, oracle)
+		oracles[idx] = oracle
 	}
 	return oracles
 }

@@ -2,11 +2,14 @@ package listener
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/distance"
+	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -23,6 +26,7 @@ type contractDeployerListener struct {
 	vandalService         interfaces.VandalService
 	contractService       interfaces.ContractService
 	functionService       interfaces.FunctionService
+	transactionService    interfaces.TransactionService
 	contractMapper        interfaces.ContractMapper
 }
 
@@ -37,6 +41,7 @@ func NewContractDeployerListener(e Env) *contractDeployerListener {
 		vandalService:         e.VandalService(),
 		contractService:       e.ContractService(),
 		functionService:       e.FunctionService(),
+		transactionService:    e.TransactionService(),
 		contractMapper:        e.ContractMapper(),
 	}
 }
@@ -50,6 +55,8 @@ func (l *contractDeployerListener) StartListening(ctx context.Context) {
 }
 
 func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.TaskStartEvent) {
+	l.logger.Debug("processing TaskStartEvent...")
+
 	task, err := l.taskService.Get(evt.TaskId)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when retrieving task: %v", err)
@@ -75,7 +82,6 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 	}
 
 	args := make([]interface{}, 0)
-
 	var idx int64
 	for idx = 0; idx < constructor.NumberOfArgs; idx++ {
 		definition := parsedABI.Constructor.Inputs[idx]
@@ -99,9 +105,25 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 		args = append(args, handler.GetValue())
 	}
 
-	_, err = l.gethService.Deploy(ctx, l.contractMapper.MapDTOToCommon(contract), args...)
+	address, tx, err := l.gethService.Deploy(ctx, l.contractMapper.MapDTOToCommon(contract), args...)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when deploying contract: %v", err)
+		return
+	}
+	l.logger.Sugar().Debugf("deploying contract %s at %s", contract.Id, address)
+	contract.Address = address
+
+	transactionDTO := &dto.NewTransactionDTO{
+		Timestamp:      common.Now(),
+		TaskId:         task.Id,
+		FunctionId:     constructor.Id,
+		Inputs:         task.Arguments,
+		Status:         common.TRANSACTION_DONE,
+		BlockchainHash: tx,
+	}
+	_, err = l.transactionService.Create(transactionDTO)
+	if err != nil {
+		l.logger.Sugar().Errorf("an error ocurred when storing contract's deploy transaction: %v", err)
 		return
 	}
 
@@ -111,7 +133,9 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 		return
 	}
 	contract.CFG = *cfg
+	l.logger.Sugar().Debugf("genereting contract's CFG for contract %s", contract.Id)
 	contract.DistanceMap = distance.ComputeDistanceMap(*cfg, l.cfg.FuzzerConfig.CritialInstructions)
+	l.logger.Sugar().Debugf("genereting contract's distance map for contract %s", contract.Id)
 
 	err = l.contractService.Update(contract)
 	if err != nil {
@@ -119,5 +143,6 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 		return
 	}
 
+	l.logger.Info(fmt.Sprintf("requesting new inputs for task %s", task.Id))
 	l.taskInputRequestTopic.Publish(bus.TaskInputRequestEvent{TaskId: task.Id})
 }

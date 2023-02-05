@@ -13,31 +13,31 @@ func NewFunctionMapper() *functionMapper {
 
 func (m *functionMapper) MapNewDTOToEntity(c *dto.NewFunctionDTO) *entities.Function {
 	return &entities.Function{
-		Name:          c.Name,
-		NumberOfArgs:  c.NumberOfArgs,
-		Payable:       c.Payable,
-		IsConstructor: c.IsConstructor,
-		ContractId:    c.ContractId,
+		Name:                    c.Name,
+		NumberOfArgs:            c.NumberOfArgs,
+		IsChangingContractState: c.IsChangingContractState,
+		IsConstructor:           c.IsConstructor,
+		ContractId:              c.ContractId,
 	}
 }
 
 func (m *functionMapper) MapDTOToEntity(c *dto.FunctionDTO) *entities.Function {
 	return &entities.Function{
-		Id:            c.Id,
-		Name:          c.Name,
-		NumberOfArgs:  c.NumberOfArgs,
-		Payable:       c.Payable,
-		IsConstructor: c.IsConstructor,
-		ContractId:    c.ContractId,
+		Id:                      c.Id,
+		Name:                    c.Name,
+		NumberOfArgs:            c.NumberOfArgs,
+		IsChangingContractState: c.IsChangingContractState,
+		IsConstructor:           c.IsConstructor,
+		ContractId:              c.ContractId,
 	}
 }
 
 func (m *functionMapper) MapEntityToDTO(c *entities.Function) *dto.FunctionDTO {
 	return &dto.FunctionDTO{
-		Name:          c.Name,
-		NumberOfArgs:  c.NumberOfArgs,
-		Payable:       c.Payable,
-		IsConstructor: c.IsConstructor,
-		ContractId:    c.ContractId,
+		Name:                    c.Name,
+		NumberOfArgs:            c.NumberOfArgs,
+		IsChangingContractState: c.IsChangingContractState,
+		IsConstructor:           c.IsConstructor,
+		ContractId:              c.ContractId,
 	}
 }

@@ -40,47 +40,47 @@ func NewTasksController(e Env) *tasksController {
 func (ctrl *tasksController) Start(c *gin.Context) {
 	var request dto.StartTaskRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("request failed to be parsed: %s", err.Error())})
 		return
 	}
 
 	var duration time.Duration
 	duration, err := time.ParseDuration(request.Duration)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("duration failed to be parsed: %s", err.Error())})
 		return
 	}
 
 	compiledContract, err := ctrl.solidityCompiler.CompileSource(request.ContractName, request.ContractSource)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("contract failed to be compiled: %s", err.Error())})
 		return
 	}
 
 	parsedABI, err := abi.JSON(strings.NewReader(compiledContract.AbiDefinition))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("contract failed to be parsed: %s", err.Error())})
+		return
+	}
+
+	payableMethods := make([]abi.Method, 0)
+	for _, function := range parsedABI.Methods {
+		if !ctrl.isMethodChangingState(function) {
+			continue
+		}
+		payableMethods = append(payableMethods, function)
+	}
+	if len(payableMethods) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "the provide contract doesn't have methods that changes the ontract's state"})
 		return
 	}
 
 	if len(request.Arguments) > 0 {
-		err = tryValidateArgs(parsedABI, request.Arguments)
+		err = ctrl.tryValidateArgs(parsedABI, request.Arguments)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("args failed to be parsed: %s", err.Error())})
 			return
 		}
-	}
-
-	contractDTO := dto.NewContractDTO{
-		Source:        request.ContractSource,
-		CompiledCode:  compiledContract.CompiledCode,
-		AbiDefinition: compiledContract.AbiDefinition,
-		Name:          compiledContract.Name,
-	}
-	contract, err := ctrl.contractService.Create(&contractDTO)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
 	}
 
 	now := common.Now()
@@ -97,25 +97,38 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 	}
 
+	contractDTO := dto.NewContractDTO{
+		TaskId:        task.Id,
+		Source:        request.ContractSource,
+		CompiledCode:  compiledContract.CompiledCode,
+		AbiDefinition: compiledContract.AbiDefinition,
+		Name:          compiledContract.Name,
+	}
+	contract, err := ctrl.contractService.Create(&contractDTO)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	functionDTO := dto.NewFunctionDTO{
-		Name:          parsedABI.Constructor.Name,
-		NumberOfArgs:  int64(len(parsedABI.Constructor.Inputs)),
-		Payable:       parsedABI.Constructor.Payable,
-		IsConstructor: true,
-		ContractId:    contract.Id,
+		Name:                    parsedABI.Constructor.Name,
+		NumberOfArgs:            int64(len(parsedABI.Constructor.Inputs)),
+		IsChangingContractState: ctrl.isMethodChangingState(parsedABI.Constructor),
+		IsConstructor:           true,
+		ContractId:              contract.Id,
 	}
 	_, err = ctrl.functionService.Create(&functionDTO)
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 	}
 
-	for _, method := range parsedABI.Methods {
+	for _, method := range payableMethods {
 		functionDTO := dto.NewFunctionDTO{
-			Name:          method.Name,
-			NumberOfArgs:  int64(len(method.Inputs)),
-			Payable:       method.Payable,
-			IsConstructor: false,
-			ContractId:    contract.Id,
+			Name:                    method.Name,
+			NumberOfArgs:            int64(len(method.Inputs)),
+			IsChangingContractState: ctrl.isMethodChangingState(method),
+			IsConstructor:           false,
+			ContractId:              contract.Id,
 		}
 		_, err := ctrl.functionService.Create(&functionDTO)
 		if err != nil {
@@ -128,7 +141,7 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	c.JSON(200, dto.StartTaskResponse{TaskId: task.Id})
 }
 
-func tryValidateArgs(parsedABI abi.ABI, args []string) error {
+func (ctrl *tasksController) tryValidateArgs(parsedABI abi.ABI, args []string) error {
 	if len(args) != len(parsedABI.Constructor.Inputs) {
 		return errors.New("invalid number of arguments")
 	}
@@ -147,4 +160,9 @@ func tryValidateArgs(parsedABI abi.ABI, args []string) error {
 		}
 	}
 	return nil
+}
+
+// Reference: https://docs.soliditylang.org/en/v0.8.17/abi-spec.html#json
+func (ctrl *tasksController) isMethodChangingState(method abi.Method) bool {
+	return method.StateMutability == "nonpayable" || method.StateMutability == "payable"
 }

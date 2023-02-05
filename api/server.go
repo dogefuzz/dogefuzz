@@ -5,21 +5,18 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/gin-gonic/gin"
 )
 
 type server struct {
 	server *http.Server
 	router *gin.Engine
-	cfg    *config.Config
-	env    *env
+	env    Env
 }
 
-func NewServer(cfg *config.Config) *server {
+func NewServer(env Env) *server {
 	return &server{
-		cfg:    cfg,
-		env:    NewEnv(cfg),
+		env:    env,
 		router: gin.Default(),
 	}
 }
@@ -27,10 +24,10 @@ func NewServer(cfg *config.Config) *server {
 func (s *server) Start() error {
 	BuildRoutes(s)
 	s.server = &http.Server{
-		Addr:    fmt.Sprintf("0.0.0.0:%d", s.cfg.ServerPort),
+		Addr:    fmt.Sprintf("0.0.0.0:%d", s.env.Config().ServerPort),
 		Handler: s.router,
 	}
-	s.env.Logger().Info(fmt.Sprintf("Running server in 0.0.0.0:%d", s.cfg.ServerPort))
+	s.env.Logger().Info(fmt.Sprintf("running server in 0.0.0.0:%d", s.env.Config().ServerPort))
 
 	go func() {
 		if err := s.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {

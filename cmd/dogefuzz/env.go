@@ -1,7 +1,6 @@
-package api
+package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,6 +9,9 @@ import (
 	"github.com/dogefuzz/dogefuzz/controller"
 	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/data/repo"
+	"github.com/dogefuzz/dogefuzz/fuzz"
+	"github.com/dogefuzz/dogefuzz/job"
+	"github.com/dogefuzz/dogefuzz/listener"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
@@ -27,55 +29,99 @@ type Env interface {
 	DbConnection() interfaces.Connection
 	EventBus() interfaces.EventBus
 	SolidityCompiler() interfaces.SolidityCompiler
+	Deployer() interfaces.Deployer
+	Agent() interfaces.Agent
+
 	ContractMapper() interfaces.ContractMapper
 	TransactionMapper() interfaces.TransactionMapper
 	TaskMapper() interfaces.TaskMapper
 	FunctionMapper() interfaces.FunctionMapper
+
 	TaskRepo() interfaces.TaskRepo
 	TransactionRepo() interfaces.TransactionRepo
 	ContractRepo() interfaces.ContractRepo
 	FunctionRepo() interfaces.FunctionRepo
+
 	ContractService() interfaces.ContractService
 	TransactionService() interfaces.TransactionService
 	TaskService() interfaces.TaskService
 	FunctionService() interfaces.FunctionService
+	GethService() interfaces.GethService
+	VandalService() interfaces.VandalService
+	ReporterService() interfaces.ReporterService
+
 	TasksController() interfaces.TasksController
 	TransactionsController() interfaces.TransactionsController
+
 	InstrumentExecutionTopic() interfaces.Topic[bus.InstrumentExecutionEvent]
 	TaskFinishTopic() interfaces.Topic[bus.TaskFinishEvent]
 	TaskInputRequestTopic() interfaces.Topic[bus.TaskInputRequestEvent]
 	TaskStartTopic() interfaces.Topic[bus.TaskStartEvent]
-	Deployer() interfaces.Deployer
-	Agent() interfaces.Agent
+
+	ContractDeployerListener() interfaces.Listener
+	ExecutionAnalyticsListener() interfaces.Listener
+	FuzzerListener() interfaces.Listener
+	ReporterListener() interfaces.Listener
+
+	TasksCheckerJob() interfaces.CronJob
+	TransactionsCheckerJob() interfaces.CronJob
+
+	FuzzerLeader() interfaces.FuzzerLeader
+	BlackboxFuzzer() interfaces.Fuzzer
+	GreyboxFuzzer() interfaces.Fuzzer
+	DirectedGreyboxFuzzer() interfaces.Fuzzer
+	PowerSchedule() interfaces.PowerSchedule
 }
 
 type env struct {
-	cfg                      *config.Config
-	logger                   *zap.Logger
-	client                   interfaces.HttpClient
-	dbConnection             interfaces.Connection
-	eventBus                 interfaces.EventBus
-	solidityCompiler         interfaces.SolidityCompiler
-	contractMapper           interfaces.ContractMapper
-	transactionMapper        interfaces.TransactionMapper
-	taskMapper               interfaces.TaskMapper
-	functionMapper           interfaces.FunctionMapper
-	taskRepo                 interfaces.TaskRepo
-	transactionRepo          interfaces.TransactionRepo
-	contractRepo             interfaces.ContractRepo
-	functionRepo             interfaces.FunctionRepo
-	contractService          interfaces.ContractService
-	transactionService       interfaces.TransactionService
-	taskService              interfaces.TaskService
-	functionService          interfaces.FunctionService
-	tasksController          interfaces.TasksController
-	transactionsController   interfaces.TransactionsController
+	cfg              *config.Config
+	logger           *zap.Logger
+	client           interfaces.HttpClient
+	dbConnection     interfaces.Connection
+	eventBus         interfaces.EventBus
+	solidityCompiler interfaces.SolidityCompiler
+	deployer         interfaces.Deployer
+	agent            interfaces.Agent
+
+	contractMapper    interfaces.ContractMapper
+	transactionMapper interfaces.TransactionMapper
+	taskMapper        interfaces.TaskMapper
+	functionMapper    interfaces.FunctionMapper
+
+	taskRepo        interfaces.TaskRepo
+	transactionRepo interfaces.TransactionRepo
+	contractRepo    interfaces.ContractRepo
+	functionRepo    interfaces.FunctionRepo
+
+	contractService    interfaces.ContractService
+	transactionService interfaces.TransactionService
+	taskService        interfaces.TaskService
+	functionService    interfaces.FunctionService
+	gethService        interfaces.GethService
+	vandalService      interfaces.VandalService
+	reporterService    interfaces.ReporterService
+
+	tasksController        interfaces.TasksController
+	transactionsController interfaces.TransactionsController
+
 	instrumentExecutionTopic interfaces.Topic[bus.InstrumentExecutionEvent]
 	taskFinishTopic          interfaces.Topic[bus.TaskFinishEvent]
 	taskInputRequestTopic    interfaces.Topic[bus.TaskInputRequestEvent]
 	taskStartTopic           interfaces.Topic[bus.TaskStartEvent]
-	deployer                 interfaces.Deployer
-	agent                    interfaces.Agent
+
+	contractDeployerListener   interfaces.Listener
+	executionAnalyticsListener interfaces.Listener
+	fuzzerListener             interfaces.Listener
+	reporterListener           interfaces.Listener
+
+	tasksCheckerJob        interfaces.CronJob
+	transactionsCheckerJob interfaces.CronJob
+
+	fuzzerLeader          interfaces.FuzzerLeader
+	blackboxFuzzer        interfaces.Fuzzer
+	greyboxFuzzer         interfaces.Fuzzer
+	directedGreyboxFuzzer interfaces.Fuzzer
+	powerSchedule         interfaces.PowerSchedule
 }
 
 func NewEnv(cfg *config.Config) *env {
@@ -120,7 +166,12 @@ func (e *env) DbConnection() interfaces.Connection {
 		dbConnection, err := data.NewConnection(e.cfg, e.logger)
 		if err != nil {
 			e.logger.Error(fmt.Sprintf("Error while initializing database manager: %s", err))
-			return nil
+			panic(err)
+		}
+		err = dbConnection.Migrate()
+		if err != nil {
+			e.logger.Error(fmt.Sprintf("Error while migrating database: %s", err))
+			panic(err)
 		}
 		e.dbConnection = dbConnection
 	}
@@ -139,6 +190,28 @@ func (e *env) SolidityCompiler() interfaces.SolidityCompiler {
 		e.solidityCompiler = solc.NewSolidityCompiler(e.cfg.StorageFolder)
 	}
 	return e.solidityCompiler
+}
+
+func (e *env) Deployer() interfaces.Deployer {
+	if e.deployer == nil {
+		deployer, err := geth.NewDeployer(e.cfg.GethConfig)
+		if err != nil {
+			panic(err)
+		}
+		e.deployer = deployer
+	}
+	return e.deployer
+}
+
+func (e *env) Agent() interfaces.Agent {
+	if e.agent == nil {
+		agent, err := geth.NewAgent(e.cfg.GethConfig)
+		if err != nil {
+			panic(err)
+		}
+		e.agent = agent
+	}
+	return e.agent
 }
 
 func (e *env) ContractMapper() interfaces.ContractMapper {
@@ -225,6 +298,27 @@ func (e *env) FunctionService() interfaces.FunctionService {
 	return e.functionService
 }
 
+func (e *env) GethService() interfaces.GethService {
+	if e.gethService == nil {
+		e.gethService = service.NewGethService(e)
+	}
+	return e.gethService
+}
+
+func (e *env) VandalService() interfaces.VandalService {
+	if e.vandalService == nil {
+		e.vandalService = service.NewVandalService(e)
+	}
+	return e.vandalService
+}
+
+func (e *env) ReporterService() interfaces.ReporterService {
+	if e.reporterService == nil {
+		e.reporterService = service.NewReporterService(e)
+	}
+	return e.reporterService
+}
+
 func (e *env) TasksController() interfaces.TasksController {
 	if e.tasksController == nil {
 		e.tasksController = controller.NewTasksController(e)
@@ -267,46 +361,104 @@ func (e *env) TaskStartTopic() interfaces.Topic[bus.TaskStartEvent] {
 	return e.taskStartTopic
 }
 
-func (e *env) Deployer() interfaces.Deployer {
-	if e.deployer == nil {
-		deployer, err := geth.NewDeployer(e.cfg.GethConfig)
-		if err != nil {
-			panic(err)
-		}
-		e.deployer = deployer
+func (e *env) ContractDeployerListener() interfaces.Listener {
+	if e.contractDeployerListener == nil {
+		e.contractDeployerListener = listener.NewContractDeployerListener(e)
 	}
-	return e.deployer
+	return e.contractDeployerListener
 }
 
-func (e *env) Agent() interfaces.Agent {
-	if e.agent == nil {
-		agent, err := geth.NewAgent(e.cfg.GethConfig)
-		if err != nil {
-			panic(err)
-		}
-		e.agent = agent
+func (e *env) ExecutionAnalyticsListener() interfaces.Listener {
+	if e.executionAnalyticsListener == nil {
+		e.executionAnalyticsListener = listener.NewExecutionAnalyticsListener(e)
 	}
-	return e.agent
+	return e.executionAnalyticsListener
+}
+
+func (e *env) FuzzerListener() interfaces.Listener {
+	if e.fuzzerListener == nil {
+		e.fuzzerListener = listener.NewFuzzerListener(e)
+	}
+	return e.fuzzerListener
+}
+
+func (e *env) ReporterListener() interfaces.Listener {
+	if e.reporterListener == nil {
+		e.reporterListener = listener.NewReporterListener(e)
+	}
+	return e.reporterListener
+}
+
+func (e *env) TasksCheckerJob() interfaces.CronJob {
+	if e.tasksCheckerJob == nil {
+		e.tasksCheckerJob = job.NewTasksCheckerJob(e)
+	}
+	return e.tasksCheckerJob
+}
+
+func (e *env) TransactionsCheckerJob() interfaces.CronJob {
+	if e.transactionsCheckerJob == nil {
+		e.transactionsCheckerJob = job.NewTransactionsCheckerJob(e)
+	}
+	return e.transactionsCheckerJob
+}
+
+func (e *env) FuzzerLeader() interfaces.FuzzerLeader {
+	if e.fuzzerLeader == nil {
+		e.fuzzerLeader = fuzz.NewFuzzerLeader(e)
+	}
+	return e.fuzzerLeader
+}
+
+func (e *env) BlackboxFuzzer() interfaces.Fuzzer {
+	if e.blackboxFuzzer == nil {
+		e.blackboxFuzzer = fuzz.NewBlackboxFuzzer()
+	}
+	return e.blackboxFuzzer
+}
+
+func (e *env) GreyboxFuzzer() interfaces.Fuzzer {
+	if e.greyboxFuzzer == nil {
+		e.greyboxFuzzer = fuzz.NewGreyboxFuzzer(e)
+	}
+	return e.greyboxFuzzer
+}
+
+func (e *env) DirectedGreyboxFuzzer() interfaces.Fuzzer {
+	if e.directedGreyboxFuzzer == nil {
+		e.directedGreyboxFuzzer = fuzz.NewDirectedGreyboxFuzzer(e)
+	}
+	return e.directedGreyboxFuzzer
+}
+
+func (e *env) PowerSchedule() interfaces.PowerSchedule {
+	if e.powerSchedule == nil {
+		e.powerSchedule = fuzz.NewPowerSchedule(e)
+	}
+	return e.powerSchedule
 }
 
 func initLogger() (*zap.Logger, error) {
-	rawJSON := []byte(`{
-		"level": "debug",
-		"encoding": "json",
-		"outputPaths": ["stdout", "/tmp/logs"],
-		"errorOutputPaths": ["stderr"],
-		"encoderConfig": {
-			"messageKey": "message",
-			"levelKey": "level",
-			"levelEncoder": "lowercase"
-		}
-	}`)
+	// rawJSON := []byte(`{
+	// 	"level": "debug",
+	// 	"encoding": "console",
+	// 	"outputPaths": ["stdout", "/tmp/logs"],
+	// 	"errorOutputPaths": ["stderr"],
+	// 	"encoderConfig": {
+	// 		"messageKey": "message",
+	// 		"levelKey": "level",
+	// 		"levelEncoder": "lowercase"
+	// 	}
+	// }`)
 
-	var cfg zap.Config
-	if err := json.Unmarshal(rawJSON, &cfg); err != nil {
-		return nil, err
-	}
-	l, err := cfg.Build()
+	// var cfg zap.Config
+	// if err := json.Unmarshal(rawJSON, &cfg); err != nil {
+	// 	return nil, err
+	// }
+	// l, err := cfg.
+	// 	WithTimestampFormat("2006-01-02 15:04:05.000").
+	// 	Build()
+	l, err := zap.NewDevelopmentConfig().Build()
 	if err != nil {
 		return nil, err
 	}

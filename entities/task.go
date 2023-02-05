@@ -13,8 +13,8 @@ type Task struct {
 	Expiration                     time.Time          `gorm:"not null"`
 	Detectors                      string             `gorm:"not null"`
 	FuzzingType                    common.FuzzingType `gorm:"not null"`
-	AggregatedExecutedInstructions string             `gorm:"not null"`
-	Status                         common.TaskStatus  `gorm:"not null"`
+	AggregatedExecutedInstructions string
+	Status                         common.TaskStatus `gorm:"not null"`
 	Contract                       Contract
 	Transactions                   []Transaction
 }

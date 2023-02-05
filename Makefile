@@ -15,3 +15,6 @@ test.unit.coverage: test.unit
 
 test.integration:
 	go test -tags=integration ./it -v -count=1
+
+start:
+	go run ./cmd/dogefuzz

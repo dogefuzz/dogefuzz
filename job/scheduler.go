@@ -3,39 +3,37 @@ package job
 import (
 	"context"
 
-	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	cron "github.com/robfig/cron/v3"
 )
 
 type scheduler struct {
 	scheduler *cron.Cron
-	cfg       *config.Config
-	env       *env
+	env       Env
 }
 
-func NewJobScheduler(cfg *config.Config) *scheduler {
-	return &scheduler{cfg: cfg, env: NewEnv(cfg)}
+func NewJobScheduler(env Env) *scheduler {
+	return &scheduler{env: env}
 }
 
 func (s *scheduler) Start() {
-	s.scheduler = cron.New()
+	s.scheduler = cron.New(cron.WithSeconds())
 	jobs := s.getAvailableJobs()
-	for _, id := range s.cfg.JobConfig.EnabledJobs {
+	for _, id := range s.env.Config().JobConfig.EnabledJobs {
 		if cronjJob, ok := jobs[id]; ok {
 			s.scheduler.AddFunc(cronjJob.CronConfig(), cronjJob.Handler)
-			s.env.logger.Sugar().Infof("starting job %s", id)
+			s.env.Logger().Sugar().Infof("starting job %s", id)
 		} else {
-			s.env.logger.Sugar().Warnf("ignore job %s because it's not implemented", id)
+			s.env.Logger().Sugar().Warnf("ignore job %s because it's not implemented", id)
 		}
 	}
 
-	s.env.logger.Info("starting job scheduler")
+	s.env.Logger().Info("starting job scheduler")
 	go s.scheduler.Run()
 }
 
 func (s *scheduler) Shutdown() context.Context {
-	s.env.logger.Info("stoping job scheduler")
+	s.env.Logger().Info("stoping job scheduler")
 	return s.scheduler.Stop()
 }
 

@@ -14,10 +14,13 @@ func NewBlackboxFuzzer() *blackboxFuzzer {
 
 func (f *blackboxFuzzer) GenerateInput(method abi.Method) ([]interface{}, error) {
 	args := make([]interface{}, len(method.Inputs))
-	for _, input := range method.Inputs {
-		handler, _ := solidity.GetTypeHandler(input.Type)
+	for idx, input := range method.Inputs {
+		handler, err := solidity.GetTypeHandler(input.Type)
+		if err != nil {
+			return nil, err
+		}
 		handler.Generate()
-		args = append(args, handler.GetValue())
+		args[idx] = handler.GetValue()
 	}
 	return args, nil
 }

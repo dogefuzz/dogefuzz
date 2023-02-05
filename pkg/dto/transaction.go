@@ -7,11 +7,12 @@ import (
 )
 
 type NewTransactionDTO struct {
-	Timestamp  time.Time                `json:"timestamp"`
-	TaskId     string                   `json:"taskId"`
-	FunctionId string                   `json:"functionId"`
-	Inputs     []string                 `json:"inputs"`
-	Status     common.TransactionStatus `json:"status"`
+	Timestamp      time.Time                `json:"timestamp"`
+	BlockchainHash string                   `json:"blockchainHash"`
+	TaskId         string                   `json:"taskId"`
+	FunctionId     string                   `json:"functionId"`
+	Inputs         []string                 `json:"inputs"`
+	Status         common.TransactionStatus `json:"status"`
 }
 
 type TransactionDTO struct {

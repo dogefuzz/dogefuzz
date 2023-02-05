@@ -52,6 +52,8 @@ func (l *fuzzerListener) StartListening(ctx context.Context) {
 }
 
 func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequestEvent) {
+	l.logger.Debug("processing TaskInputRequestEvent...")
+
 	task, err := l.taskService.Get(evt.TaskId)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when retrieving task: %v", err)
@@ -88,16 +90,16 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 		return
 	}
 
+	abiFunction := abiDefinition.Methods[chosenFunction.Name]
 	transactionsDTO := make([]*dto.NewTransactionDTO, l.cfg.FuzzerConfig.BatchSize)
 	for idx := 0; idx < l.cfg.FuzzerConfig.BatchSize; idx++ {
-		inputs, err := fuzzer.GenerateInput(abiDefinition.Methods[chosenFunction.Name])
+		inputs, err := fuzzer.GenerateInput(abiFunction)
 		if err != nil {
 			l.logger.Sugar().Errorf("an error ocurred when generating inputs: %v", err)
 			return
 		}
 
 		serializedInputs := make([]string, len(inputs))
-		abiFunction := abiDefinition.Methods[chosenFunction.Name]
 		for idx := 0; idx < len(inputs); idx++ {
 			typeHandler, err := solidity.GetTypeHandler(abiFunction.Inputs[idx].Type)
 			if err != nil {
@@ -127,7 +129,6 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 	transactionsByTransactionId := make(map[string]*dto.TransactionDTO)
 	for _, tx := range transactions {
 		deserializedInputs := make([]interface{}, len(tx.Inputs))
-		abiFunction := abiDefinition.Methods[chosenFunction.Name]
 		for idx := 0; idx < len(tx.Inputs); idx++ {
 			typeHandler, err := solidity.GetTypeHandler(abiFunction.Inputs[idx].Type)
 			if err != nil {
@@ -168,14 +169,7 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 }
 
 func chooseFunction(functions []*dto.FunctionDTO) *dto.FunctionDTO {
-	payableFunctions := make([]*dto.FunctionDTO, len(functions))
-	for idx, function := range payableFunctions {
-		if !function.Payable {
-			continue
-		}
-		payableFunctions[idx] = function
-	}
 	rand.Seed(common.Now().Unix())
 	idx := rand.Intn(len(functions))
-	return payableFunctions[idx]
+	return functions[idx]
 }

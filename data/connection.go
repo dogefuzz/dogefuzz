@@ -18,8 +18,8 @@ type connection struct {
 }
 
 func NewConnection(cfg *config.Config, logger *zap.Logger) (*connection, error) {
-	logger.Info(fmt.Sprintf("Initializing database in \"%s\" file", cfg.DatabaseName))
-	db, err := gorm.Open(sqlite.Open(cfg.DatabaseName), &gorm.Config{})
+	logger.Info(fmt.Sprintf("Initializing database in \"%s.db\" file", cfg.DatabaseName))
+	db, err := gorm.Open(sqlite.Open(fmt.Sprintf("%s.db", cfg.DatabaseName)), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func NewConnection(cfg *config.Config, logger *zap.Logger) (*connection, error) 
 }
 
 func (m *connection) Clean() error {
-	m.logger.Info(fmt.Sprintf("Cleaning \"%s\" database file", m.databaseName))
+	m.logger.Info(fmt.Sprintf("Cleaning \"%s.db\" database file", m.databaseName))
 	return os.Remove(m.databaseName)
 }
 

@@ -25,19 +25,21 @@ func main() {
 		panic(err)
 	}
 
+	env := NewEnv(cfg)
+
 	// Run server
-	server := api.NewServer(cfg)
+	server := api.NewServer(env)
 	if err = server.Start(); err != nil {
 		log.Fatal("Couldn't start server")
 		panic(err)
 	}
 
 	// Run job scheduler
-	scheduler := job.NewJobScheduler(cfg)
+	scheduler := job.NewJobScheduler(env)
 	scheduler.Start()
 
 	// Run listener manager
-	listenerManager := listener.NewManager(cfg)
+	listenerManager := listener.NewManager(env)
 	listenerManager.Start()
 
 	waitForInterrupt(server, scheduler, listenerManager)

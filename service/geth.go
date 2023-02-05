@@ -22,13 +22,13 @@ func NewGethService(e Env) *gethService {
 	}
 }
 
-func (s *gethService) Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error) {
-	address, err := s.deployer.Deploy(ctx, contract, args...)
+func (s *gethService) Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, string, error) {
+	address, tx, err := s.deployer.Deploy(ctx, contract, args...)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	s.logger.Sugar().Infof("deploying contract %s at address %s", contract.Name, address)
-	return address, nil
+	return address, tx, nil
 }
 
 func (s *gethService) BatchCall(
@@ -39,13 +39,26 @@ func (s *gethService) BatchCall(
 ) (map[string]string, map[string]error) {
 	hashesByTransactionId := make(map[string]string)
 	errorsByTransactionId := make(map[string]error)
+
+	nonce, err := s.agent.GetNonce(ctx)
+	if err != nil {
+		for transactionId := range inputsByTransactionId {
+			errorsByTransactionId[transactionId] = err
+		}
+	}
+
 	for transactionId, inputs := range inputsByTransactionId {
-		hash, err := s.agent.Send(ctx, contract, functionName, inputs)
+
+		hash, err := s.agent.Send(ctx, nonce, contract, functionName, inputs...)
 		if err != nil {
 			errorsByTransactionId[transactionId] = err
+			nonce++
 			continue
 		}
 		hashesByTransactionId[transactionId] = hash
+
+		// Update nonce
+		nonce++
 	}
 
 	return hashesByTransactionId, errorsByTransactionId

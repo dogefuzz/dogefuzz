@@ -59,15 +59,19 @@ contract HelloWorld {
 	contract, err := compiler.CompileSource("HelloWorld", solidityFile)
 	assert.Nil(s.T(), err)
 
-	address, err := deployer.Deploy(context.Background(), contract, gofakeit.Word())
+	address, tx, err := deployer.Deploy(context.Background(), contract, gofakeit.Word())
 	assert.Nil(s.T(), err)
 	assert.NotEmpty(s.T(), address)
+	assert.NotEmpty(s.T(), tx)
 
 	agent, err := NewAgent(it.GETH_CONFIG)
 	assert.Nil(s.T(), err)
 
+	nonce, err := agent.GetNonce(context.Background())
+	assert.Nil(s.T(), err)
+
 	newWord := gofakeit.Word()
-	tx, err := agent.Send(context.Background(), contract, "setName", newWord)
+	tx, err = agent.Send(context.Background(), nonce, contract, "setName", newWord)
 	assert.Nil(s.T(), err)
 
 	client, err := ethclient.Dial(it.GETH_CONFIG.NodeAddress)
@@ -146,7 +150,10 @@ contract HelloWorld {
 // 				inputs = append(inputs, handler.GetValue())
 // 			}
 
-// 			tx, err := agent.Send(context.Background(), contract, method.Name, inputs...)
+// 			nonce, err := agent.GetNonce(context.Background())
+// 			assert.Nil(s.T(), err)
+
+// 			tx, err := agent.Send(context.Background(), nonce, contract, method.Name, inputs...)
 // 			assert.NotEmpty(s.T(), tx, fmt.Sprintf("error on contract %s in method %s", file.Name(), method.Name))
 // 			assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s in method %s", file.Name(), method.Name))
 

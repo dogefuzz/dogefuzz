@@ -11,7 +11,7 @@ type DeployerMock struct {
 	mock.Mock
 }
 
-func (m *DeployerMock) Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error) {
+func (m *DeployerMock) Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, string, error) {
 	arguments := make([]interface{}, 0)
 	arguments = append(arguments, ctx)
 	arguments = append(arguments, contract)
@@ -19,5 +19,5 @@ func (m *DeployerMock) Deploy(ctx context.Context, contract *common.Contract, ar
 		arguments = append(arguments, args...)
 	}
 	mockArgs := m.Called(arguments...)
-	return mockArgs.Get(0).(string), mockArgs.Error(1)
+	return mockArgs.Get(0).(string), mockArgs.Get(1).(string), mockArgs.Error(2)
 }

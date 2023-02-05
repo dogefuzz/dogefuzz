@@ -47,6 +47,15 @@ func (s *transactionService) Update(transaction *dto.TransactionDTO) error {
 	return nil
 }
 
+func (s *transactionService) Create(transaction *dto.NewTransactionDTO) (*dto.TransactionDTO, error) {
+	entity := s.transactionMapper.MapNewDTOToEntity(transaction)
+	err := s.transactionRepo.Create(s.connection.GetDB(), entity)
+	if err != nil {
+		return nil, err
+	}
+	return s.transactionMapper.MapEntityToDTO(entity), nil
+}
+
 func (s *transactionService) BulkCreate(newTransactions []*dto.NewTransactionDTO) ([]*dto.TransactionDTO, error) {
 	tx := s.connection.GetDB().Begin()
 	trasactions := make([]*dto.TransactionDTO, len(newTransactions))
@@ -77,6 +86,7 @@ func (s *transactionService) BulkUpdate(updatedTransactions []*dto.TransactionDT
 			return err
 		}
 	}
+	tx.Commit()
 	return nil
 }
 

@@ -9,7 +9,7 @@ import (
 type Transaction struct {
 	Id                   string    `gorm:"primaryKey"`
 	Timestamp            time.Time `gorm:"not null"`
-	BlockchainHash       string    `gorm:"index;unique;not null"`
+	BlockchainHash       string    `gorm:"index"`
 	TaskId               string    `gorm:"not null"`
 	FunctionId           string    `gorm:"not null"`
 	Inputs               string    `gorm:"not null"`

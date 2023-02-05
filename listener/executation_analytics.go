@@ -38,6 +38,8 @@ func (l *executionAnalyticsListener) StartListening(ctx context.Context) {
 }
 
 func (l *executionAnalyticsListener) processEvent(ctx context.Context, evt bus.InstrumentExecutionEvent) {
+	l.logger.Debug("processing InstrumentExecutionEvent...")
+
 	transaction, err := l.transactionService.Get(evt.TransactionId)
 	if err != nil {
 		l.logger.Sugar().Errorf("transaction could not be retrieved: %v", err)
@@ -64,6 +66,8 @@ func (l *executionAnalyticsListener) processEvent(ctx context.Context, evt bus.I
 		l.logger.Sugar().Errorf("transaction could not be saved: %v", err)
 		return
 	}
+	l.logger.Sugar().Debugf("transaction %s has achieved additional %d coverage", transaction.Id, transaction.DeltaCoverage)
+	l.logger.Sugar().Debugf("transaction %s has reduce distance in %d", transaction.Id, transaction.DeltaMinDistance)
 
 	task.AggregatedExecutedInstructions = common.MergeSortedSlices(transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
 	err = l.taskService.Update(task)

@@ -51,7 +51,7 @@ func (s *vandalService) GetCFG(ctx context.Context, contract *common.Contract) (
 }
 
 func (s *vandalService) getClient() interfaces.VandalClient {
-	if s.client != nil {
+	if s.client == nil {
 		s.client = vandal.NewVandalClient(s.cfg.Endpoint)
 	}
 	return s.client

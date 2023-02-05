@@ -34,18 +34,15 @@ func NewAgent(cfg config.GethConfig) (*agent, error) {
 	return &agent{client, wallet, cfg}, nil
 }
 
-func (d *agent) Send(ctx context.Context, contract *common.Contract, functionName string, args ...interface{}) (string, error) {
+func (d *agent) Send(ctx context.Context, nonce uint64, contract *common.Contract, functionName string, args ...interface{}) (string, error) {
+	_ = nonce
+
 	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 	if err != nil {
 		return "", err
 	}
 
 	boundContract := bind.NewBoundContract(gethcommon.HexToAddress(contract.Address), parsedABI, d.client, d.client, d.client)
-
-	nonce, err := d.client.PendingNonceAt(ctx, d.wallet.GetAddress())
-	if err != nil {
-		return "", err
-	}
 
 	gasPrice, err := d.client.SuggestGasPrice(ctx)
 	if err != nil {
@@ -66,5 +63,14 @@ func (d *agent) Send(ctx context.Context, contract *common.Contract, functionNam
 	if err != nil {
 		return "", err
 	}
+
 	return tx.Hash().Hex(), nil
+}
+
+func (a *agent) GetNonce(ctx context.Context) (uint64, error) {
+	nonce, err := a.client.PendingNonceAt(ctx, a.wallet.GetAddress())
+	if err != nil {
+		return 0, err
+	}
+	return nonce, err
 }

@@ -45,6 +45,8 @@ func (l *reporterListener) StartListening(ctx context.Context) {
 }
 
 func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishEvent) {
+	l.logger.Debug("processing TaskFinishEvent...")
+
 	task, err := l.taskService.Get(evt.TaskId)
 	if err != nil {
 		l.logger.Sugar().Errorf("task could not be retrieved: %v", err)

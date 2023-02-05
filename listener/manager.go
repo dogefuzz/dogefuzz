@@ -3,18 +3,16 @@ package listener
 import (
 	"context"
 
-	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
 
 type manager struct {
-	cfg    *config.Config
-	env    *env
+	env    Env
 	cancel context.CancelFunc
 }
 
-func NewManager(cfg *config.Config) *manager {
-	return &manager{cfg: cfg, env: NewEnv(cfg)}
+func NewManager(env Env) *manager {
+	return &manager{env: env}
 }
 
 func (m *manager) Start() {
@@ -22,12 +20,12 @@ func (m *manager) Start() {
 	m.cancel = cancel
 
 	listeners := m.getAvailableListeners()
-	for _, id := range m.cfg.EventConfig.EnabledListeners {
+	for _, id := range m.env.Config().EventConfig.EnabledListeners {
 		if listener, ok := listeners[id]; ok {
 			go listener.StartListening(ctx)
-			m.env.logger.Sugar().Infof("starting listener %s", id)
+			m.env.Logger().Sugar().Infof("starting listener %s", id)
 		} else {
-			m.env.logger.Sugar().Warnf("ignore listener %s because it's not implemented", id)
+			m.env.Logger().Sugar().Warnf("ignore listener %s because it's not implemented", id)
 		}
 	}
 }

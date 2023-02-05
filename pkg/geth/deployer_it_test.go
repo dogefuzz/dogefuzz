@@ -34,9 +34,10 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 	contract, err := compiler.CompileSource("HelloWorld", VALID_SOLIDITY_FILE_WITH_NO_CONSTRUCTOR)
 	assert.Nil(s.T(), err)
 
-	address, err := deployer.Deploy(context.Background(), contract)
+	address, tx, err := deployer.Deploy(context.Background(), contract)
 	assert.Nil(s.T(), err)
 	assert.NotEmpty(s.T(), address)
+	assert.NotEmpty(s.T(), tx)
 
 	client, err := ethclient.Dial(it.GETH_CONFIG.NodeAddress)
 	assert.Nil(s.T(), err)
@@ -60,9 +61,10 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 	assert.Nil(s.T(), err)
 
 	arg := gofakeit.Word()
-	address, err := deployer.Deploy(context.Background(), contract, arg)
+	address, tx, err := deployer.Deploy(context.Background(), contract, arg)
 	assert.Nil(s.T(), err)
 	assert.NotEmpty(s.T(), address)
+	assert.NotEmpty(s.T(), tx)
 
 	client, err := ethclient.Dial(it.GETH_CONFIG.NodeAddress)
 	assert.Nil(s.T(), err)
@@ -105,9 +107,10 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 // 			handler.Generate()
 // 			inputs = append(inputs, handler.GetValue())
 // 		}
-// 		address, err := deployer.Deploy(context.Background(), contract, inputs...)
+// 		address, tx, err := deployer.Deploy(context.Background(), contract, inputs...)
 // 		assert.Nil(s.T(), err, fmt.Sprintf("error on %s", file.Name()))
 // 		assert.NotEmpty(s.T(), address)
+// 		assert.NotEmpty(s.T(), tx)
 // 	}
 // }
 

@@ -22,7 +22,7 @@ type FunctionService interface {
 }
 
 type GethService interface {
-	Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error)
+	Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, string, error)
 	BatchCall(ctx context.Context, contract *common.Contract, functionName string, inputsByTransactionId map[string][]interface{}) (map[string]string, map[string]error)
 }
 
@@ -40,6 +40,7 @@ type TaskService interface {
 
 type TransactionService interface {
 	Get(transactionId string) (*dto.TransactionDTO, error)
+	Create(transaction *dto.NewTransactionDTO) (*dto.TransactionDTO, error)
 	Update(transaction *dto.TransactionDTO) error
 	BulkCreate(newTransactions []*dto.NewTransactionDTO) ([]*dto.TransactionDTO, error)
 	BulkUpdate(updatedTransactions []*dto.TransactionDTO) error

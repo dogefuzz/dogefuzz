@@ -39,11 +39,13 @@ func (s *GethServiceTestSuite) TestDeploy_ShouldReturnAddress_WhenProvideNoArgsA
 	contract := generators.CommonContractGen()
 	ctx := context.Background()
 	expectedAddress := generators.SmartContractGen()
-	s.deployerMock.On("Deploy", ctx, contract).Return(expectedAddress, nil)
+	expectedTx := gofakeit.LetterN(20)
+	s.deployerMock.On("Deploy", ctx, contract).Return(expectedAddress, expectedTx, nil)
 
-	address, err := contractService.Deploy(context.Background(), contract)
+	address, tx, err := contractService.Deploy(context.Background(), contract)
 
 	assert.Equal(s.T(), expectedAddress, address)
+	assert.Equal(s.T(), expectedTx, tx)
 	assert.Nil(s.T(), err)
 }
 
@@ -51,11 +53,12 @@ func (s *GethServiceTestSuite) TestDeploy_ShouldReturnError_WhenProvideNoArgsAnd
 	contractService := NewGethService(s.env)
 	contract := generators.CommonContractGen()
 	expectedError := errors.New("expected Error")
-	s.deployerMock.On("Deploy", context.Background(), contract).Return("", expectedError)
+	s.deployerMock.On("Deploy", context.Background(), contract).Return("", "", expectedError)
 
-	address, err := contractService.Deploy(context.Background(), contract)
+	address, tx, err := contractService.Deploy(context.Background(), contract)
 
 	assert.Empty(s.T(), address)
+	assert.Empty(s.T(), tx)
 	assert.ErrorIs(s.T(), expectedError, err)
 }
 
@@ -66,26 +69,28 @@ func (s *GethServiceTestSuite) TestDeploy_ShouldReturnAddress_WhenProvideMultipl
 	contract := generators.CommonContractGen()
 	ctx := context.Background()
 	expectedAddress := generators.SmartContractGen()
-	s.deployerMock.On("Deploy", packArgsToVariadicFuncParameters(ctx, contract, args)...).Return(expectedAddress, nil)
+	expectedTx := gofakeit.LetterN(20)
+	s.deployerMock.On("Deploy", packArgsToVariadicFuncParameters(ctx, contract, args)...).Return(expectedAddress, expectedTx, nil)
 
-	address, err := contractService.Deploy(ctx, contract, args...)
+	address, tx, err := contractService.Deploy(ctx, contract, args...)
 
+	assert.Equal(s.T(), expectedTx, tx)
 	assert.Equal(s.T(), expectedAddress, address)
 	assert.Nil(s.T(), err)
 }
 
 func (s *GethServiceTestSuite) TestDeploy_ShouldReturnError_WhenProvideMultipleArgsAndOccurFailureInDeployment() {
-
 	contractService := NewGethService(s.env)
 	args := make([]interface{}, 10)
 	gofakeit.Slice(&args)
 	contract := generators.CommonContractGen()
 	ctx := context.Background()
 	expectedError := errors.New("expected Error")
-	s.deployerMock.On("Deploy", packArgsToVariadicFuncParameters(ctx, contract, args)...).Return("", expectedError)
+	s.deployerMock.On("Deploy", packArgsToVariadicFuncParameters(ctx, contract, args)...).Return("", "", expectedError)
 
-	address, err := contractService.Deploy(ctx, contract, args...)
+	address, tx, err := contractService.Deploy(ctx, contract, args...)
 
 	assert.Empty(s.T(), address)
+	assert.Empty(s.T(), tx)
 	assert.ErrorIs(s.T(), expectedError, err)
 }

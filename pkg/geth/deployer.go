@@ -38,25 +38,25 @@ func NewDeployer(cfg config.GethConfig) (*deployer, error) {
 	return &deployer{client, wallet, cfg}, nil
 }
 
-func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, error) {
+func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, string, error) {
 	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	nonce, err := d.client.PendingNonceAt(ctx, d.wallet.GetAddress())
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	gasPrice, err := d.client.SuggestGasPrice(ctx)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	auth, err := bind.NewKeyedTransactorWithChainID(d.wallet.GetPrivateKey(), big.NewInt(d.cfg.ChainID))
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	auth.Nonce = big.NewInt(int64(nonce))
@@ -66,7 +66,7 @@ func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args .
 
 	_, tx, _, err := bind.DeployContract(auth, parsedABI, gethcommon.FromHex(contract.CompiledCode), d.client, args...)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	var receipt *types.Receipt
@@ -74,14 +74,14 @@ func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args .
 		receipt, err = d.client.TransactionReceipt(ctx, tx.Hash())
 		if err != nil {
 			if err != ethereum.NotFound {
-				return "", err
+				return "", "", err
 			}
 		} else {
 			break
 		}
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(100 * time.Microsecond)
 	}
 	contract.Address = receipt.ContractAddress.Hex()
-	return receipt.ContractAddress.Hex(), nil
+	return receipt.ContractAddress.Hex(), tx.Hash().Hex(), nil
 }

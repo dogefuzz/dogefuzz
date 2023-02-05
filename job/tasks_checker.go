@@ -2,6 +2,7 @@ package job
 
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
@@ -21,13 +22,22 @@ func NewTasksCheckerJob(e Env) *tasksCheckerJob {
 }
 
 func (j *tasksCheckerJob) Id() string         { return "tasks-checker" }
-func (j *tasksCheckerJob) CronConfig() string { return "*/5 * * * *" }
+func (j *tasksCheckerJob) CronConfig() string { return "*/5 * * * * *" }
 
 func (j *tasksCheckerJob) Handler() {
 	tasks, err := j.taskService.FindNotFinishedAndExpired()
 	if err != nil {
 		j.logger.Sugar().Errorf("an error occured when retrieving tasks to be finished: %v", err)
 		return
+	}
+
+	for _, task := range tasks {
+		task.Status = common.TASK_DONE
+		err = j.taskService.Update(task)
+		if err != nil {
+			j.logger.Sugar().Errorf("an error occured when storing completed tasks to be finished: %v", err)
+			return
+		}
 	}
 
 	for _, task := range tasks {
