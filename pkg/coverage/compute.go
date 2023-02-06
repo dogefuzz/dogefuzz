@@ -1,8 +1,10 @@
 package coverage
 
-import "github.com/dogefuzz/dogefuzz/pkg/common"
+import (
+	"github.com/dogefuzz/dogefuzz/pkg/common"
+)
 
-func ComputeDeltaCoverage(cfg common.CFG, instructionsExecutedInTransaction []string, instructionsExecutedInTask []string) int64 {
+func ComputeDeltaCoverage(cfg common.CFG, instructionsExecutedInTransaction []string, instructionsExecutedInTask []string) uint64 {
 	currentCoverage := ComputeCoverage(cfg, instructionsExecutedInTask)
 	mergedInstructions := common.MergeSortedSlices(instructionsExecutedInTask, instructionsExecutedInTransaction)
 	newCoverage := ComputeCoverage(cfg, mergedInstructions)
@@ -12,17 +14,23 @@ func ComputeDeltaCoverage(cfg common.CFG, instructionsExecutedInTransaction []st
 	return newCoverage - currentCoverage
 }
 
-func ComputeCoverage(cfg common.CFG, instructions []string) int64 {
+func ComputeCoverage(cfg common.CFG, instructions []string) uint64 {
+	if len(instructions) == 0 {
+		return 0
+	}
 	edgesPCs := cfg.GetEdgesPCs()
-	instructionsSet := common.NewSet[string]()
+	instructionsSet := common.NewSet[uint64]()
 	for _, instruction := range instructions {
-		instructionsSet.Add(instruction)
+		instructionAsUint := common.MustConvertHexadecimalToBigInt(instruction).Uint64()
+		instructionsSet.Add(instructionAsUint)
 	}
 
 	coverageCount := 0
 	for _, pc := range edgesPCs {
-		instructionsSet.Has(pc)
-		coverageCount++
+		pcAsUint := common.MustConvertHexadecimalToBigInt(pc).Uint64()
+		if instructionsSet.Has(pcAsUint) {
+			coverageCount++
+		}
 	}
-	return int64(coverageCount)
+	return uint64(coverageCount)
 }

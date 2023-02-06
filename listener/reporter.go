@@ -96,25 +96,25 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 }
 
 func (l *reporterListener) computeCoverageByTime(cfg common.CFG, transactions []*dto.TransactionDTO) common.TimeSeriesData {
-	return l.computeTimeseriesFromTransactions(transactions, func(aggregatedInstructions []string) int64 {
+	return l.computeTimeseriesFromTransactions(transactions, func(aggregatedInstructions []string) uint64 {
 		return coverage.ComputeCoverage(cfg, aggregatedInstructions)
 	})
 }
 
 func (l *reporterListener) computeMinDistanceByTime(distanceMap common.DistanceMap, transactions []*dto.TransactionDTO) common.TimeSeriesData {
-	return l.computeTimeseriesFromTransactions(transactions, func(aggregatedInstructions []string) int64 {
+	return l.computeTimeseriesFromTransactions(transactions, func(aggregatedInstructions []string) uint64 {
 		return distance.ComputeMinDistance(distanceMap, aggregatedInstructions)
 	})
 }
 
-func (l *reporterListener) computeTimeseriesFromTransactions(transactions []*dto.TransactionDTO, computeHandler func([]string) int64) common.TimeSeriesData {
+func (l *reporterListener) computeTimeseriesFromTransactions(transactions []*dto.TransactionDTO, computeHandler func([]string) uint64) common.TimeSeriesData {
 	sort.SliceStable(transactions, func(i, j int) bool {
 		return transactions[i].Timestamp.Before(transactions[j].Timestamp)
 	})
 
 	result := common.TimeSeriesData{
 		X: make([]time.Time, 0),
-		Y: make([]int64, 0),
+		Y: make([]uint64, 0),
 	}
 	aggregatedExecutedInstructions := make([]string, 0)
 	for _, tx := range transactions {

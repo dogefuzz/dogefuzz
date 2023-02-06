@@ -11,9 +11,9 @@ func ComputeDistanceMap(cfg common.CFG, targetInstructions []string) common.Dist
 	reversedCFG := cfg.GetReverseGraph()
 	distanceMap := make(common.DistanceMap)
 	for cfgBlockPC := range cfg.Graph {
-		distanceMap[cfgBlockPC] = make(map[string]int64)
+		distanceMap[cfgBlockPC] = make(map[string]uint64)
 		for _, targetBlock := range targetBlocks {
-			distanceMap[cfgBlockPC][targetBlock] = math.MaxInt64
+			distanceMap[cfgBlockPC][targetBlock] = math.MaxUint64
 		}
 	}
 

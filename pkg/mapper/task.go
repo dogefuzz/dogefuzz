@@ -39,14 +39,29 @@ func (m *taskMapper) MapDTOToEntity(c *dto.TaskDTO) *entities.Task {
 }
 
 func (m *taskMapper) MapEntityToDTO(c *entities.Task) *dto.TaskDTO {
+	var arguments []string
+	if c.Arguments != "" {
+		arguments = strings.Split(c.Arguments, ";")
+	}
+
+	var detectors []common.OracleType
+	if c.Detectors != "" {
+		detectors = common.SplitOracleTypeString(c.Detectors)
+	}
+
+	var aggregatedExecutedInstructions []string
+	if c.AggregatedExecutedInstructions != "" {
+		aggregatedExecutedInstructions = strings.Split(c.AggregatedExecutedInstructions, ";")
+	}
+
 	return &dto.TaskDTO{
 		Id:                             c.Id,
-		Arguments:                      strings.Split(c.Arguments, ";"),
+		Arguments:                      arguments,
 		StartTime:                      c.StartTime,
 		Expiration:                     c.Expiration,
-		Detectors:                      common.SplitOracleTypeString(c.Detectors),
+		Detectors:                      detectors,
 		FuzzingType:                    c.FuzzingType,
-		AggregatedExecutedInstructions: strings.Split(c.AggregatedExecutedInstructions, ";"),
+		AggregatedExecutedInstructions: aggregatedExecutedInstructions,
 		Status:                         c.Status,
 	}
 }

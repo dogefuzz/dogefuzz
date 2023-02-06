@@ -15,7 +15,7 @@ type Transaction struct {
 	Inputs               string    `gorm:"not null"`
 	DetectedWeaknesses   string
 	ExecutedInstructions string
-	DeltaCoverage        int64
-	DeltaMinDistance     int64
+	DeltaCoverage        uint64
+	DeltaMinDistance     uint64
 	Status               common.TransactionStatus `gorm:"not null"`
 }

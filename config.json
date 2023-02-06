@@ -11,7 +11,7 @@
     "agentPrivateKeyHex": "39a7089e3f7e093b900bc8e98e6e5cba4639cd04d3e944ce1ddd2ca1595b7b87"
   },
   "fuzzer": {
-    "criticalInstructions": [],
+    "criticalInstructions": ["CALL", "SELFDESTRUCT", "CALLCODE", "DELEGATECALL"],
     "batchSize": 10,
     "seedsSize": 10,
     "seeds": {

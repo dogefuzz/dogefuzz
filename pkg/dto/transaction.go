@@ -24,8 +24,8 @@ type TransactionDTO struct {
 	Inputs               []string                 `json:"inputs"`
 	DetectedWeaknesses   []string                 `json:"detectedWeaknesses"`
 	ExecutedInstructions []string                 `json:"executedInstructions"`
-	DeltaCoverage        int64                    `json:"deltaCoverage"`
-	DeltaMinDistance     int64                    `json:"deltaMinDistance"`
+	DeltaCoverage        uint64                   `json:"deltaCoverage"`
+	DeltaMinDistance     uint64                   `json:"deltaMinDistance"`
 	Status               common.TransactionStatus `json:"status"`
 }
 

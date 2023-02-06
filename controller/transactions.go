@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"net/http"
 	"strconv"
@@ -106,8 +107,8 @@ func (ctrl *transactionsController) StoreTransactionExecution(c *gin.Context) {
 	}
 
 	executedInstructions := make([]string, len(request.Instructions))
-	for _, instructionPC := range request.Instructions {
-		executedInstructions = append(executedInstructions, strconv.FormatUint(instructionPC, 16))
+	for idx, instructionPC := range request.Instructions {
+		executedInstructions[idx] = fmt.Sprintf("0x%s", strconv.FormatUint(instructionPC, 16))
 	}
 	transaction.ExecutedInstructions = executedInstructions
 

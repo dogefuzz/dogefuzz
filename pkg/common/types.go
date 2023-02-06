@@ -62,7 +62,7 @@ const (
 	TIMESTAMP_DEPENDENCY_ORACLE OracleType = "timestamp-dependency"
 )
 
-type DistanceMap map[string]map[string]int64 // blockPC => instruction => distance
+type DistanceMap map[string]map[string]uint64 // blockPC => instruction => distance
 
 type PowerScheduleStrategy string
 
@@ -74,9 +74,9 @@ const (
 type TaskReport struct {
 	TimeElapsed        time.Duration       `json:"timeElapsed"`
 	ContractName       string              `json:"contractName"`
-	Coverage           int64               `json:"coverage"`
+	Coverage           uint64              `json:"coverage"`
 	CoverageByTime     TimeSeriesData      `json:"coverageByTime"`
-	MinDistance        int64               `json:"minDistance"`
+	MinDistance        uint64              `json:"minDistance"`
 	MinDistanceByTime  TimeSeriesData      `json:"minDistanceByTime"`
 	Transactions       []TransactionReport `json:"transactions"`
 	DetectedWeaknesses []string            `json:"detectedWeaknesses"`
@@ -84,7 +84,7 @@ type TaskReport struct {
 
 type TimeSeriesData struct {
 	X []time.Time `json:"x"`
-	Y []int64     `json:"y"`
+	Y []uint64    `json:"y"`
 }
 
 type TransactionReport struct {
@@ -93,8 +93,8 @@ type TransactionReport struct {
 	Inputs               []string  `json:"inputs"`
 	DetectedWeaknesses   []string  `json:"detectedWeaknesses"`
 	ExecutedInstructions []string  `json:"executedInstructions"`
-	DeltaCoverage        int64     `json:"deltaCoverage"`
-	DeltaMinDistance     int64     `json:"deltaMinDistance"`
+	DeltaCoverage        uint64    `json:"deltaCoverage"`
+	DeltaMinDistance     uint64    `json:"deltaMinDistance"`
 }
 
 type EventsSnapshot struct {

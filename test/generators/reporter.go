@@ -23,9 +23,9 @@ func TaskReportGen() common.TaskReport {
 	return common.TaskReport{
 		TimeElapsed:        time.Duration(gofakeit.Number(1, 60)) * time.Minute,
 		ContractName:       gofakeit.Name(),
-		Coverage:           gofakeit.Int64(),
+		Coverage:           gofakeit.Uint64(),
 		CoverageByTime:     TimeSeriesDataGen(),
-		MinDistance:        gofakeit.Int64(),
+		MinDistance:        gofakeit.Uint64(),
 		MinDistanceByTime:  TimeSeriesDataGen(),
 		Transactions:       transactions,
 		DetectedWeaknesses: weaknesses,
@@ -37,10 +37,10 @@ func TimeSeriesDataGen() common.TimeSeriesData {
 	start := gofakeit.Date()
 
 	xs := make([]time.Time, seriesLength)
-	ys := make([]int64, seriesLength)
+	ys := make([]uint64, seriesLength)
 	for idx := 0; idx < int(seriesLength); idx++ {
 		xs[idx] = start.Add(time.Duration(idx) * time.Minute)
-		ys[idx] = gofakeit.Int64()
+		ys[idx] = gofakeit.Uint64()
 	}
 	return common.TimeSeriesData{X: xs, Y: ys}
 }
@@ -70,7 +70,7 @@ func TransactionReportGen() common.TransactionReport {
 		Inputs:               inputs,
 		DetectedWeaknesses:   weaknesses,
 		ExecutedInstructions: instructions,
-		DeltaCoverage:        gofakeit.Int64(),
-		DeltaMinDistance:     gofakeit.Int64(),
+		DeltaCoverage:        gofakeit.Uint64(),
+		DeltaMinDistance:     gofakeit.Uint64(),
 	}
 }

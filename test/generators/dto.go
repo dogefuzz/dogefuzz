@@ -168,8 +168,8 @@ func TransactionDTOGen() *dto.TransactionDTO {
 		Inputs:               inputs,
 		DetectedWeaknesses:   detectedWeaknesses,
 		ExecutedInstructions: executedInstructions,
-		DeltaCoverage:        gofakeit.Int64(),
-		DeltaMinDistance:     gofakeit.Int64(),
+		DeltaCoverage:        gofakeit.Uint64(),
+		DeltaMinDistance:     gofakeit.Uint64(),
 		Status:               common.RandomChoice([]common.TransactionStatus{common.TRANSACTION_DONE, common.TRANSACTION_RUNNING, common.TRANSACTION_CREATED}),
 	}
 }
