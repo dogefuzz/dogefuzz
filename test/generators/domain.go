@@ -2,6 +2,7 @@ package generators
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/dogefuzz/dogefuzz/entities"
@@ -54,8 +55,8 @@ func TransactionGen() *entities.Transaction {
 		Inputs:               gofakeit.LetterN(255),
 		DetectedWeaknesses:   gofakeit.LetterN(255),
 		ExecutedInstructions: gofakeit.LetterN(255),
-		DeltaCoverage:        gofakeit.Uint64(),
-		DeltaMinDistance:     gofakeit.Uint64(),
+		DeltaCoverage:        strconv.FormatUint(gofakeit.Uint64(), 10),
+		DeltaMinDistance:     strconv.FormatUint(gofakeit.Uint64(), 10),
 		Status:               common.RandomChoice([]common.TransactionStatus{common.TRANSACTION_CREATED, common.TRANSACTION_RUNNING, common.TRANSACTION_SEND_ERROR, common.TRANSACTION_DONE}),
 	}
 }

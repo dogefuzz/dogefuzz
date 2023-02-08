@@ -2,6 +2,7 @@ package mapper
 
 import (
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -42,6 +43,9 @@ func (s *TransactionMapperTestSuite) TestMapDTOToEntity_ShouldReturnAValidEntity
 	m := NewTransactionMapper()
 	result := m.MapDTOToEntity(transactionDTO)
 
+	deltaCoverage := strconv.FormatUint(transactionDTO.DeltaCoverage, 10)
+	deltaMinDistance := strconv.FormatUint(transactionDTO.DeltaMinDistance, 10)
+
 	expectedResult := entities.Transaction{
 		Id:                   transactionDTO.Id,
 		Timestamp:            transactionDTO.Timestamp,
@@ -51,8 +55,8 @@ func (s *TransactionMapperTestSuite) TestMapDTOToEntity_ShouldReturnAValidEntity
 		Inputs:               strings.Join(transactionDTO.Inputs, ";"),
 		DetectedWeaknesses:   strings.Join(transactionDTO.DetectedWeaknesses, ";"),
 		ExecutedInstructions: strings.Join(transactionDTO.ExecutedInstructions, ";"),
-		DeltaCoverage:        transactionDTO.DeltaCoverage,
-		DeltaMinDistance:     transactionDTO.DeltaMinDistance,
+		DeltaCoverage:        deltaCoverage,
+		DeltaMinDistance:     deltaMinDistance,
 		Status:               transactionDTO.Status,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
@@ -64,6 +68,10 @@ func (s *TransactionMapperTestSuite) TestMapEntityToDTO_ShouldReturnAValidDTO_Wh
 	m := NewTransactionMapper()
 	result := m.MapEntityToDTO(entity)
 
+	deltaCoverage, err := strconv.ParseUint(entity.DeltaCoverage, 10, 64)
+	assert.Nil(s.T(), err)
+	deltaMinDistance, err := strconv.ParseUint(entity.DeltaMinDistance, 10, 64)
+	assert.Nil(s.T(), err)
 	expectedResult := dto.TransactionDTO{
 		Id:                   entity.Id,
 		Timestamp:            entity.Timestamp,
@@ -73,8 +81,8 @@ func (s *TransactionMapperTestSuite) TestMapEntityToDTO_ShouldReturnAValidDTO_Wh
 		Inputs:               strings.Split(entity.Inputs, ";"),
 		DetectedWeaknesses:   strings.Split(entity.DetectedWeaknesses, ";"),
 		ExecutedInstructions: strings.Split(entity.ExecutedInstructions, ";"),
-		DeltaCoverage:        entity.DeltaCoverage,
-		DeltaMinDistance:     entity.DeltaMinDistance,
+		DeltaCoverage:        deltaCoverage,
+		DeltaMinDistance:     deltaMinDistance,
 		Status:               entity.Status,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))

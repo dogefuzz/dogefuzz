@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/dogefuzz/dogefuzz/entities"
@@ -24,6 +25,9 @@ func (m *transactionMapper) MapNewDTOToEntity(n *dto.NewTransactionDTO) *entitie
 }
 
 func (m *transactionMapper) MapDTOToEntity(c *dto.TransactionDTO) *entities.Transaction {
+	deltaCoverage := strconv.FormatUint(c.DeltaCoverage, 10)
+	deltaMinDistance := strconv.FormatUint(c.DeltaMinDistance, 10)
+
 	return &entities.Transaction{
 		Id:                   c.Id,
 		Timestamp:            c.Timestamp,
@@ -33,8 +37,8 @@ func (m *transactionMapper) MapDTOToEntity(c *dto.TransactionDTO) *entities.Tran
 		Inputs:               strings.Join(c.Inputs, ";"),
 		DetectedWeaknesses:   strings.Join(c.DetectedWeaknesses, ";"),
 		ExecutedInstructions: strings.Join(c.ExecutedInstructions, ";"),
-		DeltaCoverage:        c.DeltaCoverage,
-		DeltaMinDistance:     c.DeltaMinDistance,
+		DeltaCoverage:        deltaCoverage,
+		DeltaMinDistance:     deltaMinDistance,
 		Status:               c.Status,
 	}
 }
@@ -55,6 +59,24 @@ func (m *transactionMapper) MapEntityToDTO(c *entities.Transaction) *dto.Transac
 		executedInstructions = strings.Split(c.ExecutedInstructions, ";")
 	}
 
+	var deltaCoverage uint64
+	if c.DeltaCoverage != "" {
+		val, err := strconv.ParseUint(c.DeltaCoverage, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		deltaCoverage = val
+	}
+
+	var deltaMinDistance uint64
+	if c.DeltaMinDistance != "" {
+		val, err := strconv.ParseUint(c.DeltaMinDistance, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		deltaMinDistance = val
+	}
+
 	return &dto.TransactionDTO{
 		Id:                   c.Id,
 		Timestamp:            c.Timestamp,
@@ -64,8 +86,8 @@ func (m *transactionMapper) MapEntityToDTO(c *entities.Transaction) *dto.Transac
 		Inputs:               inputs,
 		DetectedWeaknesses:   detectedWeaknesses,
 		ExecutedInstructions: executedInstructions,
-		DeltaCoverage:        c.DeltaCoverage,
-		DeltaMinDistance:     c.DeltaMinDistance,
+		DeltaCoverage:        deltaCoverage,
+		DeltaMinDistance:     deltaMinDistance,
 		Status:               c.Status,
 	}
 }

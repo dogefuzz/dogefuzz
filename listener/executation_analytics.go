@@ -52,21 +52,21 @@ func (l *executionAnalyticsListener) processEvent(ctx context.Context, evt bus.I
 		return
 	}
 
-	constract, err := l.contractService.FindByTaskId(task.Id)
+	contract, err := l.contractService.FindByTaskId(task.Id)
 	if err != nil {
 		l.logger.Sugar().Errorf("contract could not be retrieved: %v", err)
 		return
 	}
 
-	transaction.DeltaCoverage = coverage.ComputeDeltaCoverage(constract.CFG, transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
-	transaction.DeltaMinDistance = distance.ComputeDeltaMinDistance(constract.DistanceMap, transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
+	transaction.DeltaCoverage = coverage.ComputeDeltaCoverage(contract.CFG, transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
+	transaction.DeltaMinDistance = distance.ComputeDeltaMinDistance(contract.DistanceMap, transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
 	transaction.Status = common.TRANSACTION_DONE
 	err = l.transactionService.Update(transaction)
 	if err != nil {
 		l.logger.Sugar().Errorf("transaction could not be saved: %v", err)
 		return
 	}
-	l.logger.Sugar().Debugf("transaction %s has achieved additional %d coverage", transaction.Id, transaction.DeltaCoverage)
+	l.logger.Sugar().Debugf("transaction %s has achieved additional %d%% coverage", transaction.Id, uint64(100*float64(transaction.DeltaCoverage)/float64(len(contract.CFG.GetEdgesPCs()))))
 	l.logger.Sugar().Debugf("transaction %s has reduce distance in %d", transaction.Id, transaction.DeltaMinDistance)
 
 	task.AggregatedExecutedInstructions = common.MergeSortedSlices(transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
