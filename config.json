@@ -14,6 +14,7 @@
     "criticalInstructions": ["CALL", "SELFDESTRUCT", "CALLCODE", "DELEGATECALL"],
     "batchSize": 10,
     "seedsSize": 10,
+    "transactionTimeout": "10s",
     "seeds": {
       "bool": ["true", "false"],
       "uint8": ["0", "255"],
@@ -83,7 +84,7 @@
       "string": ["foo", "bar"]
     }
   },
-  "job": { "enabledJobs": ["tasks-checker", "transactions-checker"] },
+  "job": { "enabledJobs": ["tasks-checker", "transactions-checker", "transactions-timeout"] },
   "event": { "enabledListeners": ["contract-deployer", "execution-analytics", "fuzzer", "reporter"] },
   "reporter": { "type": "webhook", "webhookEndpoint": "http://localhost:3000", "webhookTimeout": "30s" }
 }

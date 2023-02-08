@@ -9,6 +9,7 @@ import (
 type transactionsCheckerJob struct {
 	logger                *zap.Logger
 	taskService           interfaces.TaskService
+	transactionService    interfaces.TransactionService
 	taskInputRequestTopic interfaces.Topic[bus.TaskInputRequestEvent]
 }
 
@@ -16,6 +17,7 @@ func NewTransactionsCheckerJob(e Env) *transactionsCheckerJob {
 	return &transactionsCheckerJob{
 		logger:                e.Logger(),
 		taskService:           e.TaskService(),
+		transactionService:    e.TransactionService(),
 		taskInputRequestTopic: e.TaskInputRequestTopic(),
 	}
 }

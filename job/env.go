@@ -23,12 +23,15 @@ type Env interface {
 	TransactionRepo() interfaces.TransactionRepo
 
 	TaskService() interfaces.TaskService
+	TransactionService() interfaces.TransactionService
 
 	TaskInputRequestTopic() interfaces.Topic[bus.TaskInputRequestEvent]
 	TaskFinishTopic() interfaces.Topic[bus.TaskFinishEvent]
 
 	TasksCheckerJob() interfaces.CronJob
 	TransactionsCheckerJob() interfaces.CronJob
+	TransactionsTimeoutCheckerJob() interfaces.CronJob
+
 	Deployer() interfaces.Deployer
 	Agent() interfaces.Agent
 }

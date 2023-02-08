@@ -2,8 +2,10 @@ package repo
 
 import (
 	"errors"
+	"time"
 
 	"github.com/dogefuzz/dogefuzz/entities"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -75,6 +77,14 @@ func (r *transactionRepo) FindTransactionsByFunctionNameAndOrderByTimestamp(tx *
 
 	var transactions []entities.Transaction
 	if err := tx.Where("function_id", function.Id).Order("timestamp").Find(&transactions).Error; err != nil {
+		return nil, err
+	}
+	return transactions, nil
+}
+
+func (r *transactionRepo) FindRunningAndCreatedBeforeThreshold(tx *gorm.DB, dateThreshold time.Time) ([]entities.Transaction, error) {
+	var transactions []entities.Transaction
+	if err := tx.Where("status = ?", common.TRANSACTION_RUNNING).Where("timestamp < ?", dateThreshold).Find(&transactions).Error; err != nil {
 		return nil, err
 	}
 	return transactions, nil

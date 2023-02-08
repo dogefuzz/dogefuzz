@@ -49,6 +49,7 @@ const (
 	TRANSACTION_SEND_ERROR TransactionStatus = "send_error"
 	TRANSACTION_RUNNING    TransactionStatus = "running"
 	TRANSACTION_DONE       TransactionStatus = "done"
+	TRANSACTION_TIMEOUT    TransactionStatus = "timeout"
 )
 
 type OracleType string

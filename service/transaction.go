@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"time"
 
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
@@ -115,6 +116,20 @@ func (s *transactionService) FindByTaskId(taskId string) ([]*dto.TransactionDTO,
 
 func (s *transactionService) FindTransactionsByFunctionNameAndOrderByTimestamp(functionName string, limit int64) ([]*dto.TransactionDTO, error) {
 	transactions, err := s.transactionRepo.FindTransactionsByFunctionNameAndOrderByTimestamp(s.connection.GetDB(), functionName, limit)
+	if err != nil {
+		return nil, err
+	}
+	transactionDTOs := make([]*dto.TransactionDTO, len(transactions))
+	for idx, transaction := range transactions {
+		transactionDTOs[idx] = s.transactionMapper.MapEntityToDTO(&transaction)
+	}
+	return transactionDTOs, nil
+}
+
+
+
+func (s *transactionService) FindRunningAndCreatedBeforeThreshold(dateThreshold time.Time) ([]*dto.TransactionDTO, error) {
+	transactions, err := s.transactionRepo.FindRunningAndCreatedBeforeThreshold(s.connection.GetDB(), dateThreshold)
 	if err != nil {
 		return nil, err
 	}

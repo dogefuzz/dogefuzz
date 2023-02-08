@@ -39,7 +39,8 @@ func (s *scheduler) Shutdown() context.Context {
 
 func (s *scheduler) getAvailableJobs() map[string]interfaces.CronJob {
 	return map[string]interfaces.CronJob{
-		s.env.TasksCheckerJob().Id():        s.env.TasksCheckerJob(),
-		s.env.TransactionsCheckerJob().Id(): s.env.TransactionsCheckerJob(),
+		s.env.TasksCheckerJob().Id():               s.env.TasksCheckerJob(),
+		s.env.TransactionsCheckerJob().Id():        s.env.TransactionsCheckerJob(),
+		s.env.TransactionsTimeoutCheckerJob().Id(): s.env.TransactionsTimeoutCheckerJob(),
 	}
 }

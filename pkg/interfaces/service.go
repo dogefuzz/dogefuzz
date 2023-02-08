@@ -2,6 +2,7 @@ package interfaces
 
 import (
 	"context"
+	"time"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
@@ -47,6 +48,7 @@ type TransactionService interface {
 	FindByHash(hash string) (*dto.TransactionDTO, error)
 	FindByTaskId(taskId string) ([]*dto.TransactionDTO, error)
 	FindTransactionsByFunctionNameAndOrderByTimestamp(functionName string, limit int64) ([]*dto.TransactionDTO, error)
+	FindRunningAndCreatedBeforeThreshold(dateThreshold time.Time) ([]*dto.TransactionDTO, error)
 }
 
 type VandalService interface {

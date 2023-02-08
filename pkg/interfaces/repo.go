@@ -1,6 +1,8 @@
 package interfaces
 
 import (
+	"time"
+
 	"github.com/dogefuzz/dogefuzz/entities"
 	"gorm.io/gorm"
 )
@@ -34,4 +36,5 @@ type TransactionRepo interface {
 	FindByBlockchainHash(tx *gorm.DB, blockchainHash string) (*entities.Transaction, error)
 	FindByTaskId(tx *gorm.DB, taskId string) ([]entities.Transaction, error)
 	FindTransactionsByFunctionNameAndOrderByTimestamp(tx *gorm.DB, functionName string, limit int64) ([]entities.Transaction, error)
+	FindRunningAndCreatedBeforeThreshold(tx *gorm.DB, dateThreshold time.Time) ([]entities.Transaction, error)
 }

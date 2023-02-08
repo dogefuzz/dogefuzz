@@ -8,26 +8,28 @@ import (
 )
 
 type TestEnv struct {
-	cfg                    *config.Config
-	client                 interfaces.HttpClient
-	logger                 *zap.Logger
-	contractMapper         interfaces.ContractMapper
-	transactionMapper      interfaces.TransactionMapper
-	taskMapper             interfaces.TaskMapper
-	functionMapper         interfaces.FunctionMapper
-	taskRepo               interfaces.TaskRepo
-	contractRepo           interfaces.ContractRepo
-	transactionRepo        interfaces.TransactionRepo
-	functionRepo           interfaces.FunctionRepo
-	deployer               interfaces.Deployer
-	agent                  interfaces.Agent
-	connection             interfaces.Connection
-	eventBus               interfaces.EventBus
-	taskService            interfaces.TaskService
-	taskInputRequestTopic  interfaces.Topic[bus.TaskInputRequestEvent]
-	taskFinishTopic        interfaces.Topic[bus.TaskFinishEvent]
-	tasksCheckerJob        interfaces.CronJob
-	transactionsCheckerJob interfaces.CronJob
+	cfg                           *config.Config
+	client                        interfaces.HttpClient
+	logger                        *zap.Logger
+	contractMapper                interfaces.ContractMapper
+	transactionMapper             interfaces.TransactionMapper
+	taskMapper                    interfaces.TaskMapper
+	functionMapper                interfaces.FunctionMapper
+	taskRepo                      interfaces.TaskRepo
+	contractRepo                  interfaces.ContractRepo
+	transactionRepo               interfaces.TransactionRepo
+	functionRepo                  interfaces.FunctionRepo
+	deployer                      interfaces.Deployer
+	agent                         interfaces.Agent
+	connection                    interfaces.Connection
+	eventBus                      interfaces.EventBus
+	taskService                   interfaces.TaskService
+	transactionService            interfaces.TransactionService
+	taskInputRequestTopic         interfaces.Topic[bus.TaskInputRequestEvent]
+	taskFinishTopic               interfaces.Topic[bus.TaskFinishEvent]
+	tasksCheckerJob               interfaces.CronJob
+	transactionsCheckerJob        interfaces.CronJob
+	transactionsTimeoutCheckerJob interfaces.CronJob
 }
 
 func NewTestEnv(
@@ -104,6 +106,10 @@ func (e *TestEnv) TaskService() interfaces.TaskService {
 	return e.taskService
 }
 
+func (e *TestEnv) TransactionService() interfaces.TransactionService {
+	return e.transactionService
+}
+
 func (e *TestEnv) TaskInputRequestTopic() interfaces.Topic[bus.TaskInputRequestEvent] {
 	return e.taskInputRequestTopic
 }
@@ -118,6 +124,10 @@ func (e *TestEnv) TasksCheckerJob() interfaces.CronJob {
 
 func (e *TestEnv) TransactionsCheckerJob() interfaces.CronJob {
 	return e.transactionsCheckerJob
+}
+
+func (e *TestEnv) TransactionsTimeoutCheckerJob() interfaces.CronJob {
+	return e.transactionsTimeoutCheckerJob
 }
 
 func (e *TestEnv) Agent() interfaces.Agent {

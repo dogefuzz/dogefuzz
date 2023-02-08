@@ -14,6 +14,7 @@
     "criticalInstructions": ["<critical1>"],
     "batchSize": 1003,
     "seedsSize": 1004,
+    "transactionTimeout": "10s",
     "seeds": {
       "bool": ["true", "false"]
     }

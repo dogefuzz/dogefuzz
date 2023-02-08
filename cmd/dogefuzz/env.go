@@ -65,6 +65,7 @@ type Env interface {
 
 	TasksCheckerJob() interfaces.CronJob
 	TransactionsCheckerJob() interfaces.CronJob
+	TransactionsTimeoutCheckerJob() interfaces.CronJob
 
 	FuzzerLeader() interfaces.FuzzerLeader
 	BlackboxFuzzer() interfaces.Fuzzer
@@ -114,8 +115,9 @@ type env struct {
 	fuzzerListener             interfaces.Listener
 	reporterListener           interfaces.Listener
 
-	tasksCheckerJob        interfaces.CronJob
-	transactionsCheckerJob interfaces.CronJob
+	tasksCheckerJob               interfaces.CronJob
+	transactionsCheckerJob        interfaces.CronJob
+	transactionsTimeoutCheckerJob interfaces.CronJob
 
 	fuzzerLeader          interfaces.FuzzerLeader
 	blackboxFuzzer        interfaces.Fuzzer
@@ -401,6 +403,13 @@ func (e *env) TransactionsCheckerJob() interfaces.CronJob {
 		e.transactionsCheckerJob = job.NewTransactionsCheckerJob(e)
 	}
 	return e.transactionsCheckerJob
+}
+
+func (e *env) TransactionsTimeoutCheckerJob() interfaces.CronJob {
+	if e.transactionsTimeoutCheckerJob == nil {
+		e.transactionsTimeoutCheckerJob = job.NewTransactionsTimeoutCheckerJob(e)
+	}
+	return e.transactionsTimeoutCheckerJob
 }
 
 func (e *env) FuzzerLeader() interfaces.FuzzerLeader {

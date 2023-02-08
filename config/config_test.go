@@ -38,6 +38,7 @@ func (s *ConfigTestSuite) TestLoadConfig_WhenPassingAValidPath_ReturnAValidConfi
 			CritialInstructions: []string{"<critical1>"},
 			BatchSize:           1003,
 			SeedsSize:           1004,
+			TransactionTimeout:  10 * time.Second,
 			Seeds: map[common.TypeIdentifier][]string{
 				solidity.BOOL: {"true", "false"},
 			},
