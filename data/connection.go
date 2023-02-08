@@ -19,7 +19,11 @@ type connection struct {
 
 func NewConnection(cfg *config.Config, logger *zap.Logger) (*connection, error) {
 	logger.Info(fmt.Sprintf("Initializing database in \"%s.db\" file", cfg.DatabaseName))
-	db, err := gorm.Open(sqlite.Open(fmt.Sprintf("%s.db", cfg.DatabaseName)), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(fmt.Sprintf("%s.db", cfg.DatabaseName)), &gorm.Config{
+		Logger: DataLogger{
+			Logger: logger,
+		},
+	})
 	if err != nil {
 		return nil, err
 	}
