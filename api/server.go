@@ -15,13 +15,15 @@ type server struct {
 }
 
 func NewServer(env Env) *server {
+	// gin.SetMode(gin.ReleaseMode)
 	return &server{
 		env:    env,
-		router: gin.Default(),
+		router: gin.New(),
 	}
 }
 
 func (s *server) Start() error {
+	BuildMiddlewares(s)
 	BuildRoutes(s)
 	s.server = &http.Server{
 		Addr:    fmt.Sprintf("0.0.0.0:%d", s.env.Config().ServerPort),
