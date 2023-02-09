@@ -42,7 +42,7 @@ func (s *powerSchedule) RequestSeeds(method abi.Method, strategy common.PowerSch
 	}
 
 	seeds := make([][]string, 0)
-	for idx := 0; idx < len(transactions) || idx < s.cfg.FuzzerConfig.SeedsSize; idx++ {
+	for idx := 0; idx < len(transactions) && idx < s.cfg.FuzzerConfig.SeedsSize; idx++ {
 		seeds = append(seeds, transactions[idx].Inputs)
 	}
 
