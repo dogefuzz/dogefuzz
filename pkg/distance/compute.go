@@ -29,7 +29,7 @@ func ComputeMinDistance(distanceMap common.DistanceMap, instructions []string) u
 
 	var sum uint64 = 0
 	for _, distance := range minDistances {
-		sum += distance
+		sum += uint64(distance)
 	}
 	return sum
 }
@@ -49,12 +49,12 @@ func findExecutedBlocks(distanceMap common.DistanceMap, instructions []string) [
 	return executedBlockPcs
 }
 
-func computeMinDistancesFromExecutedBlocks(distanceMap common.DistanceMap, executedBlocks []string) map[string]uint64 {
-	minDistances := make(map[string]uint64)
+func computeMinDistancesFromExecutedBlocks(distanceMap common.DistanceMap, executedBlocks []string) map[string]uint32 {
+	minDistances := make(map[string]uint32)
 	for _, block := range executedBlocks {
 		for pc, distance := range distanceMap[block] {
 			if _, ok := minDistances[pc]; ok {
-				minDistances[pc] = uint64(math.Min(float64(minDistances[pc]), float64(distance)))
+				minDistances[pc] = uint32(math.Min(float64(minDistances[pc]), float64(distance)))
 			} else {
 				minDistances[pc] = distance
 			}

@@ -63,7 +63,7 @@ const (
 	TIMESTAMP_DEPENDENCY_ORACLE OracleType = "timestamp-dependency"
 )
 
-type DistanceMap map[string]map[string]uint64 // blockPC => instruction => distance
+type DistanceMap map[string]map[string]uint32 // blockPC => instruction => distance
 
 type PowerScheduleStrategy string
 

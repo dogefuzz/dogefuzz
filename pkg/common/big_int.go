@@ -20,7 +20,7 @@ func ConvertHexadecimalToInt(hexadecimal string) (*big.Int, error) {
 	return val, nil
 }
 
-func MustConvertHexadecimalToBigInt(hexadecimal string) *big.Int {
+func MustConvertHexadecimalToInt(hexadecimal string) *big.Int {
 	val, err := ConvertHexadecimalToInt(hexadecimal)
 	if err != nil {
 		panic(err)

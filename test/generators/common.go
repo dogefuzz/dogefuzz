@@ -62,13 +62,13 @@ func DistanceMapGen() common.DistanceMap {
 		targetInstr[idx] = gofakeit.HexUint64()
 	}
 
-	distanceMap := make(map[string]map[string]uint64)
+	distanceMap := make(map[string]map[string]uint32)
 	for icr := 0; icr < rangeLength; icr++ {
 		instruction := gofakeit.HexUint64()
 
-		localDistance := make(map[string]uint64)
+		localDistance := make(map[string]uint32)
 		for idx := 0; idx < targetInstrCount; idx++ {
-			localDistance[targetInstr[idx]] = gofakeit.Uint64()
+			localDistance[targetInstr[idx]] = gofakeit.Uint32()
 		}
 		distanceMap[instruction] = localDistance
 	}

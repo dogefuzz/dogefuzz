@@ -21,13 +21,13 @@ func ComputeCoverage(cfg common.CFG, instructions []string) uint64 {
 	edgesPCs := cfg.GetEdgesPCs()
 	instructionsSet := common.NewSet[uint64]()
 	for _, instruction := range instructions {
-		instructionAsUint := common.MustConvertHexadecimalToBigInt(instruction).Uint64()
+		instructionAsUint := common.MustConvertHexadecimalToInt(instruction).Uint64()
 		instructionsSet.Add(instructionAsUint)
 	}
 
 	coverageCount := 0
 	for _, pc := range edgesPCs {
-		pcAsUint := common.MustConvertHexadecimalToBigInt(pc).Uint64()
+		pcAsUint := common.MustConvertHexadecimalToInt(pc).Uint64()
 		if instructionsSet.Has(pcAsUint) {
 			coverageCount++
 		}
