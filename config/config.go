@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -26,6 +27,11 @@ func LoadConfig(configPath string) (*Config, error) {
 	viper.AddConfigPath(configPath)
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
+
+	viper.SetEnvPrefix("dogefuzz")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
+
 	err := viper.ReadInConfig()
 	if err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
