@@ -20,7 +20,7 @@ func (r *consoleReporter) SendOutput(ctx context.Context, report common.TaskRepo
 	fmt.Fprintln(r.writer, "********** FUZZING EXECUTION RESULT **********")
 	fmt.Fprintf(r.writer, "Time Elapsed: %v\n", report.TimeElapsed)
 	fmt.Fprintf(r.writer, "Contract Name: %s\n", report.ContractName)
-	fmt.Fprintf(r.writer, "Coverage: %d\n", report.Coverage)
+	fmt.Fprintf(r.writer, "Coverage: %.2f%%\n", 100*(float64(report.Coverage)/float64(report.TotalInstructions)))
 	fmt.Fprintf(r.writer, "Min Distance: %d\n", report.MinDistance)
 	fmt.Fprintf(r.writer, "Transactions: %d\n", len(report.Transactions))
 	fmt.Fprintln(r.writer, "Weakneses Found:")

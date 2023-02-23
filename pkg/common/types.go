@@ -75,6 +75,7 @@ const (
 type TaskReport struct {
 	TimeElapsed        time.Duration       `json:"timeElapsed"`
 	ContractName       string              `json:"contractName"`
+	TotalInstructions  uint64              `json:"totalInstructions"`
 	Coverage           uint64              `json:"coverage"`
 	CoverageByTime     TimeSeriesData      `json:"coverageByTime"`
 	MinDistance        uint64              `json:"minDistance"`
