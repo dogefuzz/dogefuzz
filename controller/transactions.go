@@ -10,6 +10,7 @@ import (
 
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/oracle"
@@ -73,7 +74,7 @@ func (ctrl *transactionsController) StoreDetectedWeaknesses(c *gin.Context) {
 			weaknesses = append(weaknesses, string(o.Name()))
 		}
 	}
-	transaction.DetectedWeaknesses = weaknesses
+	transaction.DetectedWeaknesses = common.MergeSortedSlices(transaction.DetectedWeaknesses, weaknesses)
 
 	err = ctrl.transactionService.Update(transaction)
 	if err != nil {

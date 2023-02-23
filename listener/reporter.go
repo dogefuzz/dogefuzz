@@ -79,6 +79,7 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 	report := common.TaskReport{
 		TimeElapsed:        task.Expiration.Sub(task.StartTime),
 		ContractName:       contract.Name,
+		TotalInstructions:  uint64(len(contract.CFG.GetEdgesPCs())),
 		Coverage:           coverage.ComputeCoverage(contract.CFG, task.AggregatedExecutedInstructions),
 		CoverageByTime:     l.computeCoverageByTime(contract.CFG, transactions),
 		MinDistance:        distance.ComputeMinDistance(contract.DistanceMap, task.AggregatedExecutedInstructions),
