@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -78,4 +79,61 @@ func (s *ConfigTestSuite) TestLoadConfig_WhenPassingAInvalidPath_ReturnErrConfig
 
 	assert.Equal(s.T(), ErrConfigNotFound, err)
 	assert.Nil(s.T(), cfg)
+}
+
+func (s *ConfigTestSuite) TestLoadConfig_WhenPassingHaveAnEnvVariable_ReturnAValidConfigWithOverwritedValueByEnvVariable() {
+	expectedDatabaseName := "<newDatabaseName>"
+	expectedGethNodeAddress := "<newNodeAddress>"
+	expectedFuzzerSeedsBool := []string{"false", "true", "false"}
+	expectedConfig := Config{
+		StorageFolder: path.Join(os.TempDir(), "dogefuzz"),
+		DatabaseName:  expectedDatabaseName,
+		ServerPort:    1001,
+		GethConfig: GethConfig{
+			NodeAddress:           expectedGethNodeAddress,
+			ChainID:               1002,
+			DeployerPrivateKeyHex: "<deployerPrivateKeyHex>",
+			AgentPrivateKeyHex:    "<agentPrivateKeyHex>",
+		},
+		FuzzerConfig: FuzzerConfig{
+			CritialInstructions: []string{"<critical1>"},
+			BatchSize:           1003,
+			SeedsSize:           1004,
+			TransactionTimeout:  10 * time.Second,
+			Seeds: map[common.TypeIdentifier][]string{
+				solidity.BOOL: expectedFuzzerSeedsBool,
+			},
+		},
+		VandalConfig: VandalConfig{
+			Endpoint: "<endpoint>",
+		},
+		JobConfig: JobConfig{
+			EnabledJobs: []string{"<job1>"},
+		},
+		EventConfig: EventConfig{
+			EnabledListeners: []string{"<listener1>"},
+		},
+		ReporterConfig: ReporterConfig{
+			Type:            reporter.CONSOLE_REPORTER,
+			WebhookEndpoint: "<endpoint>",
+			WebhookTimeout:  30 * time.Second,
+		},
+	}
+
+	os.Setenv("DOGEFUZZ_DATABASENAME", expectedDatabaseName)
+	os.Setenv("DOGEFUZZ_GETH_NODEADDRESS", expectedGethNodeAddress)
+	os.Setenv("DOGEFUZZ_FUZZER_SEEDS_BOOL", strings.Join(expectedFuzzerSeedsBool, ","))
+
+	cfg, err := LoadConfig("../test/resources")
+
+	assert.Nil(s.T(), err)
+	assert.Equal(s.T(), expectedConfig.StorageFolder, cfg.StorageFolder)
+	assert.Equal(s.T(), expectedConfig.DatabaseName, cfg.DatabaseName)
+	assert.Equal(s.T(), expectedConfig.ServerPort, cfg.ServerPort)
+	assert.True(s.T(), reflect.DeepEqual(expectedConfig.GethConfig, cfg.GethConfig))
+	assert.True(s.T(), reflect.DeepEqual(expectedConfig.FuzzerConfig, cfg.FuzzerConfig))
+	assert.True(s.T(), reflect.DeepEqual(expectedConfig.VandalConfig, cfg.VandalConfig))
+	assert.True(s.T(), reflect.DeepEqual(expectedConfig.JobConfig, cfg.JobConfig))
+	assert.True(s.T(), reflect.DeepEqual(expectedConfig.EventConfig, cfg.EventConfig))
+	assert.True(s.T(), reflect.DeepEqual(expectedConfig.ReporterConfig, cfg.ReporterConfig))
 }
