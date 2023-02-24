@@ -44,7 +44,7 @@ func (s *TransactionsCheckerJobTestSuite) TestCronConfig_ShouldReturnEvery5Secon
 
 	cronConfig := j.CronConfig()
 
-	assert.Equal(s.T(), "*/5 * * * *", cronConfig)
+	assert.Equal(s.T(), "*/5 * * * * *", cronConfig)
 }
 
 func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldFindTransactionsToBeFinishedAndPublishFinishEvent_WhenServiceReturnListOfTransactions() {

@@ -23,7 +23,8 @@ func TaskReportGen() common.TaskReport {
 	return common.TaskReport{
 		TimeElapsed:        time.Duration(gofakeit.Number(1, 60)) * time.Minute,
 		ContractName:       gofakeit.Name(),
-		Coverage:           gofakeit.Uint64(),
+		TotalInstructions:  gofakeit.Uint64(),
+		Coverage:           uint64(gofakeit.Uint32()),
 		CoverageByTime:     TimeSeriesDataGen(),
 		MinDistance:        gofakeit.Uint64(),
 		MinDistanceByTime:  TimeSeriesDataGen(),

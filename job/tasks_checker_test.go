@@ -44,14 +44,15 @@ func (s *TasksCheckerJobTestSuite) TestCronConfig_ShouldReturnEvery5Seconds() {
 
 	cronConfig := j.CronConfig()
 
-	assert.Equal(s.T(), "*/5 * * * *", cronConfig)
+	assert.Equal(s.T(), "*/5 * * * * *", cronConfig)
 }
 
 func (s *TasksCheckerJobTestSuite) TestHandler_ShouldFindTasksToBeFinishedAndPublishFinishEvent_WhenServiceReturnListOfTasks() {
 	tasks := make([]*dto.TaskDTO, 5)
-	for idx := 0; idx < 5; idx++ {
+	for idx := 0; idx < len(tasks); idx++ {
 		tasks[idx] = generators.TaskDTOGen()
 		s.taskFinishTopicMock.On("Publish", bus.TaskFinishEvent{TaskId: tasks[idx].Id})
+		s.taskServiceMock.On("Update", tasks[idx]).Return(nil)
 	}
 	s.taskServiceMock.On("FindNotFinishedAndExpired").Return(tasks, nil)
 	j := NewTasksCheckerJob(s.env)
