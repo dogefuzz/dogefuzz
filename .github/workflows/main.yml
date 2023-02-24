@@ -1,0 +1,32 @@
+name: Main Commit
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+
+    - name: Starting docker compose
+      run: make docker.test.up
+
+    - name: Build project
+      run: go build -v ./...
+
+    - name: Test project
+      run: go test -v ./...
+
+    - name: Stoping docker compose
+      run: make docker.test.down
+
