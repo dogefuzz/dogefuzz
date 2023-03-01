@@ -10,6 +10,7 @@ import (
 type ContractRepo interface {
 	Create(tx *gorm.DB, contract *entities.Contract) error
 	Update(tx *gorm.DB, contract *entities.Contract) error
+	FindAll(tx *gorm.DB) ([]entities.Contract, error)
 	Find(tx *gorm.DB, id string) (*entities.Contract, error)
 	FindByTaskId(tx *gorm.DB, taskId string) (*entities.Contract, error)
 }

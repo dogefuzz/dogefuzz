@@ -6,6 +6,7 @@ import (
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
+	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
 type ContractService interface {
@@ -53,4 +54,8 @@ type TransactionService interface {
 
 type VandalService interface {
 	GetCFG(ctx context.Context, contract *common.Contract) (*common.CFG, error)
+}
+
+type SolidityService interface {
+	GetTypeHandlerWithContext(typ abi.Type) (TypeHandler, error)
 }

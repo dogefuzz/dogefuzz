@@ -20,7 +20,7 @@ type bytesHandler struct {
 	handler interfaces.TypeHandler
 }
 
-func NewBytesHandler(typ abi.Type) (*bytesHandler, error) {
+func NewBytesHandler(typ abi.Type, blockchainContext *BlockchainContext) (*bytesHandler, error) {
 	val := make([]byte, 0)
 
 	uint8Typ, err := abi.NewType("uint8", "", nil)
@@ -28,7 +28,7 @@ func NewBytesHandler(typ abi.Type) (*bytesHandler, error) {
 		return nil, err
 	}
 
-	handler, err := GetTypeHandler(uint8Typ)
+	handler, err := GetTypeHandler(uint8Typ, blockchainContext)
 	if err != nil {
 		return nil, err
 	}

@@ -10,7 +10,6 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
-	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"go.uber.org/zap"
 )
@@ -26,6 +25,7 @@ type fuzzerListener struct {
 	contractService       interfaces.ContractService
 	gethService           interfaces.GethService
 	transactionService    interfaces.TransactionService
+	solidityService       interfaces.SolidityService
 }
 
 func NewFuzzerListener(e Env) *fuzzerListener {
@@ -40,6 +40,7 @@ func NewFuzzerListener(e Env) *fuzzerListener {
 		contractService:       e.ContractService(),
 		gethService:           e.GethService(),
 		transactionService:    e.TransactionService(),
+		solidityService:       e.SolidityService(),
 	}
 }
 
@@ -101,7 +102,7 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 
 		serializedInputs := make([]string, len(inputs))
 		for idx := 0; idx < len(inputs); idx++ {
-			typeHandler, err := solidity.GetTypeHandler(abiFunction.Inputs[idx].Type)
+			typeHandler, err := l.solidityService.GetTypeHandlerWithContext(abiFunction.Inputs[idx].Type)
 			if err != nil {
 				l.logger.Sugar().Errorf("an error ocurred when getting the solidity type handler: %v", err)
 				return
@@ -130,7 +131,7 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 	for _, tx := range transactions {
 		deserializedInputs := make([]interface{}, len(tx.Inputs))
 		for idx := 0; idx < len(tx.Inputs); idx++ {
-			typeHandler, err := solidity.GetTypeHandler(abiFunction.Inputs[idx].Type)
+			typeHandler, err := l.solidityService.GetTypeHandlerWithContext(abiFunction.Inputs[idx].Type)
 			if err != nil {
 				l.logger.Sugar().Errorf("an error ocurred when getting the solidity type handler: %v", err)
 				return

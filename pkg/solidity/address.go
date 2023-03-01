@@ -2,9 +2,6 @@ package solidity
 
 import (
 	"errors"
-	"fmt"
-	"math/rand"
-	"strings"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 
@@ -14,11 +11,20 @@ import (
 var ErrInvalidAddress = errors.New("the provided json does not correspond to a address type")
 
 type addressHandler struct {
-	value gethcommon.Address
+	value              gethcommon.Address
+	availableAddresses []gethcommon.Address
 }
 
-func NewAddressHandler() *addressHandler {
-	return &addressHandler{}
+func NewAddressHandler(addresses []string) (*addressHandler, error) {
+	availableAddresses := make([]gethcommon.Address, len(addresses))
+	for idx, address := range addresses {
+		val, err := convertStringToGethAddress(address)
+		if err != nil {
+			return nil, err
+		}
+		availableAddresses[idx] = val
+	}
+	return &addressHandler{availableAddresses: availableAddresses}, nil
 }
 
 func (h *addressHandler) GetValue() interface{} {
@@ -40,8 +46,8 @@ func (h *addressHandler) Serialize() string {
 }
 
 func (h *addressHandler) Deserialize(value string) error {
-	val := gethcommon.HexToAddress(value)
-	if (val == gethcommon.Address{}) {
+	val, err := convertStringToGethAddress(value)
+	if err != nil {
 		return ErrInvalidAddress
 	}
 	h.value = val
@@ -49,21 +55,24 @@ func (h *addressHandler) Deserialize(value string) error {
 }
 
 func (h *addressHandler) Generate() {
-	const ADDRESS_LENGTH = 20
-	rand.Seed(common.Now().UnixNano())
-
-	parts := make([]string, ADDRESS_LENGTH)
-	for idx := 0; idx < len(parts); idx++ {
-		parts[idx] = fmt.Sprintf("%x", rand.Intn(256))
-	}
-	hexValue := strings.Join(parts, "")
-	h.value = gethcommon.HexToAddress(hexValue)
+	h.value = common.RandomChoice(h.availableAddresses)
 }
 
 func (h *addressHandler) GetMutators() []func() {
-	return []func(){h.GenerateAgainOp}
+	return []func(){h.NotOp, h.ChooseAgain}
 }
 
-func (h *addressHandler) GenerateAgainOp() {
-	h.Generate()
+func (h *addressHandler) NotOp() {
+}
+
+func (h *addressHandler) ChooseAgain() {
+	h.value = common.RandomChoice(h.availableAddresses)
+}
+
+func convertStringToGethAddress(address string) (gethcommon.Address, error) {
+	val := gethcommon.HexToAddress(address)
+	if (val == gethcommon.Address{}) {
+		return gethcommon.Address{}, ErrInvalidAddress
+	}
+	return val, nil
 }

@@ -49,6 +49,7 @@ type Env interface {
 	GethService() interfaces.GethService
 	VandalService() interfaces.VandalService
 	ReporterService() interfaces.ReporterService
+	SolidityService() interfaces.SolidityService
 
 	TasksController() interfaces.TasksController
 	TransactionsController() interfaces.TransactionsController
@@ -101,6 +102,7 @@ type env struct {
 	gethService        interfaces.GethService
 	vandalService      interfaces.VandalService
 	reporterService    interfaces.ReporterService
+	solidityService    interfaces.SolidityService
 
 	tasksController        interfaces.TasksController
 	transactionsController interfaces.TransactionsController
@@ -321,6 +323,13 @@ func (e *env) ReporterService() interfaces.ReporterService {
 	return e.reporterService
 }
 
+func (e *env) SolidityService() interfaces.SolidityService {
+	if e.solidityService == nil {
+		e.solidityService = service.NewSolidityService(e)
+	}
+	return e.solidityService
+}
+
 func (e *env) TasksController() interfaces.TasksController {
 	if e.tasksController == nil {
 		e.tasksController = controller.NewTasksController(e)
@@ -421,7 +430,7 @@ func (e *env) FuzzerLeader() interfaces.FuzzerLeader {
 
 func (e *env) BlackboxFuzzer() interfaces.Fuzzer {
 	if e.blackboxFuzzer == nil {
-		e.blackboxFuzzer = fuzz.NewBlackboxFuzzer()
+		e.blackboxFuzzer = fuzz.NewBlackboxFuzzer(e)
 	}
 	return e.blackboxFuzzer
 }

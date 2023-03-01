@@ -20,6 +20,11 @@ func (m *ContractRepoMock) Update(tx *gorm.DB, contract *entities.Contract) erro
 	return args.Error(0)
 }
 
+func (m *ContractRepoMock) FindAll(tx *gorm.DB) ([]entities.Contract, error) {
+	args := m.Called(tx)
+	return args.Get(0).([]entities.Contract), args.Error(1)
+}
+
 func (m *ContractRepoMock) Find(tx *gorm.DB, id string) (*entities.Contract, error) {
 	args := m.Called(tx, id)
 	return args.Get(0).(*entities.Contract), args.Error(1)

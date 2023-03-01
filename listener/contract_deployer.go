@@ -11,7 +11,6 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/distance"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
-	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"go.uber.org/zap"
 )
@@ -27,6 +26,7 @@ type contractDeployerListener struct {
 	contractService       interfaces.ContractService
 	functionService       interfaces.FunctionService
 	transactionService    interfaces.TransactionService
+	solidityService       interfaces.SolidityService
 	contractMapper        interfaces.ContractMapper
 }
 
@@ -42,6 +42,7 @@ func NewContractDeployerListener(e Env) *contractDeployerListener {
 		contractService:       e.ContractService(),
 		functionService:       e.FunctionService(),
 		transactionService:    e.TransactionService(),
+		solidityService:       e.SolidityService(),
 		contractMapper:        e.ContractMapper(),
 	}
 }
@@ -86,7 +87,7 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 	for idx = 0; idx < constructor.NumberOfArgs; idx++ {
 		definition := parsedABI.Constructor.Inputs[idx]
 
-		handler, err := solidity.GetTypeHandler(definition.Type)
+		handler, err := l.solidityService.GetTypeHandlerWithContext(definition.Type)
 		if err != nil {
 			l.logger.Sugar().Errorf("an error ocurred when parsing args: %v", err)
 			return

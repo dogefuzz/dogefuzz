@@ -1,21 +1,24 @@
 package fuzz
 
 import (
-	"github.com/dogefuzz/dogefuzz/pkg/solidity"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
 type blackboxFuzzer struct {
+	solidityService interfaces.SolidityService
 }
 
-func NewBlackboxFuzzer() *blackboxFuzzer {
-	return &blackboxFuzzer{}
+func NewBlackboxFuzzer(e env) *blackboxFuzzer {
+	return &blackboxFuzzer{
+		solidityService: e.SolidityService(),
+	}
 }
 
 func (f *blackboxFuzzer) GenerateInput(method abi.Method) ([]interface{}, error) {
 	args := make([]interface{}, len(method.Inputs))
 	for idx, input := range method.Inputs {
-		handler, err := solidity.GetTypeHandler(input.Type)
+		handler, err := f.solidityService.GetTypeHandlerWithContext(input.Type)
 		if err != nil {
 			return nil, err
 		}

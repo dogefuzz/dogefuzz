@@ -7,9 +7,12 @@ import (
 
 type env interface {
 	Config() *config.Config
+
 	BlackboxFuzzer() interfaces.Fuzzer
 	GreyboxFuzzer() interfaces.Fuzzer
 	DirectedGreyboxFuzzer() interfaces.Fuzzer
 	PowerSchedule() interfaces.PowerSchedule
+
 	TransactionService() interfaces.TransactionService
+	SolidityService() interfaces.SolidityService
 }

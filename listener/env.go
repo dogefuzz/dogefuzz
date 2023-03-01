@@ -24,6 +24,7 @@ type Env interface {
 	FunctionService() interfaces.FunctionService
 	TransactionService() interfaces.TransactionService
 	ReporterService() interfaces.ReporterService
+	SolidityService() interfaces.SolidityService
 
 	ContractMapper() interfaces.ContractMapper
 

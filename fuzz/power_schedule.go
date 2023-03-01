@@ -8,7 +8,6 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
-	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
@@ -17,12 +16,14 @@ var ErrInvalidStrategy = errors.New("the provided strategy is not valid")
 type powerSchedule struct {
 	cfg                *config.Config
 	transactionService interfaces.TransactionService
+	solidityService    interfaces.SolidityService
 }
 
 func NewPowerSchedule(e env) *powerSchedule {
 	return &powerSchedule{
 		cfg:                e.Config(),
 		transactionService: e.TransactionService(),
+		solidityService:    e.SolidityService(),
 	}
 }
 
@@ -46,7 +47,7 @@ func (s *powerSchedule) RequestSeeds(method abi.Method, strategy common.PowerSch
 		seeds = append(seeds, transactions[idx].Inputs)
 	}
 
-	deserializedSeeds, err := deserializeSeedsList(method, seeds)
+	deserializedSeeds, err := s.deserializeSeedsList(method, seeds)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +80,7 @@ func (s *powerSchedule) completeSeedsWithPreConfiguredSeeds(method abi.Method, s
 	for icr := 0; icr < int(seedsAmountToBeAdded); icr++ {
 		functionSeeds := make([]interface{}, len(method.Inputs))
 		for inputsIdx, input := range method.Inputs {
-			handler, err := solidity.GetTypeHandler(input.Type)
+			handler, err := s.solidityService.GetTypeHandlerWithContext(input.Type)
 			if err != nil {
 				return nil, err
 			}
@@ -96,12 +97,12 @@ func (s *powerSchedule) completeSeedsWithPreConfiguredSeeds(method abi.Method, s
 	return result, nil
 }
 
-func deserializeSeedsList(method abi.Method, seedsList [][]string) ([][]interface{}, error) {
+func (s *powerSchedule) deserializeSeedsList(method abi.Method, seedsList [][]string) ([][]interface{}, error) {
 	result := make([][]interface{}, len(seedsList))
 	for seedsListIdx, seeds := range seedsList {
 		deserializedSeeds := make([]interface{}, len(seeds))
 		for inputsIdx, inputDefinition := range method.Inputs {
-			handler, err := solidity.GetTypeHandler(inputDefinition.Type)
+			handler, err := s.solidityService.GetTypeHandlerWithContext(inputDefinition.Type)
 			if err != nil {
 				return nil, err
 			}
