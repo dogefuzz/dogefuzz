@@ -3,13 +3,16 @@ package service
 import (
 	"context"
 
+	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/geth"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
 type gethService struct {
 	logger   *zap.Logger
+	cfg      *config.Config
 	deployer interfaces.Deployer
 	agent    interfaces.Agent
 }
@@ -19,6 +22,7 @@ func NewGethService(e Env) *gethService {
 		logger:   e.Logger(),
 		deployer: e.Deployer(),
 		agent:    e.Agent(),
+		cfg:      e.Config(),
 	}
 }
 
@@ -40,25 +44,22 @@ func (s *gethService) BatchCall(
 	hashesByTransactionId := make(map[string]string)
 	errorsByTransactionId := make(map[string]error)
 
-	nonce, err := s.agent.GetNonce(ctx)
+	privateKey := common.RandomChoice([]string{s.cfg.GethConfig.AgentPrivateKeyHex, s.cfg.GethConfig.DeployerPrivateKeyHex})
+	wallet, err := geth.NewWalletFromPrivateKeyHex(privateKey)
 	if err != nil {
 		for transactionId := range inputsByTransactionId {
 			errorsByTransactionId[transactionId] = err
 		}
+		return hashesByTransactionId, errorsByTransactionId
 	}
 
 	for transactionId, inputs := range inputsByTransactionId {
-
-		hash, err := s.agent.Send(ctx, nonce, contract, functionName, inputs...)
+		hash, err := s.agent.Send(ctx, wallet, contract, functionName, inputs...)
 		if err != nil {
 			errorsByTransactionId[transactionId] = err
-			nonce++
 			continue
 		}
 		hashesByTransactionId[transactionId] = hash
-
-		// Update nonce
-		nonce++
 	}
 
 	return hashesByTransactionId, errorsByTransactionId

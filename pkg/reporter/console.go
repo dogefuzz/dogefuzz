@@ -24,6 +24,9 @@ func (r *consoleReporter) SendOutput(ctx context.Context, report common.TaskRepo
 	fmt.Fprintf(r.writer, "Min Distance: %d\n", report.MinDistance)
 	fmt.Fprintf(r.writer, "Transactions: %d\n", len(report.Transactions))
 	fmt.Fprintln(r.writer, "Weakneses Found:")
+	if len(report.DetectedWeaknesses) == 0 {
+		fmt.Fprintln(r.writer, "None")
+	}
 	for _, weakness := range report.DetectedWeaknesses {
 		fmt.Fprintf(r.writer, "\t- %s\n", weakness)
 	}

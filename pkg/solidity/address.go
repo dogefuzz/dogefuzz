@@ -37,8 +37,11 @@ func (h *addressHandler) SetValue(value interface{}) {
 
 func (h *addressHandler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
 	addressSeeds := seeds[ADDRESS]
-	chosenSeed := common.RandomChoice(addressSeeds)
-	return h.Deserialize(chosenSeed)
+	if len(addressSeeds) > 0 {
+		chosenSeed := common.RandomChoice(addressSeeds)
+		return h.Deserialize(chosenSeed)
+	}
+	return nil
 }
 
 func (h *addressHandler) Serialize() string {
