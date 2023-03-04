@@ -46,6 +46,11 @@ func (ctrl *transactionsController) StoreDetectedWeaknesses(c *gin.Context) {
 		return
 	}
 
+	if request.TxHash == "" {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
 	transaction, err := ctrl.waitForTransactionToBeStoredInDatabase(request.TxHash)
 	if err != nil {
 		if errors.Is(err, ErrTransactionCouldNotBeFoundInDatabase) {
@@ -94,6 +99,11 @@ func (ctrl *transactionsController) StoreTransactionExecution(c *gin.Context) {
 	var request dto.NewExecutionDTO
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if request.TxHash == "" {
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
