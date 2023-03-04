@@ -10,9 +10,9 @@ import (
 
 func CommonContractGen() *common.Contract {
 	return &common.Contract{
-		Name:          gofakeit.Word(),
-		AbiDefinition: gofakeit.Word(),
-		CompiledCode:  gofakeit.HexUint256(),
+		Name:               gofakeit.Word(),
+		AbiDefinition:      gofakeit.Word(),
+		DeploymentBytecode: gofakeit.HexUint256(),
 	}
 }
 

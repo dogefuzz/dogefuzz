@@ -29,11 +29,11 @@ func (s *ContractMapperTestSuite) TestMapNewDTOToEntity_ShouldReturnValidEntity_
 	result := m.MapNewDTOToEntity(newContractDTO)
 
 	expectedResult := entities.Contract{
-		TaskId:        newContractDTO.TaskId,
-		Source:        newContractDTO.Source,
-		CompiledCode:  newContractDTO.CompiledCode,
-		AbiDefinition: newContractDTO.AbiDefinition,
-		Name:          newContractDTO.Name,
+		TaskId:             newContractDTO.TaskId,
+		Source:             newContractDTO.Source,
+		DeploymentBytecode: newContractDTO.DeploymentBytecode,
+		AbiDefinition:      newContractDTO.AbiDefinition,
+		Name:               newContractDTO.Name,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }
@@ -47,15 +47,15 @@ func (s *ContractMapperTestSuite) TestMapDTOToEntity_ShouldReturnValidEntity_Whe
 	expectedCFG, _ := json.Marshal(contractDTO.CFG)
 	expectedDistanceMap, _ := json.Marshal(contractDTO.DistanceMap)
 	expectedResult := entities.Contract{
-		Id:            contractDTO.Id,
-		TaskId:        contractDTO.TaskId,
-		Address:       contractDTO.Address,
-		Source:        contractDTO.Source,
-		CompiledCode:  contractDTO.CompiledCode,
-		AbiDefinition: contractDTO.AbiDefinition,
-		Name:          contractDTO.Name,
-		CFG:           string(expectedCFG),
-		DistanceMap:   string(expectedDistanceMap),
+		Id:                 contractDTO.Id,
+		TaskId:             contractDTO.TaskId,
+		Address:            contractDTO.Address,
+		Source:             contractDTO.Source,
+		DeploymentBytecode: contractDTO.DeploymentBytecode,
+		AbiDefinition:      contractDTO.AbiDefinition,
+		Name:               contractDTO.Name,
+		CFG:                string(expectedCFG),
+		DistanceMap:        string(expectedDistanceMap),
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }
@@ -71,15 +71,15 @@ func (s *ContractMapperTestSuite) TestMapEntityToDTO_ShouldReturnValidDTO_WhenRe
 	var expectedDistanceMap common.DistanceMap
 	_ = json.Unmarshal([]byte(contract.DistanceMap), &expectedDistanceMap)
 	expectedResult := dto.ContractDTO{
-		Id:            contract.Id,
-		TaskId:        contract.TaskId,
-		Address:       contract.Address,
-		Source:        contract.Source,
-		CompiledCode:  contract.CompiledCode,
-		AbiDefinition: contract.AbiDefinition,
-		Name:          contract.Name,
-		CFG:           expectedCFG,
-		DistanceMap:   expectedDistanceMap,
+		Id:                 contract.Id,
+		TaskId:             contract.TaskId,
+		Address:            contract.Address,
+		Source:             contract.Source,
+		DeploymentBytecode: contract.DeploymentBytecode,
+		AbiDefinition:      contract.AbiDefinition,
+		Name:               contract.Name,
+		CFG:                expectedCFG,
+		DistanceMap:        expectedDistanceMap,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }
@@ -93,15 +93,15 @@ func (s *ContractMapperTestSuite) TestMapEntityToDTO_ShouldReturnValidDTOWithEmp
 	result := m.MapEntityToDTO(contract)
 
 	expectedResult := dto.ContractDTO{
-		Id:            contract.Id,
-		TaskId:        contract.TaskId,
-		Address:       contract.Address,
-		Source:        contract.Source,
-		CompiledCode:  contract.CompiledCode,
-		AbiDefinition: contract.AbiDefinition,
-		Name:          contract.Name,
-		CFG:           common.CFG{},
-		DistanceMap:   common.DistanceMap(nil),
+		Id:                 contract.Id,
+		TaskId:             contract.TaskId,
+		Address:            contract.Address,
+		Source:             contract.Source,
+		DeploymentBytecode: contract.DeploymentBytecode,
+		AbiDefinition:      contract.AbiDefinition,
+		Name:               contract.Name,
+		CFG:                common.CFG{},
+		DistanceMap:        common.DistanceMap(nil),
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }
@@ -113,10 +113,10 @@ func (s *ContractMapperTestSuite) TestMapDTOToCommon_ShouldReturnValidCommonCont
 	result := m.MapDTOToCommon(contractDTO)
 
 	expectedResult := common.Contract{
-		Address:       contractDTO.Address,
-		CompiledCode:  contractDTO.CompiledCode,
-		AbiDefinition: contractDTO.AbiDefinition,
-		Name:          contractDTO.Name,
+		Address:            contractDTO.Address,
+		DeploymentBytecode: contractDTO.DeploymentBytecode,
+		AbiDefinition:      contractDTO.AbiDefinition,
+		Name:               contractDTO.Name,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }

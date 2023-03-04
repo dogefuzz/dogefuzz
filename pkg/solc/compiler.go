@@ -74,7 +74,7 @@ func (c *solidityCompiler) CompileSource(contractName string, contractSource str
 	if err != nil {
 		return nil, err
 	}
-	return common.NewContract(contractName, string(abiDefinition), compiledContract.Code), nil
+	return common.NewContract(contractName, string(abiDefinition), compiledContract.Code, compiledContract.RuntimeCode), nil
 }
 
 func (c *solidityCompiler) getSolcBinaryLocationIfExists(version *semver.Version) (string, bool) {

@@ -40,7 +40,7 @@ contract HelloWorld {
 	contract, _ := compiler.CompileSource("HelloWorld", VALID_SOLIDITY_FILE)
 
 	c := NewVandalClient("http://localhost:51243")
-	blocks, functions, err := c.Decompile(context.Background(), contract.CompiledCode)
+	blocks, functions, err := c.Decompile(context.Background(), contract.DeploymentBytecode)
 	assert.Equal(s.T(), 30, len(blocks))
 	assert.Equal(s.T(), 2, len(functions))
 	assert.Nil(s.T(), err)
@@ -59,7 +59,7 @@ contract HelloWorld {
 // 		assert.Nil(s.T(), err, fmt.Sprintf("error while compiling the code for %s contract", file.Name()))
 
 // 		c := NewVandalClient("http://localhost:51243")
-// 		blocks, functions, err := c.Decompile(context.Background(), contract.CompiledCode)
+// 		blocks, functions, err := c.Decompile(context.Background(), contract.DeploymentBytecode)
 // 		assert.Greater(s.T(), len(blocks), 0, fmt.Sprintf("the contract %s should have more than one block", fileWithoutExtension))
 // 		assert.GreaterOrEqual(s.T(), len(functions), 0, fmt.Sprintf("the contract %s should have more than one function", fileWithoutExtension))
 // 		assert.Nil(s.T(), err)

@@ -99,11 +99,12 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	}
 
 	contractDTO := dto.NewContractDTO{
-		TaskId:        task.Id,
-		Source:        request.ContractSource,
-		CompiledCode:  compiledContract.CompiledCode,
-		AbiDefinition: compiledContract.AbiDefinition,
-		Name:          compiledContract.Name,
+		TaskId:             task.Id,
+		Source:             request.ContractSource,
+		DeploymentBytecode: compiledContract.DeploymentBytecode,
+		RuntimeBytecode:    compiledContract.RuntimeBytecode,
+		AbiDefinition:      compiledContract.AbiDefinition,
+		Name:               compiledContract.Name,
 	}
 	contract, err := ctrl.contractService.Create(&contractDTO)
 	if err != nil {

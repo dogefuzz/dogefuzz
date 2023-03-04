@@ -94,7 +94,7 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 // 		fileWithoutExtension := file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]
 // 		contract, err := compiler.CompileSource(fileWithoutExtension, string(f))
 // 		assert.Nil(s.T(), err, fmt.Sprintf("error on %s", file.Name()))
-// 		assert.NotEqual(s.T(), "0x", contract.CompiledCode)
+// 		assert.NotEqual(s.T(), "0x", contract.DeploymentBytecode)
 
 // 		parsedAbi, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 // 		assert.Nil(s.T(), err, fmt.Sprintf("error on %s", file.Name()))
