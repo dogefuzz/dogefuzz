@@ -34,6 +34,7 @@ func (m *functionMapper) MapDTOToEntity(c *dto.FunctionDTO) *entities.Function {
 
 func (m *functionMapper) MapEntityToDTO(c *entities.Function) *dto.FunctionDTO {
 	return &dto.FunctionDTO{
+		Id:                      c.Id,
 		Name:                    c.Name,
 		NumberOfArgs:            c.NumberOfArgs,
 		IsChangingContractState: c.IsChangingContractState,
