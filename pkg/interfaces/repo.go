@@ -28,6 +28,7 @@ type TaskRepo interface {
 	Update(tx *gorm.DB, task *entities.Task) error
 	FindNotFinishedTasksThatDontHaveIncompletedTransactions(tx *gorm.DB) ([]entities.Task, error)
 	FindNotFinishedAndExpired(tx *gorm.DB) ([]entities.Task, error)
+	FindNotFinishedAndHaveDeployedContract(tx *gorm.DB) ([]entities.Task, error)
 }
 
 type TransactionRepo interface {

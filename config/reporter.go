@@ -10,4 +10,5 @@ type ReporterConfig struct {
 	Type            reporter.ReporterType `mapstructure:"type"`
 	WebhookEndpoint string                `mapstructure:"webhookEndpoint"`
 	WebhookTimeout  time.Duration         `mapstructure:"webhookTimeout"`
+	FileOutputPath  string                `mapstructure:"fileOutputPath"`
 }

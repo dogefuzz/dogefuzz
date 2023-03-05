@@ -17,6 +17,7 @@ func NewContractDTOGen() *dto.NewContractDTO {
 		RuntimeBytecode:    gofakeit.LetterN(255),
 		AbiDefinition:      gofakeit.LetterN(255),
 		TaskId:             gofakeit.LetterN(255),
+		Status:             common.RandomChoice([]common.ContractStatus{common.CONTRACT_CREATED, common.CONTRACT_DEPLOYED}),
 	}
 
 }
@@ -25,6 +26,7 @@ func ContractDTOGen() *dto.ContractDTO {
 	return &dto.ContractDTO{
 		Id:                 gofakeit.LetterN(255),
 		TaskId:             gofakeit.LetterN(255),
+		Status:             common.RandomChoice([]common.ContractStatus{common.CONTRACT_CREATED, common.CONTRACT_DEPLOYED}),
 		Address:            SmartContractGen(),
 		Source:             gofakeit.LetterN(255),
 		DeploymentBytecode: gofakeit.LetterN(255),

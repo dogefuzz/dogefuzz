@@ -1,6 +1,8 @@
 package oracle
 
 import (
+	"strings"
+
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 )
@@ -29,55 +31,55 @@ const (
 func NewEventsSnapshot(oracles []dto.OracleEvent) common.EventsSnapshot {
 	snapshot := common.EventsSnapshot{}
 	for _, oracle := range oracles {
-		if oracle == CALLFAILED {
+		if strings.Contains(string(oracle), CALLFAILED) {
 			snapshot.CallFailed = true
 		}
-		if oracle == REENTRANCY {
+		if strings.Contains(string(oracle), REENTRANCY) {
 			snapshot.Reentrancy = true
 		}
-		if oracle == REPEATED {
+		if strings.Contains(string(oracle), REPEATED) {
 			snapshot.RepeatedCall = true
 		}
-		if oracle == ETHERTRANSFER {
+		if strings.Contains(string(oracle), ETHERTRANSFER) {
 			snapshot.EtherTransfer = true
 		}
-		if oracle == ETHERTRANSFERFAILED {
+		if strings.Contains(string(oracle), ETHERTRANSFERFAILED) {
 			snapshot.EtherTransferFailed = true
 		}
-		if oracle == CALLETHERETRANSFERFAILED {
+		if strings.Contains(string(oracle), CALLETHERETRANSFERFAILED) {
 			snapshot.CallEtherFailed = true
 		}
-		if oracle == GASLESSSEND {
+		if strings.Contains(string(oracle), GASLESSSEND) {
 			snapshot.GaslessSend = true
 		}
-		if oracle == DELEGATE {
+		if strings.Contains(string(oracle), DELEGATE) {
 			snapshot.Delegate = true
 		}
-		if oracle == EXCEPTIONDISORDER {
+		if strings.Contains(string(oracle), EXCEPTIONDISORDER) {
 			snapshot.ExceptionDisorder = true
 		}
-		if oracle == SENDOP {
+		if strings.Contains(string(oracle), SENDOP) {
 			snapshot.SendOp = true
 		}
-		if oracle == CALLOP {
+		if strings.Contains(string(oracle), CALLOP) {
 			snapshot.CallOp = true
 		}
-		if oracle == CALLEXCEPTION {
+		if strings.Contains(string(oracle), CALLEXCEPTION) {
 			snapshot.CallException = true
 		}
-		if oracle == UNKNOWCALL {
+		if strings.Contains(string(oracle), UNKNOWCALL) {
 			snapshot.UnknowCall = true
 		}
-		if oracle == STORAGECHANGE {
+		if strings.Contains(string(oracle), STORAGECHANGE) {
 			snapshot.StorageChanged = true
 		}
-		if oracle == TIMESTAMP {
+		if strings.Contains(string(oracle), TIMESTAMP) {
 			snapshot.Timestamp = true
 		}
-		if oracle == BLOCKHAHSH {
+		if strings.Contains(string(oracle), BLOCKHAHSH) {
 			snapshot.BlockHash = true
 		}
-		if oracle == BLOCKNUMBER {
+		if strings.Contains(string(oracle), BLOCKNUMBER) {
 			snapshot.BlockNumber = true
 		}
 	}

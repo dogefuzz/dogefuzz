@@ -93,6 +93,13 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 		return
 	}
 
+	task.Status = common.TASK_DONE
+	err = l.taskService.Update(task)
+	if err != nil {
+		l.logger.Sugar().Errorf("the task %s could not be updated", task.Id)
+		return
+	}
+
 	l.logger.Sugar().Infof("the execution report for the task %s was successfully sent", task.Id)
 }
 

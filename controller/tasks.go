@@ -100,6 +100,7 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 
 	contractDTO := dto.NewContractDTO{
 		TaskId:             task.Id,
+		Status:             common.CONTRACT_CREATED,
 		Source:             request.ContractSource,
 		DeploymentBytecode: compiledContract.DeploymentBytecode,
 		RuntimeBytecode:    compiledContract.RuntimeBytecode,

@@ -79,3 +79,15 @@ func (s *taskService) FindNotFinishedAndExpired() ([]*dto.TaskDTO, error) {
 	}
 	return dtos, nil
 }
+
+func (s *taskService) FindNotFinishedAndHaveDeployedContract() ([]*dto.TaskDTO, error) {
+	tasks, err := s.taskRepo.FindNotFinishedAndHaveDeployedContract(s.connection.GetDB())
+	if err != nil {
+		return nil, err
+	}
+	dtos := make([]*dto.TaskDTO, len(tasks))
+	for idx, task := range tasks {
+		dtos[idx] = s.taskMapper.MapEntityToDTO(&task)
+	}
+	return dtos, nil
+}

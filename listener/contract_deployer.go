@@ -70,6 +70,11 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 		return
 	}
 
+	if contract.Status == common.CONTRACT_DEPLOYED {
+		l.logger.Sugar().Warnf("the contract %s was already deployed", contract.Id)
+		return
+	}
+
 	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when parsing contract ABI definition: %v", err)
@@ -137,6 +142,7 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 	l.logger.Sugar().Debugf("genereting contract's CFG for contract %s", contract.Id)
 	contract.DistanceMap = distance.ComputeDistanceMap(*cfg, l.cfg.FuzzerConfig.CritialInstructions)
 	l.logger.Sugar().Debugf("genereting contract's distance map for contract %s", contract.Id)
+	contract.Status = common.CONTRACT_DEPLOYED
 
 	err = l.contractService.Update(contract)
 	if err != nil {

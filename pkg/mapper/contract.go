@@ -17,6 +17,7 @@ func NewContractMapper() *contractMapper {
 func (m *contractMapper) MapNewDTOToEntity(d *dto.NewContractDTO) *entities.Contract {
 	return &entities.Contract{
 		TaskId:             d.TaskId,
+		Status:             d.Status,
 		Source:             d.Source,
 		DeploymentBytecode: d.DeploymentBytecode,
 		RuntimeBytecode:    d.RuntimeBytecode,
@@ -32,6 +33,7 @@ func (m *contractMapper) MapDTOToEntity(d *dto.ContractDTO) *entities.Contract {
 	return &entities.Contract{
 		Id:                 d.Id,
 		TaskId:             d.TaskId,
+		Status:             d.Status,
 		Address:            d.Address,
 		Source:             d.Source,
 		DeploymentBytecode: d.DeploymentBytecode,
@@ -52,6 +54,7 @@ func (m *contractMapper) MapEntityToDTO(c *entities.Contract) *dto.ContractDTO {
 	return &dto.ContractDTO{
 		Id:                 c.Id,
 		TaskId:             c.TaskId,
+		Status:             c.Status,
 		Address:            c.Address,
 		Source:             c.Source,
 		DeploymentBytecode: c.DeploymentBytecode,

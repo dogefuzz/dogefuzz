@@ -87,7 +87,16 @@
       "address": ["0x149efdd75031aa34c01a01da9fb8e859c5166b49", "0xae02fb2776c3e3051e25af26712b6b34b70e5266"]
     }
   },
-  "job": { "enabledJobs": ["tasks-checker", "transactions-checker", "transactions-timeout"] },
-  "event": { "enabledListeners": ["contract-deployer", "execution-analytics", "fuzzer", "reporter"] },
-  "reporter": { "type": "console", "webhookEndpoint": "http://localhost:3000", "webhookTimeout": "30s" }
+  "job": {
+    "enabledJobs": ["tasks-checker", "transactions-checker", "transactions-timeout"]
+  },
+  "event": {
+    "enabledListeners": ["contract-deployer", "execution-analytics", "fuzzer", "reporter"]
+  },
+  "reporter": {
+    "type": "file",
+    "webhookEndpoint": "http://localhost:3000",
+    "webhookTimeout": "30s",
+    "fileOutputPath": "result.json"
+  }
 }
