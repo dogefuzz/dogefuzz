@@ -25,6 +25,7 @@ type transactionsController struct {
 	logger                   *zap.Logger
 	transactionService       interfaces.TransactionService
 	taskService              interfaces.TaskService
+	contractService          interfaces.ContractService
 	instrumentExecutionTopic interfaces.Topic[bus.InstrumentExecutionEvent]
 	maxRetries               int
 }
@@ -34,6 +35,7 @@ func NewTransactionsController(e Env) *transactionsController {
 		logger:                   e.Logger(),
 		transactionService:       e.TransactionService(),
 		taskService:              e.TaskService(),
+		contractService:          e.ContractService(),
 		instrumentExecutionTopic: e.InstrumentExecutionTopic(),
 		maxRetries:               1,
 	}
@@ -43,6 +45,11 @@ func (ctrl *transactionsController) StoreDetectedWeaknesses(c *gin.Context) {
 	var request dto.NewWeaknessDTO
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if request.TxHash == "" {
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 
@@ -66,8 +73,14 @@ func (ctrl *transactionsController) StoreDetectedWeaknesses(c *gin.Context) {
 		return
 	}
 
+	if task.Status == common.TASK_DONE {
+		ctrl.logger.Info("as the task is done, this weaknesses detection will be ignored")
+		c.AbortWithStatus(200)
+		return
+	}
+
 	snapshot := oracle.NewEventsSnapshot(request.OracleEvents)
-	var weaknesses []string
+	weaknesses := make([]string, 0)
 	oracles := oracle.GetOracles(task.Detectors)
 	for _, o := range oracles {
 		if o.Detect(snapshot) {
@@ -97,6 +110,11 @@ func (ctrl *transactionsController) StoreTransactionExecution(c *gin.Context) {
 		return
 	}
 
+	if request.TxHash == "" {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
 	transaction, err := ctrl.waitForTransactionToBeStoredInDatabase(request.TxHash)
 	if err != nil {
 		if errors.Is(err, ErrTransactionCouldNotBeFoundInDatabase) {
@@ -104,6 +122,22 @@ func (ctrl *transactionsController) StoreTransactionExecution(c *gin.Context) {
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	task, err := ctrl.taskService.Get(transaction.TaskId)
+	if err != nil {
+		if errors.Is(err, service.ErrTaskNotFound) {
+			c.AbortWithStatus(404)
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if task.Status == common.TASK_DONE {
+		ctrl.logger.Info("as the task is done, this execution analytics will be ignored")
+		c.AbortWithStatus(200)
 		return
 	}
 

@@ -6,13 +6,13 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
-func GetTypeHandler(typ abi.Type) (interfaces.TypeHandler, error) {
+func GetTypeHandler(typ abi.Type, blockchainContext *BlockchainContext) (interfaces.TypeHandler, error) {
 	if typ.Elem != nil {
 		switch typ.GetType() {
 		case common.SliceT(typ.Elem.GetType()):
-			return NewSliceHandler(typ)
+			return NewSliceHandler(typ, blockchainContext)
 		case common.ArrayT(typ.Size, typ.Elem.GetType()):
-			return NewArrayHandler(typ.Size, typ)
+			return NewArrayHandler(typ.Size, typ, blockchainContext)
 		default:
 			return nil, ErrNotImplementedType(typ.GetType())
 		}
@@ -45,11 +45,11 @@ func GetTypeHandler(typ abi.Type) (interfaces.TypeHandler, error) {
 	case common.StringT:
 		return NewStringHandler(), nil
 	case common.AddressT:
-		return NewAddressHandler(), nil
+		return NewAddressHandler(blockchainContext.AvailableAddresses)
 	case common.FixedBytesT(typ.Size):
-		return NewFixedBytesHandler(typ)
+		return NewFixedBytesHandler(typ, blockchainContext)
 	case common.BytesT:
-		return NewBytesHandler(typ)
+		return NewBytesHandler(typ, blockchainContext)
 	default:
 		return nil, ErrNotImplementedType(typ.GetType())
 	}

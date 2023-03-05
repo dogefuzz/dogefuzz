@@ -16,28 +16,27 @@ import (
 
 type agent struct {
 	client *ethclient.Client
-	wallet interfaces.Wallet
 	cfg    config.GethConfig
 }
 
 func NewAgent(cfg config.GethConfig) (*agent, error) {
-	wallet, err := NewWalletFromPrivateKeyHex(cfg.AgentPrivateKeyHex)
-	if err != nil {
-		return nil, err
-	}
 
 	client, err := ethclient.Dial(cfg.NodeAddress)
 	if err != nil {
 		return nil, err
 	}
 
-	return &agent{client, wallet, cfg}, nil
+	return &agent{client, cfg}, nil
 }
 
-func (d *agent) Send(ctx context.Context, nonce uint64, contract *common.Contract, functionName string, args ...interface{}) (string, error) {
-	_ = nonce
+func (d *agent) Send(ctx context.Context, wallet interfaces.Wallet, contract *common.Contract, functionName string, args ...interface{}) (string, error) {
 
 	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
+	if err != nil {
+		return "", err
+	}
+
+	nonce, err := d.client.PendingNonceAt(ctx, wallet.GetAddress())
 	if err != nil {
 		return "", err
 	}
@@ -49,13 +48,13 @@ func (d *agent) Send(ctx context.Context, nonce uint64, contract *common.Contrac
 		return "", err
 	}
 
-	auth, err := bind.NewKeyedTransactorWithChainID(d.wallet.GetPrivateKey(), big.NewInt(d.cfg.ChainID))
+	auth, err := bind.NewKeyedTransactorWithChainID(wallet.GetPrivateKey(), big.NewInt(d.cfg.ChainID))
 	if err != nil {
 		return "", err
 	}
 
 	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)
+	auth.Value = big.NewInt(common.RandomChoice([]int64{0, 100000000000}))
 	auth.GasLimit = uint64(2000000)
 	auth.GasPrice = gasPrice
 
@@ -65,12 +64,4 @@ func (d *agent) Send(ctx context.Context, nonce uint64, contract *common.Contrac
 	}
 
 	return tx.Hash().Hex(), nil
-}
-
-func (a *agent) GetNonce(ctx context.Context) (uint64, error) {
-	nonce, err := a.client.PendingNonceAt(ctx, a.wallet.GetAddress())
-	if err != nil {
-		return 0, err
-	}
-	return nonce, err
 }

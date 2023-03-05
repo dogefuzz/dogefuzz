@@ -17,18 +17,27 @@ var ErrInvalidArray = errors.New("the provided json does not correspond to a arr
 var ErrInvalidArraySize = errors.New("the provided json does not correspond to a array with size required by this handler")
 
 type arrayHandler struct {
-	size    int
-	typ     abi.Type
-	value   interface{}
-	handler interfaces.TypeHandler
+	size              int
+	typ               abi.Type
+	value             interface{}
+	handler           interfaces.TypeHandler
+	blockchainContext *BlockchainContext
 }
 
-func NewArrayHandler(size int, typ abi.Type) (*arrayHandler, error) {
-	handler, err := GetTypeHandler(*typ.Elem)
+func NewArrayHandler(size int, typ abi.Type, blockchainContext *BlockchainContext) (*arrayHandler, error) {
+	handler, err := GetTypeHandler(*typ.Elem, blockchainContext)
 	if err != nil {
 		return nil, err
 	}
-	return &arrayHandler{size: size, typ: typ, value: make([]any, size), handler: handler}, nil
+	instance := &arrayHandler{
+		size:              size,
+		typ:               typ,
+		value:             make([]any, size),
+		handler:           handler,
+		blockchainContext: blockchainContext,
+	}
+
+	return instance, nil
 }
 
 func (h *arrayHandler) GetValue() interface{} {
@@ -46,7 +55,7 @@ func (h *arrayHandler) SetValue(value interface{}) {
 }
 
 func (h *arrayHandler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
-	handler, err := GetTypeHandler(h.typ)
+	handler, err := GetTypeHandler(h.typ, h.blockchainContext)
 	if err != nil {
 		return err
 	}

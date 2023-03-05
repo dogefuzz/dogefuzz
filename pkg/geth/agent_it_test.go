@@ -8,12 +8,13 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/solc"
 	"github.com/dogefuzz/dogefuzz/test/it"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
+	gethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 
@@ -67,11 +68,12 @@ contract HelloWorld {
 	agent, err := NewAgent(it.GETH_CONFIG)
 	assert.Nil(s.T(), err)
 
-	nonce, err := agent.GetNonce(context.Background())
+	privateKey := common.RandomChoice([]string{it.GETH_CONFIG.AgentPrivateKeyHex, it.GETH_CONFIG.DeployerPrivateKeyHex})
+	wallet, err := NewWalletFromPrivateKeyHex(privateKey)
 	assert.Nil(s.T(), err)
 
 	newWord := gofakeit.Word()
-	tx, err = agent.Send(context.Background(), nonce, contract, "setName", newWord)
+	tx, err = agent.Send(context.Background(), wallet, contract, "setName", newWord)
 	assert.Nil(s.T(), err)
 
 	client, err := ethclient.Dial(it.GETH_CONFIG.NodeAddress)
@@ -79,7 +81,7 @@ contract HelloWorld {
 
 	var receipt *types.Receipt
 	for {
-		receipt, err = client.TransactionReceipt(context.Background(), common.HexToHash(tx))
+		receipt, err = client.TransactionReceipt(context.Background(), gethcommon.HexToHash(tx))
 		if err != nil {
 			if err != ethereum.NotFound {
 				assert.Nil(s.T(), err)
@@ -95,7 +97,7 @@ contract HelloWorld {
 	parsedAbi, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 	assert.Nil(s.T(), err)
 
-	bindedContract := bind.NewBoundContract(common.HexToAddress(address), parsedAbi, client, client, client)
+	bindedContract := bind.NewBoundContract(gethcommon.HexToAddress(address), parsedAbi, client, client, client)
 	var results []interface{}
 	err = bindedContract.Call(nil, &results, "greet")
 	assert.Nil(s.T(), err)
@@ -117,7 +119,7 @@ contract HelloWorld {
 // 		fileWithoutExtension := file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]
 // 		contract, err := compiler.CompileSource(fileWithoutExtension, string(f))
 // 		assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s", file.Name()))
-// 		assert.NotEqual(s.T(), "0x", contract.CompiledCode)
+// 		assert.NotEqual(s.T(), "0x", contract.DeploymentBytecode)
 
 // 		parsedAbi, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 // 		assert.Nil(s.T(), err, fmt.Sprintf("error on contract %s", file.Name()))

@@ -114,6 +114,18 @@ func (s *transactionService) FindByTaskId(taskId string) ([]*dto.TransactionDTO,
 	return transactionDTOs, nil
 }
 
+func (s *transactionService) FindDoneByTaskId(taskId string) ([]*dto.TransactionDTO, error) {
+	transactions, err := s.transactionRepo.FindDoneByTaskId(s.connection.GetDB(), taskId)
+	if err != nil {
+		return nil, err
+	}
+	transactionDTOs := make([]*dto.TransactionDTO, len(transactions))
+	for idx, transaction := range transactions {
+		transactionDTOs[idx] = s.transactionMapper.MapEntityToDTO(&transaction)
+	}
+	return transactionDTOs, nil
+}
+
 func (s *transactionService) FindTransactionsByFunctionNameAndOrderByTimestamp(functionName string, limit int64) ([]*dto.TransactionDTO, error) {
 	transactions, err := s.transactionRepo.FindTransactionsByFunctionNameAndOrderByTimestamp(s.connection.GetDB(), functionName, limit)
 	if err != nil {

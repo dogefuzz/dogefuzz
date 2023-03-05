@@ -40,6 +40,8 @@ func (s *reporterService) getReporter(reporterConfig config.ReporterConfig) (int
 		return reporter.NewConsoleReporter(os.Stdout), nil
 	case reporter.WEBHOOK_REPOTER:
 		return reporter.NewWebhookReporter(s.client, reporterConfig.WebhookEndpoint, reporterConfig.WebhookTimeout), nil
+	case reporter.FILE_REPORTER:
+		return reporter.NewFileReporter(reporterConfig.FileOutputPath), nil
 	default:
 		return nil, ErrReporterNotImplemented
 	}

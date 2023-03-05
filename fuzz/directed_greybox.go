@@ -3,17 +3,19 @@ package fuzz
 import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
-	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 
 type directedGreyboxFuzzer struct {
 	powerSchedule interfaces.PowerSchedule
+
+	solidityService interfaces.SolidityService
 }
 
 func NewDirectedGreyboxFuzzer(e env) *directedGreyboxFuzzer {
 	return &directedGreyboxFuzzer{
-		powerSchedule: e.PowerSchedule(),
+		powerSchedule:   e.PowerSchedule(),
+		solidityService: e.SolidityService(),
 	}
 }
 
@@ -27,7 +29,7 @@ func (f *directedGreyboxFuzzer) GenerateInput(method abi.Method) ([]interface{},
 
 	inputs := make([]interface{}, len(method.Inputs))
 	for inputsIdx, inputDefinition := range method.Inputs {
-		handler, err := solidity.GetTypeHandler(inputDefinition.Type)
+		handler, err := f.solidityService.GetTypeHandlerWithContext(inputDefinition.Type)
 		if err != nil {
 			return nil, err
 		}

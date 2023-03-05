@@ -23,10 +23,10 @@ func NewTransactionsCheckerJob(e Env) *transactionsCheckerJob {
 }
 
 func (j *transactionsCheckerJob) Id() string         { return "transactions-checker" }
-func (j *transactionsCheckerJob) CronConfig() string { return "*/5 * * * * *" }
+func (j *transactionsCheckerJob) CronConfig() string { return "* * * * * *" }
 
 func (j *transactionsCheckerJob) Handler() {
-	tasks, err := j.taskService.FindNotFinishedTasksThatDontHaveIncompletedTransactions()
+	tasks, err := j.taskService.FindNotFinishedAndHaveDeployedContract()
 	if err != nil {
 		j.logger.Sugar().Errorf("an error occured when retrieving tasks that are still running: %v", err)
 		return

@@ -9,8 +9,7 @@ import (
 )
 
 type Agent interface {
-	Send(ctx context.Context, nonce uint64, contract *common.Contract, functionName string, args ...interface{}) (string, error)
-	GetNonce(ctx context.Context) (uint64, error)
+	Send(ctx context.Context, wallet Wallet, contract *common.Contract, functionName string, args ...interface{}) (string, error)
 }
 
 type Deployer interface {

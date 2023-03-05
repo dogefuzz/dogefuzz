@@ -31,6 +31,14 @@ func (r *contractRepo) Update(tx *gorm.DB, updatedContract *entities.Contract) e
 	return tx.Model(&contract).Updates(updatedContract).Error
 }
 
+func (r *contractRepo) FindAll(tx *gorm.DB) ([]entities.Contract, error) {
+	var contracts []entities.Contract
+	if err := tx.Find(&contracts).Error; err != nil {
+		return nil, err
+	}
+	return contracts, nil
+}
+
 func (r *contractRepo) Find(tx *gorm.DB, id string) (*entities.Contract, error) {
 	var contract entities.Contract
 	if err := tx.First(&contract, "id = ?", id).Error; err != nil {

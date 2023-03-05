@@ -11,7 +11,6 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
-	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -22,6 +21,7 @@ type tasksController struct {
 	taskService      interfaces.TaskService
 	contractService  interfaces.ContractService
 	functionService  interfaces.FunctionService
+	solidityService  interfaces.SolidityService
 	taskStartTopic   interfaces.Topic[bus.TaskStartEvent]
 	solidityCompiler interfaces.SolidityCompiler
 }
@@ -32,6 +32,7 @@ func NewTasksController(e Env) *tasksController {
 		taskService:      e.TaskService(),
 		contractService:  e.ContractService(),
 		functionService:  e.FunctionService(),
+		solidityService:  e.SolidityService(),
 		taskStartTopic:   e.TaskStartTopic(),
 		solidityCompiler: e.SolidityCompiler(),
 	}
@@ -98,11 +99,13 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	}
 
 	contractDTO := dto.NewContractDTO{
-		TaskId:        task.Id,
-		Source:        request.ContractSource,
-		CompiledCode:  compiledContract.CompiledCode,
-		AbiDefinition: compiledContract.AbiDefinition,
-		Name:          compiledContract.Name,
+		TaskId:             task.Id,
+		Status:             common.CONTRACT_CREATED,
+		Source:             request.ContractSource,
+		DeploymentBytecode: compiledContract.DeploymentBytecode,
+		RuntimeBytecode:    compiledContract.RuntimeBytecode,
+		AbiDefinition:      compiledContract.AbiDefinition,
+		Name:               compiledContract.Name,
 	}
 	contract, err := ctrl.contractService.Create(&contractDTO)
 	if err != nil {
@@ -149,7 +152,7 @@ func (ctrl *tasksController) tryValidateArgs(parsedABI abi.ABI, args []string) e
 	for idx, arg := range args {
 		definition := parsedABI.Constructor.Inputs[idx]
 
-		handler, err := solidity.GetTypeHandler(definition.Type)
+		handler, err := ctrl.solidityService.GetTypeHandlerWithContext(definition.Type)
 		if err != nil {
 			return err
 		}

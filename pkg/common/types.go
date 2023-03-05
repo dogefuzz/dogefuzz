@@ -35,11 +35,19 @@ const (
 	DIRECTED_GREYBOX_FUZZING FuzzingType = "directed_greybox"
 )
 
+type ContractStatus string
+
+const (
+	CONTRACT_CREATED  ContractStatus = "running"
+	CONTRACT_DEPLOYED ContractStatus = "deployed"
+)
+
 type TaskStatus string
 
 const (
 	TASK_RUNNING TaskStatus = "running"
 	TASK_DONE    TaskStatus = "done"
+	TASK_REPORT  TaskStatus = "report"
 )
 
 type TransactionStatus string

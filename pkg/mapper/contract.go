@@ -16,11 +16,13 @@ func NewContractMapper() *contractMapper {
 
 func (m *contractMapper) MapNewDTOToEntity(d *dto.NewContractDTO) *entities.Contract {
 	return &entities.Contract{
-		TaskId:        d.TaskId,
-		Source:        d.Source,
-		CompiledCode:  d.CompiledCode,
-		AbiDefinition: d.AbiDefinition,
-		Name:          d.Name,
+		TaskId:             d.TaskId,
+		Status:             d.Status,
+		Source:             d.Source,
+		DeploymentBytecode: d.DeploymentBytecode,
+		RuntimeBytecode:    d.RuntimeBytecode,
+		AbiDefinition:      d.AbiDefinition,
+		Name:               d.Name,
 	}
 }
 
@@ -29,15 +31,17 @@ func (m *contractMapper) MapDTOToEntity(d *dto.ContractDTO) *entities.Contract {
 	distanceMap, _ := json.Marshal(d.DistanceMap)
 
 	return &entities.Contract{
-		Id:            d.Id,
-		TaskId:        d.TaskId,
-		Address:       d.Address,
-		Source:        d.Source,
-		CompiledCode:  d.CompiledCode,
-		AbiDefinition: d.AbiDefinition,
-		Name:          d.Name,
-		CFG:           string(cfg),
-		DistanceMap:   string(distanceMap),
+		Id:                 d.Id,
+		TaskId:             d.TaskId,
+		Status:             d.Status,
+		Address:            d.Address,
+		Source:             d.Source,
+		DeploymentBytecode: d.DeploymentBytecode,
+		RuntimeBytecode:    d.RuntimeBytecode,
+		AbiDefinition:      d.AbiDefinition,
+		Name:               d.Name,
+		CFG:                string(cfg),
+		DistanceMap:        string(distanceMap),
 	}
 }
 
@@ -48,23 +52,26 @@ func (m *contractMapper) MapEntityToDTO(c *entities.Contract) *dto.ContractDTO {
 	_ = json.Unmarshal([]byte(c.DistanceMap), &distanceMap)
 
 	return &dto.ContractDTO{
-		Id:            c.Id,
-		TaskId:        c.TaskId,
-		Address:       c.Address,
-		Source:        c.Source,
-		CompiledCode:  c.CompiledCode,
-		AbiDefinition: c.AbiDefinition,
-		Name:          c.Name,
-		CFG:           cfg,
-		DistanceMap:   distanceMap,
+		Id:                 c.Id,
+		TaskId:             c.TaskId,
+		Status:             c.Status,
+		Address:            c.Address,
+		Source:             c.Source,
+		DeploymentBytecode: c.DeploymentBytecode,
+		RuntimeBytecode:    c.RuntimeBytecode,
+		AbiDefinition:      c.AbiDefinition,
+		Name:               c.Name,
+		CFG:                cfg,
+		DistanceMap:        distanceMap,
 	}
 }
 
 func (m *contractMapper) MapDTOToCommon(c *dto.ContractDTO) *common.Contract {
 	return &common.Contract{
-		Address:       c.Address,
-		AbiDefinition: c.AbiDefinition,
-		CompiledCode:  c.CompiledCode,
-		Name:          c.Name,
+		Address:            c.Address,
+		AbiDefinition:      c.AbiDefinition,
+		DeploymentBytecode: c.DeploymentBytecode,
+		RuntimeBytecode:    c.RuntimeBytecode,
+		Name:               c.Name,
 	}
 }

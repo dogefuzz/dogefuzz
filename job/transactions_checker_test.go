@@ -44,7 +44,7 @@ func (s *TransactionsCheckerJobTestSuite) TestCronConfig_ShouldReturnEvery5Secon
 
 	cronConfig := j.CronConfig()
 
-	assert.Equal(s.T(), "*/5 * * * * *", cronConfig)
+	assert.Equal(s.T(), "* * * * * *", cronConfig)
 }
 
 func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldFindTransactionsToBeFinishedAndPublishFinishEvent_WhenServiceReturnListOfTransactions() {
@@ -53,7 +53,7 @@ func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldFindTransactionsToBe
 		tasks[idx] = generators.TaskDTOGen()
 		s.taskInputRequestTopicMock.On("Publish", bus.TaskInputRequestEvent{TaskId: tasks[idx].Id})
 	}
-	s.taskServiceMock.On("FindNotFinishedTasksThatDontHaveIncompletedTransactions").Return(tasks, nil)
+	s.taskServiceMock.On("FindNotFinishedAndHaveDeployedContract").Return(tasks, nil)
 	j := NewTransactionsCheckerJob(s.env)
 
 	j.Handler()
@@ -65,7 +65,7 @@ func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldFindTransactionsToBe
 func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldReturnError_WhenServiceReturnReturnError() {
 	tasks := make([]*dto.TaskDTO, 0)
 	err := errors.New("error example")
-	s.taskServiceMock.On("FindNotFinishedTasksThatDontHaveIncompletedTransactions").Return(tasks, err)
+	s.taskServiceMock.On("FindNotFinishedAndHaveDeployedContract").Return(tasks, err)
 	j := NewTransactionsCheckerJob(s.env)
 
 	j.Handler()
@@ -76,7 +76,7 @@ func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldReturnError_WhenServ
 
 func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldEmitEvent_WhenServiceReturnAnEmptyListOfTransactions() {
 	tasks := make([]*dto.TaskDTO, 0)
-	s.taskServiceMock.On("FindNotFinishedTasksThatDontHaveIncompletedTransactions").Return(tasks, nil)
+	s.taskServiceMock.On("FindNotFinishedAndHaveDeployedContract").Return(tasks, nil)
 	j := NewTransactionsCheckerJob(s.env)
 
 	j.Handler()

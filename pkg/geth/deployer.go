@@ -64,7 +64,7 @@ func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args .
 	auth.GasLimit = uint64(2000000)
 	auth.GasPrice = gasPrice
 
-	_, tx, _, err := bind.DeployContract(auth, parsedABI, gethcommon.FromHex(contract.CompiledCode), d.client, args...)
+	_, tx, _, err := bind.DeployContract(auth, parsedABI, gethcommon.FromHex(contract.DeploymentBytecode), d.client, args...)
 	if err != nil {
 		return "", "", err
 	}

@@ -10,6 +10,7 @@ import (
 type ContractRepo interface {
 	Create(tx *gorm.DB, contract *entities.Contract) error
 	Update(tx *gorm.DB, contract *entities.Contract) error
+	FindAll(tx *gorm.DB) ([]entities.Contract, error)
 	Find(tx *gorm.DB, id string) (*entities.Contract, error)
 	FindByTaskId(tx *gorm.DB, taskId string) (*entities.Contract, error)
 }
@@ -27,6 +28,7 @@ type TaskRepo interface {
 	Update(tx *gorm.DB, task *entities.Task) error
 	FindNotFinishedTasksThatDontHaveIncompletedTransactions(tx *gorm.DB) ([]entities.Task, error)
 	FindNotFinishedAndExpired(tx *gorm.DB) ([]entities.Task, error)
+	FindNotFinishedAndHaveDeployedContract(tx *gorm.DB) ([]entities.Task, error)
 }
 
 type TransactionRepo interface {
@@ -35,6 +37,7 @@ type TransactionRepo interface {
 	Update(tx *gorm.DB, transaction *entities.Transaction) error
 	FindByBlockchainHash(tx *gorm.DB, blockchainHash string) (*entities.Transaction, error)
 	FindByTaskId(tx *gorm.DB, taskId string) ([]entities.Transaction, error)
+	FindDoneByTaskId(tx *gorm.DB, taskId string) ([]entities.Transaction, error)
 	FindTransactionsByFunctionNameAndOrderByTimestamp(tx *gorm.DB, functionName string, limit int64) ([]entities.Transaction, error)
 	FindRunningAndCreatedBeforeThreshold(tx *gorm.DB, dateThreshold time.Time) ([]entities.Transaction, error)
 }

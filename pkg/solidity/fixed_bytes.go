@@ -22,14 +22,14 @@ type fixedBytesHandler struct {
 	handler interfaces.TypeHandler
 }
 
-func NewFixedBytesHandler(typ abi.Type) (*fixedBytesHandler, error) {
+func NewFixedBytesHandler(typ abi.Type, blockchainContext *BlockchainContext) (*fixedBytesHandler, error) {
 	val := make([]byte, typ.Size)
 	uint8Typ, err := abi.NewType("uint8", "", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	handler, err := GetTypeHandler(uint8Typ)
+	handler, err := GetTypeHandler(uint8Typ, blockchainContext)
 	if err != nil {
 		return nil, err
 	}

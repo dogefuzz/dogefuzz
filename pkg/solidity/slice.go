@@ -20,14 +20,21 @@ type sliceHandler struct {
 	typ     abi.Type
 	value   interface{}
 	handler interfaces.TypeHandler
+	blockchainContext *BlockchainContext
 }
 
-func NewSliceHandler(typ abi.Type) (*sliceHandler, error) {
-	handler, err := GetTypeHandler(*typ.Elem)
+func NewSliceHandler(typ abi.Type, blockchainContext *BlockchainContext) (*sliceHandler, error) {
+	handler, err := GetTypeHandler(*typ.Elem, blockchainContext)
 	if err != nil {
 		return nil, err
 	}
-	return &sliceHandler{typ: typ, value: make([]any, 0), handler: handler}, nil
+	instance := &sliceHandler{
+		typ: typ, 
+		value: make([]any, 0), 
+		handler: handler,
+		blockchainContext: blockchainContext,
+	}
+	return instance, nil
 }
 
 func (h *sliceHandler) GetValue() interface{} {
@@ -41,7 +48,7 @@ func (h *sliceHandler) SetValue(value interface{}) {
 func (h *sliceHandler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
 	rand.Seed(time.Now().UnixNano())
 
-	handler, err := GetTypeHandler(h.typ)
+	handler, err := GetTypeHandler(h.typ, h.blockchainContext)
 	if err != nil {
 		return err
 	}

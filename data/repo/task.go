@@ -58,3 +58,11 @@ func (r *taskRepo) FindNotFinishedAndExpired(tx *gorm.DB) ([]entities.Task, erro
 	}
 	return tasks, nil
 }
+
+func (r *taskRepo) FindNotFinishedAndHaveDeployedContract(tx *gorm.DB) ([]entities.Task, error) {
+	var tasks []entities.Task
+	if err := tx.Raw("SELECT * FROM tasks t WHERE EXISTS (SELECT * FROM contracts c WHERE c.task_id = t.id AND c.status = ?) AND t.status = ?", common.CONTRACT_DEPLOYED, common.TASK_RUNNING).Find(&tasks).Error; err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}

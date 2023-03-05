@@ -13,15 +13,15 @@ func ContractGen() *entities.Contract {
 	cfg, _ := json.Marshal(CFGGen())
 	distanceMap, _ := json.Marshal(DistanceMapGen())
 	return &entities.Contract{
-		Id:            gofakeit.LetterN(255),
-		TaskId:        gofakeit.LetterN(255),
-		Address:       SmartContractGen(),
-		Source:        gofakeit.LetterN(255),
-		CompiledCode:  gofakeit.LetterN(255),
-		AbiDefinition: gofakeit.LetterN(255),
-		Name:          gofakeit.Name(),
-		CFG:           string(cfg),
-		DistanceMap:   string(distanceMap),
+		Id:                 gofakeit.LetterN(255),
+		TaskId:             gofakeit.LetterN(255),
+		Address:            SmartContractGen(),
+		Source:             gofakeit.LetterN(255),
+		DeploymentBytecode: gofakeit.LetterN(255),
+		AbiDefinition:      gofakeit.LetterN(255),
+		Name:               gofakeit.Name(),
+		CFG:                string(cfg),
+		DistanceMap:        string(distanceMap),
 	}
 }
 
