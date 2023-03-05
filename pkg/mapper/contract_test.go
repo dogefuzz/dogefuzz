@@ -30,8 +30,10 @@ func (s *ContractMapperTestSuite) TestMapNewDTOToEntity_ShouldReturnValidEntity_
 
 	expectedResult := entities.Contract{
 		TaskId:             newContractDTO.TaskId,
+		Status:             newContractDTO.Status,
 		Source:             newContractDTO.Source,
 		DeploymentBytecode: newContractDTO.DeploymentBytecode,
+		RuntimeBytecode:    newContractDTO.RuntimeBytecode,
 		AbiDefinition:      newContractDTO.AbiDefinition,
 		Name:               newContractDTO.Name,
 	}
@@ -49,9 +51,11 @@ func (s *ContractMapperTestSuite) TestMapDTOToEntity_ShouldReturnValidEntity_Whe
 	expectedResult := entities.Contract{
 		Id:                 contractDTO.Id,
 		TaskId:             contractDTO.TaskId,
+		Status:             contractDTO.Status,
 		Address:            contractDTO.Address,
 		Source:             contractDTO.Source,
 		DeploymentBytecode: contractDTO.DeploymentBytecode,
+		RuntimeBytecode:    contractDTO.RuntimeBytecode,
 		AbiDefinition:      contractDTO.AbiDefinition,
 		Name:               contractDTO.Name,
 		CFG:                string(expectedCFG),
@@ -73,9 +77,11 @@ func (s *ContractMapperTestSuite) TestMapEntityToDTO_ShouldReturnValidDTO_WhenRe
 	expectedResult := dto.ContractDTO{
 		Id:                 contract.Id,
 		TaskId:             contract.TaskId,
+		Status:             contract.Status,
 		Address:            contract.Address,
 		Source:             contract.Source,
 		DeploymentBytecode: contract.DeploymentBytecode,
+		RuntimeBytecode:    contract.RuntimeBytecode,
 		AbiDefinition:      contract.AbiDefinition,
 		Name:               contract.Name,
 		CFG:                expectedCFG,
@@ -95,9 +101,11 @@ func (s *ContractMapperTestSuite) TestMapEntityToDTO_ShouldReturnValidDTOWithEmp
 	expectedResult := dto.ContractDTO{
 		Id:                 contract.Id,
 		TaskId:             contract.TaskId,
+		Status:             contract.Status,
 		Address:            contract.Address,
 		Source:             contract.Source,
 		DeploymentBytecode: contract.DeploymentBytecode,
+		RuntimeBytecode:    contract.RuntimeBytecode,
 		AbiDefinition:      contract.AbiDefinition,
 		Name:               contract.Name,
 		CFG:                common.CFG{},
@@ -115,6 +123,7 @@ func (s *ContractMapperTestSuite) TestMapDTOToCommon_ShouldReturnValidCommonCont
 	expectedResult := common.Contract{
 		Address:            contractDTO.Address,
 		DeploymentBytecode: contractDTO.DeploymentBytecode,
+		RuntimeBytecode:    contractDTO.RuntimeBytecode,
 		AbiDefinition:      contractDTO.AbiDefinition,
 		Name:               contractDTO.Name,
 	}
