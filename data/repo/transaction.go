@@ -66,6 +66,17 @@ func (r *transactionRepo) FindByTaskId(tx *gorm.DB, taskId string) ([]entities.T
 	return transactions, nil
 }
 
+func (r *transactionRepo) FindDoneByTaskId(tx *gorm.DB, taskId string) ([]entities.Transaction, error) {
+	var transactions []entities.Transaction
+	if err := tx.Where("status = ?", common.TASK_DONE).Where("task_id = ?", taskId).Find(&transactions).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotExists
+		}
+		return nil, err
+	}
+	return transactions, nil
+}
+
 func (r *transactionRepo) FindTransactionsByFunctionNameAndOrderByTimestamp(tx *gorm.DB, functionName string, limit int64) ([]entities.Transaction, error) {
 	var function entities.Function
 	if err := tx.Where("name = ?", functionName).Find(&function).Error; err != nil {

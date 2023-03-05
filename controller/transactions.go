@@ -136,7 +136,7 @@ func (ctrl *transactionsController) StoreTransactionExecution(c *gin.Context) {
 	}
 
 	if task.Status == common.TASK_DONE {
-		ctrl.logger.Info("as the task is done, this weaknesses detection will be ignored")
+		ctrl.logger.Info("as the task is done, this execution analytics will be ignored")
 		c.AbortWithStatus(200)
 		return
 	}

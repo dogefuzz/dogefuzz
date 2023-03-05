@@ -63,7 +63,7 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 		return
 	}
 
-	transactions, err := l.transactionService.FindByTaskId(task.Id)
+	transactions, err := l.transactionService.FindDoneByTaskId(task.Id)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error occurred when retrieving transactions of this task: %v", err)
 		return
