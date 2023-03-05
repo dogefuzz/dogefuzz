@@ -54,7 +54,7 @@ func (d *agent) Send(ctx context.Context, wallet interfaces.Wallet, contract *co
 	}
 
 	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)
+	auth.Value = big.NewInt(common.RandomChoice([]int64{0, 100000000000}))
 	auth.GasLimit = uint64(2000000)
 	auth.GasPrice = gasPrice
 

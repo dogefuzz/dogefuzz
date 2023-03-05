@@ -1,6 +1,8 @@
 package oracle
 
-import "github.com/dogefuzz/dogefuzz/pkg/common"
+import (
+	"github.com/dogefuzz/dogefuzz/pkg/common"
+)
 
 type NumberDependencyOracle struct{}
 

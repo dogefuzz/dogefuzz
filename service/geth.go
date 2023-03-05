@@ -44,8 +44,8 @@ func (s *gethService) BatchCall(
 	hashesByTransactionId := make(map[string]string)
 	errorsByTransactionId := make(map[string]error)
 
-	// privateKey := common.RandomChoice([]string{s.cfg.GethConfig.AgentPrivateKeyHex, s.cfg.GethConfig.DeployerPrivateKeyHex})
-	privateKey := s.cfg.GethConfig.AgentPrivateKeyHex
+	privateKey := common.RandomChoice([]string{s.cfg.GethConfig.AgentPrivateKeyHex, s.cfg.GethConfig.DeployerPrivateKeyHex})
+	// privateKey := s.cfg.GethConfig.AgentPrivateKeyHex
 	wallet, err := geth.NewWalletFromPrivateKeyHex(privateKey)
 	if err != nil {
 		for transactionId := range inputsByTransactionId {
