@@ -8,6 +8,7 @@ import (
 
 type ContractMapper interface {
 	MapNewDTOToEntity(d *dto.NewContractDTO) *entities.Contract
+	MapNewWithIdDTOToEntity(d *dto.NewContractWithIdDTO) *entities.Contract
 	MapDTOToEntity(d *dto.ContractDTO) *entities.Contract
 	MapEntityToDTO(c *entities.Contract) *dto.ContractDTO
 	MapDTOToCommon(c *dto.ContractDTO) *common.Contract

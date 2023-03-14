@@ -11,6 +11,7 @@ import (
 
 	"github.com/dogefuzz/dogefuzz/api"
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/environment"
 	"github.com/dogefuzz/dogefuzz/job"
 	"github.com/dogefuzz/dogefuzz/listener"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
@@ -18,10 +19,11 @@ import (
 
 func main() {
 	flag.Parse()
+	ctx := context.Background()
 
 	cfg, err := config.LoadConfig(".")
 	if err != nil {
-		log.Fatal("Couldn't load config")
+		log.Fatalf("Couldn't load config: %v", err)
 		panic(err)
 	}
 
@@ -30,7 +32,7 @@ func main() {
 	// Run server
 	server := api.NewServer(env)
 	if err = server.Start(); err != nil {
-		log.Fatal("Couldn't start server")
+		log.Fatalf("Couldn't start server: %v", err)
 		panic(err)
 	}
 
@@ -41,6 +43,14 @@ func main() {
 	// Run listener manager
 	listenerManager := listener.NewManager(env)
 	listenerManager.Start()
+
+	// Start environment
+	blockchainEnvironment := environment.NewBlockchainEnvironment(env)
+	err = blockchainEnvironment.Setup(ctx)
+	if err != nil {
+		log.Fatalf("Couldn't start environemnt: %v", err)
+		panic(err)
+	}
 
 	waitForInterrupt(server, scheduler, listenerManager)
 }

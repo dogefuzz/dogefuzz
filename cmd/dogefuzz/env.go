@@ -9,6 +9,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/controller"
 	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/data/repo"
+	"github.com/dogefuzz/dogefuzz/environment"
 	"github.com/dogefuzz/dogefuzz/fuzz"
 	"github.com/dogefuzz/dogefuzz/job"
 	"github.com/dogefuzz/dogefuzz/listener"
@@ -31,6 +32,7 @@ type Env interface {
 	SolidityCompiler() interfaces.SolidityCompiler
 	Deployer() interfaces.Deployer
 	Agent() interfaces.Agent
+	ContractPool() interfaces.ContractPool
 
 	ContractMapper() interfaces.ContractMapper
 	TransactionMapper() interfaces.TransactionMapper
@@ -84,6 +86,7 @@ type env struct {
 	solidityCompiler interfaces.SolidityCompiler
 	deployer         interfaces.Deployer
 	agent            interfaces.Agent
+	contractPool     interfaces.ContractPool
 
 	contractMapper    interfaces.ContractMapper
 	transactionMapper interfaces.TransactionMapper
@@ -216,6 +219,13 @@ func (e *env) Agent() interfaces.Agent {
 		e.agent = agent
 	}
 	return e.agent
+}
+
+func (e *env) ContractPool() interfaces.ContractPool {
+	if e.contractPool == nil {
+		e.contractPool = environment.NewContractPool(e)
+	}
+	return e.contractPool
 }
 
 func (e *env) ContractMapper() interfaces.ContractMapper {

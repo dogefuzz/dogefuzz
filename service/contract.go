@@ -24,6 +24,17 @@ func NewContractService(e Env) *contractService {
 	}
 }
 
+func (s *contractService) Find(contractId string) (*dto.ContractDTO, error) {
+	contract, err := s.contractRepo.Find(s.connection.GetDB(), contractId)
+	if err != nil {
+		if errors.Is(err, repo.ErrNotExists) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return s.contractMapper.MapEntityToDTO(contract), nil
+}
+
 func (s *contractService) Get(contractId string) (*dto.ContractDTO, error) {
 	contract, err := s.contractRepo.Find(s.connection.GetDB(), contractId)
 	if err != nil {
@@ -48,6 +59,16 @@ func (s *contractService) FindByTaskId(taskId string) (*dto.ContractDTO, error) 
 
 func (s *contractService) Create(ctr *dto.NewContractDTO) (*dto.ContractDTO, error) {
 	contract := s.contractMapper.MapNewDTOToEntity(ctr)
+	err := s.contractRepo.Create(s.connection.GetDB(), contract)
+	if err != nil {
+		return nil, err
+	}
+	contractDTO := s.contractMapper.MapEntityToDTO(contract)
+	return contractDTO, nil
+}
+
+func (s *contractService) CreateWithId(ctr *dto.NewContractWithIdDTO) (*dto.ContractDTO, error) {
+	contract := s.contractMapper.MapNewWithIdDTOToEntity(ctr)
 	err := s.contractRepo.Create(s.connection.GetDB(), contract)
 	if err != nil {
 		return nil, err

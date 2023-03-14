@@ -38,7 +38,7 @@ const (
 type ContractStatus string
 
 const (
-	CONTRACT_CREATED  ContractStatus = "running"
+	CONTRACT_CREATED  ContractStatus = "created"
 	CONTRACT_DEPLOYED ContractStatus = "deployed"
 )
 

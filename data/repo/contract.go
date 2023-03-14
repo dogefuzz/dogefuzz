@@ -16,7 +16,10 @@ func NewContractRepo(e Env) *contractRepo {
 }
 
 func (r *contractRepo) Create(tx *gorm.DB, contract *entities.Contract) error {
-	contract.Id = uuid.NewString()
+	if contract.Id == "" {
+		contract.Id = uuid.NewString()
+	}
+
 	return tx.Create(contract).Error
 }
 

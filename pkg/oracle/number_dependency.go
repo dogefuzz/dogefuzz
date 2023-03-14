@@ -1,6 +1,8 @@
 package oracle
 
 import (
+	"fmt"
+
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
@@ -11,5 +13,6 @@ func (o NumberDependencyOracle) Name() common.OracleType {
 }
 
 func (o NumberDependencyOracle) Detect(snapshot common.EventsSnapshot) bool {
+	fmt.Printf("%v && (%v || %v || %v)\n", snapshot.BlockNumber, snapshot.StorageChanged, snapshot.EtherTransfer, snapshot.SendOp)
 	return snapshot.BlockNumber && (snapshot.StorageChanged || snapshot.EtherTransfer || snapshot.SendOp)
 }
