@@ -3,6 +3,7 @@ package geth
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"strings"
 	"testing"
 	"time"
@@ -73,7 +74,8 @@ contract HelloWorld {
 	assert.Nil(s.T(), err)
 
 	newWord := gofakeit.Word()
-	tx, err = agent.Send(context.Background(), wallet, contract, "setName", newWord)
+	value := big.NewInt(0)
+	tx, err = agent.Send(context.Background(), wallet, contract, "setName", value, newWord)
 	assert.Nil(s.T(), err)
 
 	client, err := ethclient.Dial(it.GETH_CONFIG.NodeAddress)

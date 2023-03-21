@@ -1,27 +1,48 @@
-pragma solidity 0.4.26;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.19;
 
 contract ReentrancyAgent {
     address globalCalledAddress;
     bytes globalData;
-    bool sent = false;
+    uint balance = 0;
+    mapping(address => bool) sent;
 
-    function() external {
-        if (!sent) {
-            sent = true;
-            globalCalledAddress.call(globalData);
+    fallback() external payable {
+        balance += msg.value;
+        if (!sent[globalCalledAddress]) {
+            sent[globalCalledAddress] = true;
+            // globalCalledAddress.call(globalData);
+            (bool success, ) = globalCalledAddress.call(globalData);
+            assert(success);
         } else {
-            sent = false;
+            sent[globalCalledAddress] = false;
         }
-        
     }
 
-    function CallContract(address contractAddress, bytes data) public payable {
+    receive() external payable {
+        balance += msg.value;
+        if (!sent[globalCalledAddress]) {
+            sent[globalCalledAddress] = true;
+            // globalCalledAddress.call(globalData);
+            (bool success, ) = globalCalledAddress.call(globalData);
+            assert(success);
+        } else {
+            sent[globalCalledAddress] = false;
+        }
+    }
+
+    function CallContract(
+        address contractAddress,
+        bytes calldata data
+    ) public payable {
         globalCalledAddress = contractAddress;
         globalData = data;
+        bool success;
         if (msg.value > 0) {
-            contractAddress.call.value(msg.value)(data);
+            (success, ) = contractAddress.call{value: msg.value}(data);
         } else {
-            contractAddress.call(data);
+            (success, ) = contractAddress.call(data);
         }
+        assert(success);
     }
 }

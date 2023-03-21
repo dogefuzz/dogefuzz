@@ -53,6 +53,7 @@ type Env interface {
 	ReporterService() interfaces.ReporterService
 	SolidityService() interfaces.SolidityService
 
+	ContractsController() interfaces.ContractsController
 	TasksController() interfaces.TasksController
 	TransactionsController() interfaces.TransactionsController
 
@@ -107,6 +108,7 @@ type env struct {
 	reporterService    interfaces.ReporterService
 	solidityService    interfaces.SolidityService
 
+	contractsController    interfaces.ContractsController
 	tasksController        interfaces.TasksController
 	transactionsController interfaces.TransactionsController
 
@@ -338,6 +340,13 @@ func (e *env) SolidityService() interfaces.SolidityService {
 		e.solidityService = service.NewSolidityService(e)
 	}
 	return e.solidityService
+}
+
+func (e *env) ContractsController() interfaces.ContractsController {
+	if e.contractsController == nil {
+		e.contractsController = controller.NewContractsController(e)
+	}
+	return e.contractsController
 }
 
 func (e *env) TasksController() interfaces.TasksController {

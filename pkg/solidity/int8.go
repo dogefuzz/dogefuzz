@@ -3,6 +3,7 @@ package solidity
 import (
 	"errors"
 	"math"
+	"math/big"
 	"math/rand"
 	"strconv"
 
@@ -67,19 +68,25 @@ func (h *int8Handler) SafeAdd() {
 	newHandler.Generate()
 	value := newHandler.GetValue().(int8)
 	if h.value > math.MaxInt8-value {
-		h.value = h.value - (math.MaxInt8 - value) - 1
+		// if a + b > MAX then a + b - MAX
+		// to not overflow, a + b - MAX ~~ a - (MAX - b)
+		h.value = h.value - (math.MaxInt8 - value)
+	} else {
+		h.value = h.value + value
 	}
-	h.value = h.value + value
 }
 
 func (h *int8Handler) SafeSub() {
 	newHandler := NewInt8Handler()
 	newHandler.Generate()
 	value := newHandler.GetValue().(int8)
-	if h.value < value {
-		h.value = value - h.value - 1
+	if h.value < math.MinInt8+value {
+		// if a - b < MIN then MIN - (a - b)
+		// to not undeflow, MIN - (a - b) ~~ (b + MIN) - a
+		h.value = (value + math.MinInt8) - h.value
+	} else {
+		h.value = h.value - value
 	}
-	h.value = h.value - value
 }
 
 func (h *int8Handler) SafeMul() {
@@ -88,11 +95,15 @@ func (h *int8Handler) SafeMul() {
 	value := newHandler.GetValue().(int8)
 	if value == 0 {
 		h.value = 0
+	} else if h.value > math.MaxInt8/value {
+		a := new(big.Int).SetInt64(int64(h.value))
+		b := new(big.Int).SetInt64(int64(value))
+		max := new(big.Int).SetInt64(int64(math.MaxInt8))
+		c := new(big.Int).Mod(new(big.Int).Mul(a, b), max)
+		h.value = int8(c.Int64())
+	} else {
+		h.value = h.value * value
 	}
-	if h.value > math.MaxInt8/value {
-		h.value = h.value * (math.MaxInt8 / value)
-	}
-	h.value = h.value * value
 }
 
 func (h *int8Handler) SafeDiv() {
@@ -101,6 +112,7 @@ func (h *int8Handler) SafeDiv() {
 	value := newHandler.GetValue().(int8)
 	if value == 0 {
 		h.value = 0
+	} else {
+		h.value = h.value / value
 	}
-	h.value = h.value / value
 }

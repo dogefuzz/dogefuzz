@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/dogefuzz/dogefuzz/config"
+	"github.com/dogefuzz/dogefuzz/environment"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -22,12 +23,11 @@ func NewSolidityService(e Env) *solidityService {
 }
 
 func (s *solidityService) GetTypeHandlerWithContext(typ abi.Type) (interfaces.TypeHandler, error) {
-	blockchainContext := &solidity.BlockchainContext{}
 	addresses, err := s.getAvailableAddresses()
 	if err != nil {
 		return nil, err
 	}
-	blockchainContext.AvailableAddresses = addresses
+	blockchainContext := solidity.NewBlockchainContext(addresses)
 	return solidity.GetTypeHandler(typ, blockchainContext)
 }
 
@@ -40,6 +40,9 @@ func (s *solidityService) getAvailableAddresses() ([]string, error) {
 	if s.cfg.DeployerAddress != "" {
 		availableAddresses = append(availableAddresses, s.cfg.DeployerAddress)
 	}
+
+	availableAddresses = append(availableAddresses, environment.EXCEPTION_FALLBACK_CONTRACT_ID)
+	availableAddresses = append(availableAddresses, environment.GAS_CONSUMPTION_FALLBACK_CONTRACT_ID)
 
 	contracts, err := s.contractRepo.FindAll(s.connection.GetDB())
 	if err != nil {

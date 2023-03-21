@@ -41,7 +41,7 @@ func (h *stringHandler) Deserialize(value string) error {
 }
 
 func (h *stringHandler) Generate() {
-	rand.Seed(common.Now().Unix())
+	rand.Seed(common.Now().UnixNano())
 	var alphabet = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	length := rand.Intn(256)
 	wordSlice := make([]rune, length)
@@ -60,13 +60,23 @@ func (h *stringHandler) GetMutators() []func() {
 }
 
 func (h *stringHandler) ChangeCharacter() {
-
+	rand.Seed(common.Now().UnixNano())
+	idx := rand.Intn(len(h.value))
+	var alphabet = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	letter := alphabet[rand.Intn(len(alphabet))]
+	h.value = h.value[:idx] + string([]rune{letter}) + h.value[idx+1:]
 }
 
 func (h *stringHandler) AddCharacter() {
-
+	rand.Seed(common.Now().UnixNano())
+	idx := rand.Intn(len(h.value))
+	var alphabet = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	letter := alphabet[rand.Intn(len(alphabet))]
+	h.value = h.value[:idx] + string([]rune{letter}) + h.value[idx:]
 }
 
 func (h *stringHandler) RemoveCharacter() {
-
+	rand.Seed(common.Now().UnixNano())
+	idx := rand.Intn(len(h.value))
+	h.value = h.value[:idx] + h.value[idx+1:]
 }
