@@ -26,6 +26,19 @@ func (m *contractMapper) MapNewDTOToEntity(d *dto.NewContractDTO) *entities.Cont
 	}
 }
 
+func (m *contractMapper) MapNewWithIdDTOToEntity(d *dto.NewContractWithIdDTO) *entities.Contract {
+	return &entities.Contract{
+		Id:                 d.Id,
+		TaskId:             d.TaskId,
+		Status:             d.Status,
+		Source:             d.Source,
+		DeploymentBytecode: d.DeploymentBytecode,
+		RuntimeBytecode:    d.RuntimeBytecode,
+		AbiDefinition:      d.AbiDefinition,
+		Name:               d.Name,
+	}
+}
+
 func (m *contractMapper) MapDTOToEntity(d *dto.ContractDTO) *entities.Contract {
 	cfg, _ := json.Marshal(d.CFG)
 	distanceMap, _ := json.Marshal(d.DistanceMap)

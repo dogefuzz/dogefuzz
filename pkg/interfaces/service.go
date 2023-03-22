@@ -10,9 +10,11 @@ import (
 )
 
 type ContractService interface {
+	Find(contractId string) (*dto.ContractDTO, error)
 	Get(contractId string) (*dto.ContractDTO, error)
 	FindByTaskId(taskId string) (*dto.ContractDTO, error)
 	Create(ctr *dto.NewContractDTO) (*dto.ContractDTO, error)
+	CreateWithId(ctr *dto.NewContractWithIdDTO) (*dto.ContractDTO, error)
 	Update(ctr *dto.ContractDTO) error
 }
 

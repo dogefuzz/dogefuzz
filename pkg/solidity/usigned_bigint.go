@@ -8,7 +8,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
 
-var ErrInvalidUnsignedBigInt = errors.New("the provided json does not correspond to a boolean type")
+var ErrInvalidUnsignedBigInt = errors.New("the provided json does not correspond to a unsigned big int type")
 
 type unsignedBigIntHandler struct {
 	bitSize int
@@ -81,36 +81,83 @@ func (h *unsignedBigIntHandler) GetMutators() []func() {
 }
 
 func (h *unsignedBigIntHandler) SafeAdd() {
-	// value := s.Generate()
-	// if input > math.MaxUint8-value {
-	// 	return input - (math.MaxUint8 - value) - 1
-	// }
-	// return input + value
+	base := big.NewInt(2)
+	exponent := big.NewInt(int64(h.bitSize))
+
+	max := new(big.Int)
+	max.Exp(base, exponent, nil)
+	max.Sub(max, big.NewInt(1))
+
+	newHandler := NewUnsignedBigIntHandler(h.bitSize)
+	newHandler.Generate()
+	value := newHandler.GetValue().(*big.Int)
+
+	if h.value.Cmp(big.NewInt(0).Sub(max, value)) > 0 {
+		// if a + b > MAX then a + b - MAX
+		// to not overflow, a + b - MAX ~~ a - (MAX - b)
+		h.value.Sub(h.value, big.NewInt(0).Sub(max, value))
+	} else {
+		h.value.Add(h.value, value)
+	}
 }
 
 func (h *unsignedBigIntHandler) SafeSub() {
-	// value := s.Generate()
-	// if input < value {
-	// 	return value - input - 1
-	// }
-	// return input - value
+	base := big.NewInt(2)
+	exponent := big.NewInt(int64(h.bitSize))
+
+	max := new(big.Int)
+	max.Exp(base, exponent, nil)
+	max.Sub(max, big.NewInt(1))
+
+	newHandler := NewUnsignedBigIntHandler(h.bitSize)
+	newHandler.Generate()
+	value := newHandler.GetValue().(*big.Int)
+
+	if h.value.Cmp(value) < 0 {
+		// if a - b < 0 then 0 - (a - b)
+		// to not undeflow, 0 - (a - b) ~~ b - a
+		h.value.Sub(value, h.value)
+	} else {
+		h.value.Sub(h.value, value)
+	}
 }
 
 func (h *unsignedBigIntHandler) SafeMul() {
-	// value := s.Generate()
-	// if value.Cmp(big.NewInt(0)) {
-	// 	return big.NewInt(0)
-	// }
-	// if input > math.MaxUint8/value {
-	// 	return input * (math.MaxUint8 / value)
-	// }
-	// return input * value
+	base := big.NewInt(2)
+	exponent := big.NewInt(int64(h.bitSize))
+
+	max := new(big.Int)
+	max.Exp(base, exponent, nil)
+	max.Sub(max, big.NewInt(1))
+
+	newHandler := NewUnsignedBigIntHandler(h.bitSize)
+	newHandler.Generate()
+	value := newHandler.GetValue().(*big.Int)
+
+	if value.Cmp(big.NewInt(0)) == 0 {
+		h.value = big.NewInt(0)
+	} else if h.value.Cmp(big.NewInt(0).Div(max, value)) > 0 {
+		h.value.Mod(big.NewInt(1).Mul(h.value, value), max)
+	} else {
+		h.value.Mul(h.value, value)
+	}
 }
 
 func (h *unsignedBigIntHandler) SafeDiv() {
-	// value := s.Generate()
-	// if value == 0 {
-	// 	return 0
-	// }
-	// return input / value
+	base := big.NewInt(2)
+	exponent := big.NewInt(int64(h.bitSize))
+
+	max := new(big.Int)
+	max.Exp(base, exponent, nil)
+	max.Sub(max, big.NewInt(1))
+
+	newHandler := NewUnsignedBigIntHandler(h.bitSize)
+	newHandler.Generate()
+	value := newHandler.GetValue().(*big.Int)
+
+	if value.Cmp(big.NewInt(0)) == 0 {
+		h.value = big.NewInt(0)
+	} else {
+		h.value.Div(h.value, value)
+	}
 }

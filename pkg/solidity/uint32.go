@@ -3,6 +3,7 @@ package solidity
 import (
 	"errors"
 	"math"
+	"math/big"
 	"math/rand"
 	"strconv"
 
@@ -67,9 +68,12 @@ func (h *uint32Handler) SafeAdd() {
 	newHandler.Generate()
 	value := newHandler.GetValue().(uint32)
 	if h.value > math.MaxUint32-value {
-		h.value = h.value - (math.MaxUint32 - value) - 1
+		// if a + b > MAX then a + b - MAX
+		// to not overflow, a + b - MAX ~~ a - (MAX - b)
+		h.value = h.value - (math.MaxUint32 - value)
+	} else {
+		h.value = h.value + value
 	}
-	h.value = h.value + value
 }
 
 func (h *uint32Handler) SafeSub() {
@@ -77,9 +81,12 @@ func (h *uint32Handler) SafeSub() {
 	newHandler.Generate()
 	value := newHandler.GetValue().(uint32)
 	if h.value < value {
-		h.value = value - h.value - 1
+		// if a - b < 0 then 0 - (a - b)
+		// to not undeflow, 0 - (a - b) ~~ b - a
+		h.value = value - h.value
+	} else {
+		h.value = h.value - value
 	}
-	h.value = h.value - value
 }
 
 func (h *uint32Handler) SafeMul() {
@@ -88,11 +95,15 @@ func (h *uint32Handler) SafeMul() {
 	value := newHandler.GetValue().(uint32)
 	if value == 0 {
 		h.value = 0
+	} else if h.value > math.MaxUint32/value {
+		a := new(big.Int).SetUint64(uint64(h.value))
+		b := new(big.Int).SetUint64(uint64(value))
+		max := new(big.Int).SetUint64(uint64(math.MaxUint32))
+		c := new(big.Int).Mod(new(big.Int).Mul(a, b), max)
+		h.value = uint32(c.Uint64())
+	} else {
+		h.value = h.value * value
 	}
-	if h.value > math.MaxUint32/value {
-		h.value = h.value * (math.MaxUint32 / value)
-	}
-	h.value = h.value * value
 }
 
 func (h *uint32Handler) SafeDiv() {
@@ -101,6 +112,7 @@ func (h *uint32Handler) SafeDiv() {
 	value := newHandler.GetValue().(uint32)
 	if value == 0 {
 		h.value = 0
+	} else {
+		h.value = h.value / value
 	}
-	h.value = h.value / value
 }

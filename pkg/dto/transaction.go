@@ -30,7 +30,7 @@ type TransactionDTO struct {
 }
 
 type NewExecutionDTO struct {
-	Name         string   `json:"name"`
+	Address      string   `json:"address"`
 	Input        string   `json:"input"`
 	Instructions []uint64 `json:"instructions"`
 	TxHash       string   `json:"txHash"`

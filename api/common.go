@@ -26,6 +26,7 @@ type Env interface {
 	TransactionService() interfaces.TransactionService
 	TaskService() interfaces.TaskService
 	FunctionService() interfaces.FunctionService
+	ContractsController() interfaces.ContractsController
 	TasksController() interfaces.TasksController
 	TransactionsController() interfaces.TransactionsController
 	InstrumentExecutionTopic() interfaces.Topic[bus.InstrumentExecutionEvent]

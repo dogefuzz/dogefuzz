@@ -9,6 +9,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/controller"
 	"github.com/dogefuzz/dogefuzz/data"
 	"github.com/dogefuzz/dogefuzz/data/repo"
+	"github.com/dogefuzz/dogefuzz/environment"
 	"github.com/dogefuzz/dogefuzz/fuzz"
 	"github.com/dogefuzz/dogefuzz/job"
 	"github.com/dogefuzz/dogefuzz/listener"
@@ -31,6 +32,7 @@ type Env interface {
 	SolidityCompiler() interfaces.SolidityCompiler
 	Deployer() interfaces.Deployer
 	Agent() interfaces.Agent
+	ContractPool() interfaces.ContractPool
 
 	ContractMapper() interfaces.ContractMapper
 	TransactionMapper() interfaces.TransactionMapper
@@ -51,6 +53,7 @@ type Env interface {
 	ReporterService() interfaces.ReporterService
 	SolidityService() interfaces.SolidityService
 
+	ContractsController() interfaces.ContractsController
 	TasksController() interfaces.TasksController
 	TransactionsController() interfaces.TransactionsController
 
@@ -84,6 +87,7 @@ type env struct {
 	solidityCompiler interfaces.SolidityCompiler
 	deployer         interfaces.Deployer
 	agent            interfaces.Agent
+	contractPool     interfaces.ContractPool
 
 	contractMapper    interfaces.ContractMapper
 	transactionMapper interfaces.TransactionMapper
@@ -104,6 +108,7 @@ type env struct {
 	reporterService    interfaces.ReporterService
 	solidityService    interfaces.SolidityService
 
+	contractsController    interfaces.ContractsController
 	tasksController        interfaces.TasksController
 	transactionsController interfaces.TransactionsController
 
@@ -218,6 +223,13 @@ func (e *env) Agent() interfaces.Agent {
 	return e.agent
 }
 
+func (e *env) ContractPool() interfaces.ContractPool {
+	if e.contractPool == nil {
+		e.contractPool = environment.NewContractPool(e)
+	}
+	return e.contractPool
+}
+
 func (e *env) ContractMapper() interfaces.ContractMapper {
 	if e.contractMapper == nil {
 		e.contractMapper = mapper.NewContractMapper()
@@ -328,6 +340,13 @@ func (e *env) SolidityService() interfaces.SolidityService {
 		e.solidityService = service.NewSolidityService(e)
 	}
 	return e.solidityService
+}
+
+func (e *env) ContractsController() interfaces.ContractsController {
+	if e.contractsController == nil {
+		e.contractsController = controller.NewContractsController(e)
+	}
+	return e.contractsController
 }
 
 func (e *env) TasksController() interfaces.TasksController {

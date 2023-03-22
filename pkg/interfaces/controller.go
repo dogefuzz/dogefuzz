@@ -2,6 +2,10 @@ package interfaces
 
 import "github.com/gin-gonic/gin"
 
+type ContractsController interface {
+	GetAgent(c *gin.Context)
+}
+
 type TasksController interface {
 	Start(c *gin.Context)
 }

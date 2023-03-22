@@ -3,13 +3,14 @@ package interfaces
 import (
 	"context"
 	"crypto/ecdsa"
+	"math/big"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	gethcommon "github.com/ethereum/go-ethereum/common"
 )
 
 type Agent interface {
-	Send(ctx context.Context, wallet Wallet, contract *common.Contract, functionName string, args ...interface{}) (string, error)
+	Send(ctx context.Context, wallet Wallet, contract *common.Contract, functionName string, value *big.Int, args ...interface{}) (string, error)
 }
 
 type Deployer interface {

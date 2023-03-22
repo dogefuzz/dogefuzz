@@ -29,7 +29,7 @@ func NewAgent(cfg config.GethConfig) (*agent, error) {
 	return &agent{client, cfg}, nil
 }
 
-func (d *agent) Send(ctx context.Context, wallet interfaces.Wallet, contract *common.Contract, functionName string, args ...interface{}) (string, error) {
+func (d *agent) Send(ctx context.Context, wallet interfaces.Wallet, contract *common.Contract, functionName string, value *big.Int, args ...interface{}) (string, error) {
 
 	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 	if err != nil {
@@ -54,7 +54,7 @@ func (d *agent) Send(ctx context.Context, wallet interfaces.Wallet, contract *co
 	}
 
 	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(common.RandomChoice([]int64{0, 100000000000}))
+	auth.Value = value
 	auth.GasLimit = uint64(2000000)
 	auth.GasPrice = gasPrice
 

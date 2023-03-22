@@ -100,36 +100,76 @@ func (h *signedBigIntHandler) GetMutators() []func() {
 }
 
 func (h *signedBigIntHandler) SafeAdd() {
-	// value := s.Generate()
-	// if input > math.MaxUint8-value {
-	// 	return input - (math.MaxUint8 - value) - 1
-	// }
-	// return input + value
+	base := big.NewInt(2)
+	exponent := big.NewInt(int64(h.bitSize / 2))
+
+	max := new(big.Int)
+	max.Exp(base, exponent, nil)
+	max.Sub(max, big.NewInt(1))
+
+	newHandler := NewSignedBigIntHandler(h.bitSize)
+	newHandler.Generate()
+	value := newHandler.GetValue().(*big.Int)
+
+	if h.value.Cmp(big.NewInt(0).Sub(max, value)) > 0 {
+		// if a + b > MAX then a + b - MAX
+		// to not overflow, a + b - MAX ~~ a - (MAX - b)
+		h.value.Sub(h.value, big.NewInt(0).Sub(max, value))
+	} else {
+		h.value.Add(h.value, value)
+	}
 }
 
 func (h *signedBigIntHandler) SafeSub() {
-	// value := s.Generate()
-	// if input < value {
-	// 	return value - input - 1
-	// }
-	// return input - value
+	base := big.NewInt(2)
+	exponent := big.NewInt(int64(h.bitSize / 2))
+
+	min := new(big.Int)
+	min.Exp(base, exponent, nil)
+	min.Neg(min)
+
+	newHandler := NewSignedBigIntHandler(h.bitSize)
+	newHandler.Generate()
+	value := newHandler.GetValue().(*big.Int)
+
+	if h.value.Cmp(big.NewInt(0).Add(min, value)) < 0 {
+		// if a - b < MIN then MIN - (a - b)
+		// to not undeflow, MIN - (a - b) ~~ (b + MIN) - a
+		h.value.Sub(big.NewInt(0).Add(min, value), h.value)
+	} else {
+		h.value.Sub(h.value, value)
+	}
 }
 
 func (h *signedBigIntHandler) SafeMul() {
-	// value := s.Generate()
-	// if value.Cmp(big.NewInt(0)) {
-	// 	return big.NewInt(0)
-	// }
-	// if input > math.MaxUint8/value {
-	// 	return input * (math.MaxUint8 / value)
-	// }
-	// return input * value
+	base := big.NewInt(2)
+	exponent := big.NewInt(int64(h.bitSize / 2))
+
+	max := new(big.Int)
+	max.Exp(base, exponent, nil)
+	max.Sub(max, big.NewInt(1))
+
+	newHandler := NewSignedBigIntHandler(h.bitSize)
+	newHandler.Generate()
+	value := newHandler.GetValue().(*big.Int)
+
+	if value.Cmp(big.NewInt(0)) == 0 {
+		h.value = big.NewInt(0)
+	} else if h.value.Cmp(big.NewInt(1).Div(max, value)) > 0 {
+		h.value.Mod(big.NewInt(1).Mul(h.value, value), max)
+	} else {
+		h.value.Mul(h.value, value)
+	}
 }
 
 func (h *signedBigIntHandler) SafeDiv() {
-	// value := s.Generate()
-	// if value == 0 {
-	// 	return 0
-	// }
-	// return input / value
+	newHandler := NewSignedBigIntHandler(h.bitSize)
+	newHandler.Generate()
+	value := newHandler.GetValue().(*big.Int)
+
+	if value.Cmp(big.NewInt(0)) == 0 {
+		h.value = big.NewInt(0)
+	} else {
+		h.value.Div(h.value, value)
+	}
 }

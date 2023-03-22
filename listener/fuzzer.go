@@ -171,6 +171,14 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 
 func chooseFunction(functions []*dto.FunctionDTO) *dto.FunctionDTO {
 	rand.Seed(common.Now().Unix())
-	idx := rand.Intn(len(functions))
-	return functions[idx]
+
+	filteredFunctions := make([]*dto.FunctionDTO, 0)
+	for _, function := range functions {
+		if !function.IsConstructor {
+			filteredFunctions = append(filteredFunctions, function)
+		}
+	}
+
+	idx := rand.Intn(len(filteredFunctions))
+	return filteredFunctions[idx]
 }

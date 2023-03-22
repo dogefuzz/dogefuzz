@@ -141,6 +141,18 @@ func (ctrl *transactionsController) StoreTransactionExecution(c *gin.Context) {
 		return
 	}
 
+	contract, err := ctrl.contractService.FindByTaskId(transaction.TaskId)
+	if err != nil {
+		c.AbortWithStatus(404)
+		return
+	}
+
+	if contract.Address == request.Address {
+		ctrl.logger.Info("this execution doesn't correspond to the contract being tested, so this execution analytics will be ignored")
+		c.AbortWithStatus(200)
+		return
+	}
+
 	executedInstructions := make([]string, len(request.Instructions))
 	for idx, instructionPC := range request.Instructions {
 		executedInstructions[idx] = fmt.Sprintf("0x%s", strconv.FormatUint(instructionPC, 16))

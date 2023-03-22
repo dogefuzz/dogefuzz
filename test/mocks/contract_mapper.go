@@ -16,6 +16,11 @@ func (m *ContractMapperMock) MapNewDTOToEntity(d *dto.NewContractDTO) *entities.
 	return args.Get(0).(*entities.Contract)
 }
 
+func (m *ContractMapperMock) MapNewWithIdDTOToEntity(d *dto.NewContractWithIdDTO) *entities.Contract {
+	args := m.Called(d)
+	return args.Get(0).(*entities.Contract)
+}
+
 func (m *ContractMapperMock) MapDTOToEntity(d *dto.ContractDTO) *entities.Contract {
 	args := m.Called(d)
 	return args.Get(0).(*entities.Contract)
