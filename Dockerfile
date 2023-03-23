@@ -15,7 +15,9 @@ WORKDIR /app
 
 COPY --from=builder /app/dogefuzz .
 COPY config.json .
-COPY assets/ .
+
+RUN mkdir assets
+COPY assets/ ./assets/
 
 EXPOSE 3456
 
