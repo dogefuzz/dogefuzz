@@ -35,10 +35,12 @@ To execute a fuzzing process, here an example of request:`POST http://localhost:
 ```
 
 It will execute the contract `AddressLotteryV2` contract per 15 minutes using the `directed_greybox` fuzzing strategy. And, it will detect the following weaknesses:
+
 - delegate
 - exception-disorder
 - gasless-send
 - number-dependency
 - reentrancy
 - timestamp-dependency
+
 As no `args` were passed, the fuzzer will generate the contructor arguments.
