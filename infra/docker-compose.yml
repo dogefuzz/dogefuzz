@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   geth:
-    build: ttps://github.com/dogefuzz/enhanced-go-ethereum.git#main
+    build: https://github.com/dogefuzz/enhanced-go-ethereum.git#main
     environment:
       CHAIN_ID: 1900
       NODE_WALLET_ADDRESS: '0x095e7e130af11aebd04fb5fb81193bda66eefb81'
