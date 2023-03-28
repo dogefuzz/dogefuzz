@@ -18,6 +18,7 @@ import (
 	gethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -54,7 +55,7 @@ contract HelloWorld {
 }
 `
 
-	deployer, err := NewDeployer(it.GETH_CONFIG)
+	deployer, err := NewDeployer(zap.NewNop(), it.GETH_CONFIG)
 	assert.Nil(s.T(), err)
 
 	compiler := solc.NewSolidityCompiler(it.SOLC_FOLDER)

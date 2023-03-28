@@ -48,6 +48,11 @@ func NewGethService(e Env) *gethService {
 func (s *gethService) Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, string, error) {
 	address, tx, err := s.deployer.Deploy(ctx, contract, args...)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			s.logger.Sugar().Errorf("%s deployment failed in node %s by context cancellation: %v", contract.Name, s.cfg.GethConfig.NodeAddress, ctx.Err())
+			return "", "", err
+		}
+		s.logger.Sugar().Errorf("%s deployment failed in node %s: %v", contract.Name, s.cfg.GethConfig.NodeAddress, err)
 		return "", "", err
 	}
 	s.logger.Sugar().Infof("deploying contract %s at address %s", contract.Name, address)

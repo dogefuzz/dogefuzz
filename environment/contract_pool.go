@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"sync"
+	"time"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
@@ -71,6 +72,9 @@ func (p *contractPool) deployReentrancyAgentContract(ctx context.Context) error 
 }
 
 func (p *contractPool) deployContract(ctx context.Context, contractName string, contractId string) error {
+	ctx, cancel := context.WithTimeout(ctx, time.Second*15)
+	defer cancel()
+
 	content, err := ioutil.ReadFile(fmt.Sprintf("%s/%s.sol", CONTRACT_FOLDER, contractName))
 	if err != nil {
 		return err

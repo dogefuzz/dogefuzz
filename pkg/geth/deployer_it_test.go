@@ -13,6 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"go.uber.org/zap"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -27,7 +28,7 @@ func TestGethDeployerIntegrationTestSuite(t *testing.T) {
 }
 
 func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGethNode_WhenProvidedAValidContractWithNoConstructor() {
-	deployer, err := NewDeployer(it.GETH_CONFIG)
+	deployer, err := NewDeployer(zap.NewNop(), it.GETH_CONFIG)
 	assert.Nil(s.T(), err)
 
 	compiler := solc.NewSolidityCompiler(it.SOLC_FOLDER)
@@ -53,7 +54,7 @@ func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGeth
 }
 
 func (s *GethDeployerIntegrationTestSuite) TestDeploy_ShouldDeployContractInGethNode_WhenProvidedAValidContractWithConstructor() {
-	deployer, err := NewDeployer(it.GETH_CONFIG)
+	deployer, err := NewDeployer(zap.NewNop(), it.GETH_CONFIG)
 	assert.Nil(s.T(), err)
 
 	compiler := solc.NewSolidityCompiler(it.SOLC_FOLDER)

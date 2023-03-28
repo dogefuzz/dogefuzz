@@ -6,6 +6,15 @@ docker.test.up:
 
 docker.test.down:
 	docker compose -f ./infra/docker-compose.test.yml down -v
+	
+docker.build:
+	docker compose -f ./infra/docker-compose.yml build
+
+docker.up:
+	docker compose -f ./infra/docker-compose.yml up -d
+
+docker.down:
+	docker compose -f ./infra/docker-compose.yml down -v
 
 test.unit:
 	go test $$(go list ./... | grep -v github.com/dogefuzz/dogefuzz/test) -coverprofile=coverage.out

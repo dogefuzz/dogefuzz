@@ -57,6 +57,7 @@ func (d *agent) Send(ctx context.Context, wallet interfaces.Wallet, contract *co
 	auth.Value = value
 	auth.GasLimit = uint64(2000000)
 	auth.GasPrice = gasPrice
+	auth.Context = ctx
 
 	tx, err := boundContract.Transact(auth, functionName, args...)
 	if err != nil {
