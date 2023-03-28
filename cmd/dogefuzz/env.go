@@ -196,14 +196,14 @@ func (e *env) EventBus() interfaces.EventBus {
 
 func (e *env) SolidityCompiler() interfaces.SolidityCompiler {
 	if e.solidityCompiler == nil {
-		e.solidityCompiler = solc.NewSolidityCompiler(e.cfg.StorageFolder)
+		e.solidityCompiler = solc.NewSolidityCompiler(e.Config().StorageFolder)
 	}
 	return e.solidityCompiler
 }
 
 func (e *env) Deployer() interfaces.Deployer {
 	if e.deployer == nil {
-		deployer, err := geth.NewDeployer(e.cfg.GethConfig)
+		deployer, err := geth.NewDeployer(e.Logger(), e.Config().GethConfig)
 		if err != nil {
 			panic(err)
 		}
@@ -214,7 +214,7 @@ func (e *env) Deployer() interfaces.Deployer {
 
 func (e *env) Agent() interfaces.Agent {
 	if e.agent == nil {
-		agent, err := geth.NewAgent(e.cfg.GethConfig)
+		agent, err := geth.NewAgent(e.Config().GethConfig)
 		if err != nil {
 			panic(err)
 		}
