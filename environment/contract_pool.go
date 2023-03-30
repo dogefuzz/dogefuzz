@@ -4,20 +4,16 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"sync"
-	"time"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
-	"golang.org/x/sync/errgroup"
 )
 
 const CONTRACT_FOLDER = "./assets/contracts"
 
 type contractPool struct {
-	mu                 sync.Mutex
 	logger             *zap.Logger
 	gethService        interfaces.GethService
 	contractService    interfaces.ContractService
@@ -36,23 +32,20 @@ func NewContractPool(e env) *contractPool {
 }
 
 func (p *contractPool) Setup(ctx context.Context) error {
-	g, ctx := errgroup.WithContext(ctx)
-
-	g.Go(func() error {
-		return p.deployExceptionFallbackContract(ctx)
-	})
-
-	g.Go(func() error {
-		return p.deployGasConsumptionFallbackContract(ctx)
-	})
-
-	g.Go(func() error {
-		return p.deployReentrancyAgentContract(ctx)
-	})
-
-	if err := g.Wait(); err != nil {
+	err := p.deployExceptionFallbackContract(ctx)
+	if err != nil {
 		return err
 	}
+
+	err = p.deployGasConsumptionFallbackContract(ctx)
+	if err != nil {
+		return err
+	}
+	err = p.deployReentrancyAgentContract(ctx)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -72,9 +65,6 @@ func (p *contractPool) deployReentrancyAgentContract(ctx context.Context) error 
 }
 
 func (p *contractPool) deployContract(ctx context.Context, contractName string, contractId string) error {
-	ctx, cancel := context.WithTimeout(ctx, time.Second*15)
-	defer cancel()
-
 	content, err := ioutil.ReadFile(fmt.Sprintf("%s/%s.sol", CONTRACT_FOLDER, contractName))
 	if err != nil {
 		return err
@@ -109,12 +99,10 @@ func (p *contractPool) deployContract(ctx context.Context, contractName string, 
 		contract = createdContract
 	}
 
-	p.mu.Lock()
 	address, _, err := p.gethService.Deploy(ctx, compiledContract)
 	if err != nil {
 		return err
 	}
-	p.mu.Unlock()
 	p.logger.Sugar().Debugf("deploying contract %s at %s", contractName, address)
 
 	contract.Address = address

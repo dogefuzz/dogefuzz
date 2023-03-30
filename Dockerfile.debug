@@ -1,0 +1,28 @@
+FROM golang:1.19-alpine3.17 as builder
+
+RUN apk add build-base
+RUN go install -ldflags "-s -w -extldflags '-static'" github.com/go-delve/delve/cmd/dlv@latest
+
+WORKDIR /app
+
+ADD . .
+
+RUN go build -gcflags="all=-N -l" ./cmd/dogefuzz
+
+
+FROM alpine:3.17
+
+RUN apk add curl
+
+WORKDIR /app
+
+COPY --from=builder /app/dogefuzz .
+COPY --from=builder /go/bin/dlv .
+COPY config.json .
+
+RUN mkdir assets
+COPY assets/ ./assets/
+
+EXPOSE 3456 40000
+
+CMD ["/app/dlv", "--listen=:40000", "--headless=true", "--api-version=2", "--accept-multiclient", "exec", "/app/dogefuzz"]

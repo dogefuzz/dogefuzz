@@ -11,6 +11,8 @@ RUN go build ./cmd/dogefuzz
 
 FROM alpine:3.17
 
+RUN apk add curl
+
 WORKDIR /app
 
 COPY --from=builder /app/dogefuzz .
