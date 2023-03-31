@@ -48,6 +48,7 @@ func NewTestEnv(
 	taskService interfaces.TaskService,
 	taskFinishTopic interfaces.Topic[bus.TaskFinishEvent],
 	taskInputRequestTopic interfaces.Topic[bus.TaskInputRequestEvent],
+	cfg *config.Config,
 ) *TestEnv {
 	return &TestEnv{
 		contractMapper:        contractMapper,
@@ -59,6 +60,7 @@ func NewTestEnv(
 		taskService:           taskService,
 		taskFinishTopic:       taskFinishTopic,
 		taskInputRequestTopic: taskInputRequestTopic,
+		cfg:                   cfg,
 	}
 }
 

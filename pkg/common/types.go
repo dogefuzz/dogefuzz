@@ -161,3 +161,5 @@ type Function struct {
 }
 
 type Seeds = map[TypeIdentifier][]string
+
+type ReporterType string

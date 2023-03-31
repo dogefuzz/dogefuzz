@@ -10,7 +10,6 @@ import (
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
-	"github.com/dogefuzz/dogefuzz/pkg/reporter"
 	"github.com/dogefuzz/dogefuzz/pkg/solidity"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -54,7 +53,7 @@ func (s *ConfigTestSuite) TestLoadConfig_WhenPassingAValidPath_ReturnAValidConfi
 			EnabledListeners: []string{"<listener1>"},
 		},
 		ReporterConfig: ReporterConfig{
-			Type:            reporter.CONSOLE_REPORTER,
+			Type:            common.CONSOLE_REPORTER,
 			WebhookEndpoint: "<endpoint>",
 			WebhookTimeout:  30 * time.Second,
 		},
@@ -114,7 +113,7 @@ func (s *ConfigTestSuite) TestLoadConfig_WhenPassingHaveAnEnvVariable_ReturnAVal
 			EnabledListeners: []string{"<listener1>"},
 		},
 		ReporterConfig: ReporterConfig{
-			Type:            reporter.CONSOLE_REPORTER,
+			Type:            common.CONSOLE_REPORTER,
 			WebhookEndpoint: "<endpoint>",
 			WebhookTimeout:  30 * time.Second,
 		},

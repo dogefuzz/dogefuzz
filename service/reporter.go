@@ -36,11 +36,11 @@ func (s *reporterService) SendReport(ctx context.Context, report common.TaskRepo
 
 func (s *reporterService) getReporter(reporterConfig config.ReporterConfig) (interfaces.Reporter, error) {
 	switch reporterConfig.Type {
-	case reporter.CONSOLE_REPORTER:
+	case common.CONSOLE_REPORTER:
 		return reporter.NewConsoleReporter(os.Stdout), nil
-	case reporter.WEBHOOK_REPOTER:
+	case common.WEBHOOK_REPOTER:
 		return reporter.NewWebhookReporter(s.client, reporterConfig.WebhookEndpoint, reporterConfig.WebhookTimeout), nil
-	case reporter.FILE_REPORTER:
+	case common.FILE_REPORTER:
 		return reporter.NewFileReporter(reporterConfig.FileOutputPath), nil
 	default:
 		return nil, ErrReporterNotImplemented

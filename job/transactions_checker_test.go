@@ -28,7 +28,7 @@ func TestTransactionsCheckerJobTestSuite(t *testing.T) {
 func (s *TransactionsCheckerJobTestSuite) SetupTest() {
 	s.taskServiceMock = new(mocks.TaskServiceMock)
 	s.taskInputRequestTopicMock = new(mocks.TaskInputRequestTopicMock)
-	s.env = test.NewTestEnv(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, s.taskServiceMock, nil, s.taskInputRequestTopicMock)
+	s.env = test.NewTestEnv(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, s.taskServiceMock, nil, s.taskInputRequestTopicMock, nil)
 }
 
 func (s *TransactionsCheckerJobTestSuite) TestId_ShouldReturnJobName() {

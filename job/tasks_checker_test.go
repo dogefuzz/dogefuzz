@@ -28,7 +28,7 @@ func TestTasksCheckerJobTestSuite(t *testing.T) {
 func (s *TasksCheckerJobTestSuite) SetupTest() {
 	s.taskServiceMock = new(mocks.TaskServiceMock)
 	s.taskFinishTopicMock = new(mocks.TaskFinishTopicMock)
-	s.env = test.NewTestEnv(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, s.taskServiceMock, s.taskFinishTopicMock, nil)
+	s.env = test.NewTestEnv(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, s.taskServiceMock, s.taskFinishTopicMock, nil, nil)
 }
 
 func (s *TasksCheckerJobTestSuite) TestId_ShouldReturnJobName() {

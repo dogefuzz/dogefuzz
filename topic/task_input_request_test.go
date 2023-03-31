@@ -24,7 +24,7 @@ func TestTaskInputRequestTestSuite(t *testing.T) {
 
 func (s *TaskInputRequestTestSuite) SetupTest() {
 	s.eventBusMock = new(mocks.EventBusMock)
-	s.env = test.NewTestEnv(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, s.eventBusMock, nil, nil, nil)
+	s.env = test.NewTestEnv(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, s.eventBusMock, nil, nil, nil, nil)
 }
 
 func (s *TaskInputRequestTestSuite) TestPublish_ShouldCallEventBusPublishMethod_WhenReceiveAValidEvent() {
