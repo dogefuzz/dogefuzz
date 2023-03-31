@@ -13,6 +13,9 @@ FROM alpine:3.17
 
 RUN apk add curl
 
+# https://stackoverflow.com/questions/66963068/docker-alpine-executable-binary-not-found-even-if-in-path
+RUN apk add gcompat
+
 WORKDIR /app
 
 COPY --from=builder /app/dogefuzz .

@@ -2,6 +2,9 @@ package solc
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -40,20 +43,22 @@ func (s *SolidityCompilerTestSuite) TestCompileSource() {
 	assert.Equal(s.T(), expectedAbiDefinition2, contract2.AbiDefinition)
 }
 
-// func (s *SolidityCompilerTestSuite) TestDecompile_WithBenchmarkContracts() {
+func (s *SolidityCompilerTestSuite) TestDecompile_WithDefaultContracts() {
+	currentDirectory, err := os.Getwd()
+	assert.Nil(s.T(), err)
 
-// 	folder := "/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts"
-// 	solidityFiles, _ := ioutil.ReadDir(folder)
+	contractFolder := filepath.Join(currentDirectory, "../../assets/contracts")
+	solidityFiles, _ := ioutil.ReadDir(contractFolder)
 
-// 	for _, file := range solidityFiles {
-// 		f, _ := ioutil.ReadFile("/home/imedeiros/workspace/dogefuzz/dogefuzz/test/resources/contracts/" + file.Name())
-// 		compiler := NewSolidityCompiler("/tmp/dogefuzz/")
-// 		fileWithoutExtension := file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]
-// 		contract, err := compiler.CompileSource(fileWithoutExtension, string(f))
-// 		assert.Nil(s.T(), err, "error on "+file.Name())
-// 		assert.NotEqual(s.T(), "0x", contract.DeploymentBytecode)
-// 	}
-// }
+	for _, file := range solidityFiles {
+		f, _ := ioutil.ReadFile(filepath.Join(contractFolder, file.Name()))
+		compiler := NewSolidityCompiler("/tmp/dogefuzz/")
+		fileWithoutExtension := file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]
+		contract, err := compiler.CompileSource(fileWithoutExtension, string(f))
+		assert.Nil(s.T(), err, "error on "+file.Name())
+		assert.NotEqual(s.T(), "0x", contract.DeploymentBytecode)
+	}
+}
 
 const CONTRACT1 = `
 pragma solidity ^0.8.13;
@@ -69,7 +74,7 @@ pragma solidity ^0.4.24;
 contract HashForEther {
 
     function withdrawWinnings() {
-        // Winner if the last 8 hex characters of the address are 0. 
+        // Winner if the last 8 hex characters of the address are 0.
         require(uint32(msg.sender) == 0);
         _sendWinnings();
      }
