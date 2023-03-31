@@ -2,7 +2,6 @@ package solc
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -48,10 +47,10 @@ func (s *SolidityCompilerTestSuite) TestDecompile_WithDefaultContracts() {
 	assert.Nil(s.T(), err)
 
 	contractFolder := filepath.Join(currentDirectory, "../../assets/contracts")
-	solidityFiles, _ := ioutil.ReadDir(contractFolder)
+	solidityFiles, _ := os.ReadDir(contractFolder)
 
 	for _, file := range solidityFiles {
-		f, _ := ioutil.ReadFile(filepath.Join(contractFolder, file.Name()))
+		f, _ := os.ReadFile(filepath.Join(contractFolder, file.Name()))
 		compiler := NewSolidityCompiler("/tmp/dogefuzz/")
 		fileWithoutExtension := file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]
 		contract, err := compiler.CompileSource(fileWithoutExtension, string(f))

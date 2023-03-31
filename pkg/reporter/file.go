@@ -3,7 +3,6 @@ package reporter
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
@@ -30,7 +29,7 @@ func (r *fileReporter) SendOutput(ctx context.Context, report common.TaskReport)
 		return err
 	}
 
-	return ioutil.WriteFile(r.outputFile, jsonContent, 0644)
+	return os.WriteFile(r.outputFile, jsonContent, 0644)
 }
 
 func fileExists(filename string) bool {

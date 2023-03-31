@@ -78,7 +78,12 @@ func (s *gethService) BatchCall(
 	}
 
 	for transactionId, inputs := range inputsByTransactionId {
-		availableSendHandlers := []SendHandler{s.sendToContractDirectly, s.sendToContractViaAgentContract}
+		availableSendHandlers := []SendHandler{
+			s.sendToContractDirectly,
+			s.sendToContractViaExceptionAgentContract,
+			s.sendToContractViaGasConsumptionAgentContract,
+			s.sendToContractViaReentrancyAgentContract,
+		}
 		send := common.RandomChoice(availableSendHandlers)
 
 		parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
@@ -108,8 +113,20 @@ func (s *gethService) sendToContractDirectly(ctx context.Context, wallet *geth.W
 	return s.agent.Send(ctx, wallet, contract, functionName, value, args...)
 }
 
-func (s *gethService) sendToContractViaAgentContract(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, functionName string, value *big.Int, args []interface{}) (string, error) {
-	agentContract, err := s.contractRepo.Find(s.connection.GetDB(), environment.REENTRANCY_AGENT_CONTRACT_ID)
+func (s *gethService) sendToContractViaExceptionAgentContract(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, functionName string, value *big.Int, args []interface{}) (string, error) {
+	return s.sendToContractViaAgentContract(ctx, environment.EXCEPTION_AGENT_CONTRACT_ID, wallet, contract, functionName, value, args)
+}
+
+func (s *gethService) sendToContractViaGasConsumptionAgentContract(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, functionName string, value *big.Int, args []interface{}) (string, error) {
+	return s.sendToContractViaAgentContract(ctx, environment.GAS_CONSUMPTION_AGENT_CONTRACT_ID, wallet, contract, functionName, value, args)
+}
+
+func (s *gethService) sendToContractViaReentrancyAgentContract(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, functionName string, value *big.Int, args []interface{}) (string, error) {
+	return s.sendToContractViaAgentContract(ctx, environment.REENTRANCY_AGENT_CONTRACT_ID, wallet, contract, functionName, value, args)
+}
+
+func (s *gethService) sendToContractViaAgentContract(ctx context.Context, agentId string, wallet *geth.Wallet, contract *common.Contract, functionName string, value *big.Int, args []interface{}) (string, error) {
+	agentContract, err := s.contractRepo.Find(s.connection.GetDB(), agentId)
 	if err != nil {
 		if errors.Is(err, repo.ErrNotExists) {
 			return "", ErrContractNotFound

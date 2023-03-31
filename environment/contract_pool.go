@@ -3,7 +3,7 @@ package environment
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
@@ -32,40 +32,25 @@ func NewContractPool(e env) *contractPool {
 }
 
 func (p *contractPool) Setup(ctx context.Context) error {
-	err := p.deployExceptionFallbackContract(ctx)
-	if err != nil {
-		return err
+	contracts := map[string]string{
+		EXCEPTION_FALLBACK_CONTRACT_NAME:       EXCEPTION_FALLBACK_CONTRACT_ID,
+		EXCEPTION_AGENT_CONTRACT_NAME:          EXCEPTION_AGENT_CONTRACT_ID,
+		GAS_CONSUMPTION_FALLBACK_CONTRACT_NAME: GAS_CONSUMPTION_FALLBACK_CONTRACT_ID,
+		GAS_CONSUMPTION_AGENT_CONTRACT_NAME:    GAS_CONSUMPTION_AGENT_CONTRACT_ID,
+		REENTRANCY_AGENT_CONTRACT_NAME:         REENTRANCY_AGENT_CONTRACT_ID,
 	}
 
-	err = p.deployGasConsumptionFallbackContract(ctx)
-	if err != nil {
-		return err
+	for name, id := range contracts {
+		err := p.deployContract(ctx, name, id)
+		if err != nil {
+			return err
+		}
 	}
-	err = p.deployReentrancyAgentContract(ctx)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
-func (p *contractPool) deployExceptionFallbackContract(ctx context.Context) error {
-	name := "ExceptionFallback"
-	return p.deployContract(ctx, name, EXCEPTION_FALLBACK_CONTRACT_ID)
-}
-
-func (p *contractPool) deployGasConsumptionFallbackContract(ctx context.Context) error {
-	name := "GasConsumptionFallback"
-	return p.deployContract(ctx, name, GAS_CONSUMPTION_FALLBACK_CONTRACT_ID)
-}
-
-func (p *contractPool) deployReentrancyAgentContract(ctx context.Context) error {
-	name := "ReentrancyAgent"
-	return p.deployContract(ctx, name, REENTRANCY_AGENT_CONTRACT_ID)
-}
-
 func (p *contractPool) deployContract(ctx context.Context, contractName string, contractId string) error {
-	content, err := ioutil.ReadFile(fmt.Sprintf("%s/%s.sol", CONTRACT_FOLDER, contractName))
+	content, err := os.ReadFile(fmt.Sprintf("%s/%s.sol", CONTRACT_FOLDER, contractName))
 	if err != nil {
 		return err
 	}
