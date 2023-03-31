@@ -41,6 +41,7 @@ type TaskService interface {
 	FindNotFinishedTasksThatDontHaveIncompletedTransactions() ([]*dto.TaskDTO, error)
 	FindNotFinishedAndExpired() ([]*dto.TaskDTO, error)
 	FindNotFinishedAndHaveDeployedContract() ([]*dto.TaskDTO, error)
+	FindNotFinishedThatHaveDeployedContractAndLimitedPendingTransactions(limit int) ([]*dto.TaskDTO, error)
 }
 
 type TransactionService interface {

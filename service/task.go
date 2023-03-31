@@ -91,3 +91,15 @@ func (s *taskService) FindNotFinishedAndHaveDeployedContract() ([]*dto.TaskDTO, 
 	}
 	return dtos, nil
 }
+
+func (s *taskService) FindNotFinishedThatHaveDeployedContractAndLimitedPendingTransactions(limit int) ([]*dto.TaskDTO, error) {
+	tasks, err := s.taskRepo.FindNotFinishedThatHaveDeployedContractAndLimitedPendingTransactions(s.connection.GetDB(), limit)
+	if err != nil {
+		return nil, err
+	}
+	dtos := make([]*dto.TaskDTO, len(tasks))
+	for idx, task := range tasks {
+		dtos[idx] = s.taskMapper.MapEntityToDTO(&task)
+	}
+	return dtos, nil
+}

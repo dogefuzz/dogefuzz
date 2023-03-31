@@ -28,7 +28,7 @@ func TestTransactionsCheckerJobTestSuite(t *testing.T) {
 func (s *TransactionsCheckerJobTestSuite) SetupTest() {
 	s.taskServiceMock = new(mocks.TaskServiceMock)
 	s.taskInputRequestTopicMock = new(mocks.TaskInputRequestTopicMock)
-	s.env = test.NewTestEnv(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, s.taskServiceMock, nil, s.taskInputRequestTopicMock, nil)
+	s.env = test.NewTestEnv(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, s.taskServiceMock, nil, s.taskInputRequestTopicMock, generators.ConfigGen())
 }
 
 func (s *TransactionsCheckerJobTestSuite) TestId_ShouldReturnJobName() {
@@ -53,7 +53,7 @@ func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldFindTransactionsToBe
 		tasks[idx] = generators.TaskDTOGen()
 		s.taskInputRequestTopicMock.On("Publish", bus.TaskInputRequestEvent{TaskId: tasks[idx].Id})
 	}
-	s.taskServiceMock.On("FindNotFinishedAndHaveDeployedContract").Return(tasks, nil)
+	s.taskServiceMock.On("FindNotFinishedThatHaveDeployedContractAndLimitedPendingTransactions", s.env.Config().FuzzerConfig.PendingTransactionsThreshold).Return(tasks, nil)
 	j := NewTransactionsCheckerJob(s.env)
 
 	j.Handler()
@@ -65,7 +65,7 @@ func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldFindTransactionsToBe
 func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldReturnError_WhenServiceReturnReturnError() {
 	tasks := make([]*dto.TaskDTO, 0)
 	err := errors.New("error example")
-	s.taskServiceMock.On("FindNotFinishedAndHaveDeployedContract").Return(tasks, err)
+	s.taskServiceMock.On("FindNotFinishedThatHaveDeployedContractAndLimitedPendingTransactions", s.env.Config().FuzzerConfig.PendingTransactionsThreshold).Return(tasks, err)
 	j := NewTransactionsCheckerJob(s.env)
 
 	j.Handler()
@@ -76,7 +76,7 @@ func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldReturnError_WhenServ
 
 func (s *TransactionsCheckerJobTestSuite) TestHandler_ShouldEmitEvent_WhenServiceReturnAnEmptyListOfTransactions() {
 	tasks := make([]*dto.TaskDTO, 0)
-	s.taskServiceMock.On("FindNotFinishedAndHaveDeployedContract").Return(tasks, nil)
+	s.taskServiceMock.On("FindNotFinishedThatHaveDeployedContractAndLimitedPendingTransactions", s.env.Config().FuzzerConfig.PendingTransactionsThreshold).Return(tasks, nil)
 	j := NewTransactionsCheckerJob(s.env)
 
 	j.Handler()

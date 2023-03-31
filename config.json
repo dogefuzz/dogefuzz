@@ -17,6 +17,7 @@
     "batchSize": 1,
     "seedsSize": 10,
     "transactionTimeout": "10s",
+    "pendingTransactionsThreshold": 5,
     "seeds": {
       "bool": ["true", "false"],
       "uint8": ["0", "255"],

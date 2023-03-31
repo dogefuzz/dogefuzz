@@ -1,6 +1,7 @@
 package job
 
 import (
+	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
@@ -8,6 +9,7 @@ import (
 
 type transactionsCheckerJob struct {
 	logger                *zap.Logger
+	cfg                   *config.Config
 	taskService           interfaces.TaskService
 	transactionService    interfaces.TransactionService
 	taskInputRequestTopic interfaces.Topic[bus.TaskInputRequestEvent]
@@ -16,6 +18,7 @@ type transactionsCheckerJob struct {
 func NewTransactionsCheckerJob(e Env) *transactionsCheckerJob {
 	return &transactionsCheckerJob{
 		logger:                e.Logger(),
+		cfg:                   e.Config(),
 		taskService:           e.TaskService(),
 		transactionService:    e.TransactionService(),
 		taskInputRequestTopic: e.TaskInputRequestTopic(),
@@ -26,7 +29,7 @@ func (j *transactionsCheckerJob) Id() string         { return "transactions-chec
 func (j *transactionsCheckerJob) CronConfig() string { return "* * * * * *" }
 
 func (j *transactionsCheckerJob) Handler() {
-	tasks, err := j.taskService.FindNotFinishedAndHaveDeployedContract()
+	tasks, err := j.taskService.FindNotFinishedThatHaveDeployedContractAndLimitedPendingTransactions(j.cfg.FuzzerConfig.PendingTransactionsThreshold)
 	if err != nil {
 		j.logger.Sugar().Errorf("an error occured when retrieving tasks that are still running: %v", err)
 		return

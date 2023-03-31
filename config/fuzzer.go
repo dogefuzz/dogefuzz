@@ -7,9 +7,10 @@ import (
 )
 
 type FuzzerConfig struct {
-	CritialInstructions []string      `mapstructure:"criticalInstructions"`
-	BatchSize           int           `mapstructure:"batchSize"`
-	SeedsSize           int           `mapstructure:"seedsSize"`
-	Seeds               common.Seeds  `mapstructure:"seeds"`
-	TransactionTimeout  time.Duration `mapstructure:"transactionTimeout"`
+	CritialInstructions          []string      `mapstructure:"criticalInstructions"`
+	BatchSize                    int           `mapstructure:"batchSize"`
+	SeedsSize                    int           `mapstructure:"seedsSize"`
+	Seeds                        common.Seeds  `mapstructure:"seeds"`
+	TransactionTimeout           time.Duration `mapstructure:"transactionTimeout"`
+	PendingTransactionsThreshold int           `mapstructure:"pendingTransactionsThreshold"`
 }

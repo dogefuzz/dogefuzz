@@ -38,3 +38,8 @@ func (m *TaskServiceMock) FindNotFinishedAndHaveDeployedContract() ([]*dto.TaskD
 	args := m.Called()
 	return args.Get(0).([]*dto.TaskDTO), args.Error(1)
 }
+
+func (m *TaskServiceMock) FindNotFinishedThatHaveDeployedContractAndLimitedPendingTransactions(limit int) ([]*dto.TaskDTO, error) {
+	args := m.Called(limit)
+	return args.Get(0).([]*dto.TaskDTO), args.Error(1)
+}
