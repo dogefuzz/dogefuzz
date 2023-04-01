@@ -139,16 +139,22 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 		return
 	}
 	contract.CFG = *cfg
-	l.logger.Sugar().Debugf("genereting contract's CFG for contract %s", contract.Id)
 	contract.DistanceMap = distance.ComputeDistanceMap(*cfg, l.cfg.FuzzerConfig.CritialInstructions)
-	l.logger.Sugar().Debugf("genereting contract's distance map for contract %s", contract.Id)
 	contract.Status = common.CONTRACT_DEPLOYED
-
 	err = l.contractService.Update(contract)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error occurred while updating contract adress: %v", err)
 		return
 	}
+	l.logger.Sugar().Debugf("generated contract's CFG and distance map for contract %s", contract.Id)
+
+	task.Expiration = common.Now().Add(task.Duration)
+	err = l.taskService.Update(task)
+	if err != nil {
+		l.logger.Sugar().Errorf("an error ocurred while updating task with new expiration: %v", err)
+		return
+	}
+	l.logger.Sugar().Debugf("updating task with new expiration %s", contract.Id)
 
 	l.logger.Info(fmt.Sprintf("requesting new inputs for task %s", task.Id))
 	l.taskInputRequestTopic.Publish(bus.TaskInputRequestEvent{TaskId: task.Id})

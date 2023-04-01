@@ -7,9 +7,11 @@ import (
 )
 
 type Task struct {
-	Id                             string             `gorm:"primaryKey"`
-	Arguments                      string             `gorm:"not null"`
-	StartTime                      time.Time          `gorm:"not null"`
+	Id                             string `gorm:"primaryKey"`
+	Arguments                      string `gorm:"not null"`
+	Duration                       time.Duration
+	StartTime                      time.Time `gorm:"not null"`
+	DeploymentTime                 time.Time
 	Expiration                     time.Time          `gorm:"not null"`
 	Detectors                      string             `gorm:"not null"`
 	FuzzingType                    common.FuzzingType `gorm:"not null"`

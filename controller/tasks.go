@@ -87,6 +87,7 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	now := common.Now()
 	taskDTO := dto.NewTaskDTO{
 		Arguments:   request.Arguments,
+		Duration:    duration,
 		StartTime:   now,
 		Expiration:  now.Add(duration),
 		Detectors:   common.GetUniqueSlice(request.Detectors),

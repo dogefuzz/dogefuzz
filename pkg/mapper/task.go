@@ -16,12 +16,14 @@ func NewTaskMapper() *taskMapper {
 
 func (m *taskMapper) MapNewDTOToEntity(c *dto.NewTaskDTO) *entities.Task {
 	return &entities.Task{
-		Arguments:   strings.Join(c.Arguments, ";"),
-		StartTime:   c.StartTime,
-		Expiration:  c.Expiration,
-		Detectors:   common.JoinOracleTypeList(c.Detectors),
-		FuzzingType: c.FuzzingType,
-		Status:      c.Status,
+		Arguments:      strings.Join(c.Arguments, ";"),
+		Duration:       c.Duration,
+		StartTime:      c.StartTime,
+		DeploymentTime: c.DeploymentTime,
+		Expiration:     c.Expiration,
+		Detectors:      common.JoinOracleTypeList(c.Detectors),
+		FuzzingType:    c.FuzzingType,
+		Status:         c.Status,
 	}
 }
 
@@ -29,7 +31,9 @@ func (m *taskMapper) MapDTOToEntity(c *dto.TaskDTO) *entities.Task {
 	return &entities.Task{
 		Id:                             c.Id,
 		Arguments:                      strings.Join(c.Arguments, ";"),
+		Duration:                       c.Duration,
 		StartTime:                      c.StartTime,
+		DeploymentTime:                 c.DeploymentTime,
 		Expiration:                     c.Expiration,
 		Detectors:                      common.JoinOracleTypeList(c.Detectors),
 		FuzzingType:                    c.FuzzingType,
@@ -57,7 +61,9 @@ func (m *taskMapper) MapEntityToDTO(c *entities.Task) *dto.TaskDTO {
 	return &dto.TaskDTO{
 		Id:                             c.Id,
 		Arguments:                      arguments,
+		Duration:                       c.Duration,
 		StartTime:                      c.StartTime,
+		DeploymentTime:                 c.DeploymentTime,
 		Expiration:                     c.Expiration,
 		Detectors:                      detectors,
 		FuzzingType:                    c.FuzzingType,
