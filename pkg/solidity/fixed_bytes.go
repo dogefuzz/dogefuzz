@@ -48,7 +48,17 @@ func (h *fixedBytesHandler) GetValue() interface{} {
 }
 
 func (h *fixedBytesHandler) SetValue(value interface{}) {
-	h.value = value.([]byte)
+	arrayValue := reflect.ValueOf(value)
+	if arrayValue.Kind() != reflect.Array {
+		panic(ErrInvalidFixedBytes)
+	}
+
+	slice := reflect.New(reflect.SliceOf(reflect.TypeOf(byte(0)))).Elem()
+	for i := 0; i < h.size; i++ {
+		newSlice := reflect.Append(slice, arrayValue.Index(i))
+		slice.Set(newSlice)
+	}
+	h.value = slice.Interface().([]byte)
 }
 
 func (h *fixedBytesHandler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
