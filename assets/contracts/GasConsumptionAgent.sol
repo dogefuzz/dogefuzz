@@ -4,14 +4,14 @@ pragma solidity 0.8.19;
 contract GasConsumptionAgent {
     fallback() external payable {
         int64 value = 0;
-        while (true) {
+        while (value < 100) {
             value++;
         }
     }
 
     receive() external payable {
         int64 value = 0;
-        while (true) {
+        while (value < 100) {
             value++;
         }
     }
