@@ -38,5 +38,6 @@ func (f *directedGreyboxFuzzer) GenerateInput(method abi.Method) ([]interface{},
 		mutationFunction()
 		inputs[inputsIdx] = handler.GetValue()
 	}
+
 	return inputs, nil
 }

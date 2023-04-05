@@ -151,7 +151,7 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 
 	transactionHashesByTransactionId, errorsByTransactionId := l.gethService.BatchCall(ctx, l.contractMapper.MapDTOToCommon(contract), chosenFunction.Name, inputsByTransactionId)
 	for transactionId, err := range errorsByTransactionId {
-		l.logger.Sugar().Warnf("failed to send transaction to node: %v", err)
+		l.logger.Sugar().Warnf("failed to send transaction %s to node: %v", transactionId, err)
 		transaction := transactionsByTransactionId[transactionId]
 		transaction.Status = common.TRANSACTION_SEND_ERROR
 	}

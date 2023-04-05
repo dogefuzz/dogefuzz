@@ -12,6 +12,7 @@ import (
 )
 
 var ErrInvalidStrategy = errors.New("the provided strategy is not valid")
+var ErrSeedsListInvalid = errors.New("the provided seeds list is invalid")
 
 type powerSchedule struct {
 	cfg                *config.Config
@@ -102,6 +103,10 @@ func (s *powerSchedule) deserializeSeedsList(method abi.Method, seedsList [][]st
 	for seedsListIdx, seeds := range seedsList {
 		deserializedSeeds := make([]interface{}, len(seeds))
 		for inputsIdx, inputDefinition := range method.Inputs {
+			if len(seeds) <= inputsIdx {
+				return nil, ErrSeedsListInvalid
+			}
+
 			handler, err := s.solidityService.GetTypeHandlerWithContext(inputDefinition.Type)
 			if err != nil {
 				return nil, err

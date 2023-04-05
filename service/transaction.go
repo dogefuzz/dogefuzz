@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/dogefuzz/dogefuzz/data/repo"
@@ -15,6 +16,7 @@ type transactionService struct {
 	transactionRepo   interfaces.TransactionRepo
 	transactionMapper interfaces.TransactionMapper
 	connection        interfaces.Connection
+	mu                sync.Mutex
 }
 
 func NewTransactionService(e Env) *transactionService {
@@ -58,6 +60,9 @@ func (s *transactionService) Create(transaction *dto.NewTransactionDTO) (*dto.Tr
 }
 
 func (s *transactionService) BulkCreate(newTransactions []*dto.NewTransactionDTO) ([]*dto.TransactionDTO, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	tx := s.connection.GetDB().Begin()
 	trasactions := make([]*dto.TransactionDTO, len(newTransactions))
 	for idx, dto := range newTransactions {
@@ -75,6 +80,9 @@ func (s *transactionService) BulkCreate(newTransactions []*dto.NewTransactionDTO
 }
 
 func (s *transactionService) BulkUpdate(updatedTransactions []*dto.TransactionDTO) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	tx := s.connection.GetDB().Begin()
 	for _, dto := range updatedTransactions {
 		entity := s.transactionMapper.MapDTOToEntity(dto)
@@ -137,8 +145,6 @@ func (s *transactionService) FindTransactionsByFunctionNameAndOrderByTimestamp(f
 	}
 	return transactionDTOs, nil
 }
-
-
 
 func (s *transactionService) FindRunningAndCreatedBeforeThreshold(dateThreshold time.Time) ([]*dto.TransactionDTO, error) {
 	transactions, err := s.transactionRepo.FindRunningAndCreatedBeforeThreshold(s.connection.GetDB(), dateThreshold)

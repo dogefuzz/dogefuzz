@@ -77,14 +77,18 @@ func (r *taskRepo) FindNotFinishedThatHaveDeployedContractAndLimitedPendingTrans
 				FROM contracts c
 				WHERE c.task_id = t.id
 					AND c.status = ?)
-			AND EXISTS (SELECT *
-			 	FROM transactions tx
-				WHERE tx.task_id = t.id
-					AND tx.status = ?
-				GROUP BY tx.status
-				HAVING COUNT(*) <= ?)
+			AND ((NOT EXISTS (SELECT *
+					FROM transactions tx
+					WHERE tx.task_id = t.id
+						AND tx.status = ?))
+				OR (EXISTS (SELECT *
+					FROM transactions tx
+					WHERE tx.task_id = t.id
+						AND tx.status = ?
+					GROUP BY tx.status
+					HAVING COUNT(*) <= ?)))
 			AND t.status = ?`
-	if err := tx.Raw(query, common.CONTRACT_DEPLOYED, common.TRANSACTION_RUNNING, limit, common.TASK_RUNNING).Find(&tasks).Error; err != nil {
+	if err := tx.Raw(query, common.CONTRACT_DEPLOYED, common.TRANSACTION_RUNNING, common.TRANSACTION_RUNNING, limit, common.TASK_RUNNING).Find(&tasks).Error; err != nil {
 		return nil, err
 	}
 	return tasks, nil
