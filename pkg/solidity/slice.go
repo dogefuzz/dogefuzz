@@ -3,7 +3,6 @@ package solidity
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"math/rand"
 	"reflect"
 	"time"
@@ -12,8 +11,6 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
-
-	gethcommon "github.com/ethereum/go-ethereum/common"
 )
 
 var ErrInvalidSlice = errors.New("the provided json does not correspond to a slice type")
@@ -68,7 +65,15 @@ func (h *sliceHandler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
 }
 
 func (h *sliceHandler) Serialize() string {
-	js, _ := json.Marshal(h.value)
+	arrayValue := reflect.ValueOf(h.value)
+	values := make([]string, arrayValue.Len())
+
+	for idx := 0; idx < arrayValue.Len(); idx++ {
+		h.handler.SetValue(arrayValue.Index(idx).Interface())
+		values[idx] = h.handler.Serialize()
+	}
+
+	js, _ := json.Marshal(values)
 	return string(js)
 }
 
@@ -131,14 +136,6 @@ func (h *sliceHandler) MutateElementOp() {
 
 	h.value = arrayValue.Interface()
 
-	addresses := h.value.([]gethcommon.Address)
-	for idx := 0; idx < len(addresses); idx++ {
-		if (addresses[idx] == gethcommon.Address{}) {
-			fmt.Println("[mutateElementOp] the address is empty, skipping")
-			return
-		}
-	}
-
 }
 
 func (h *sliceHandler) AddElementOp() {
@@ -170,14 +167,6 @@ func (h *sliceHandler) AddElementOp() {
 	}
 
 	h.value = appendedArray.Interface()
-
-	addresses := h.value.([]gethcommon.Address)
-	for idx := 0; idx < len(addresses); idx++ {
-		if (addresses[idx] == gethcommon.Address{}) {
-			fmt.Println("[mutateElementOp] the address is empty, skipping")
-			return
-		}
-	}
 }
 
 func (h *sliceHandler) RemoveElementOp() {
@@ -201,12 +190,4 @@ func (h *sliceHandler) RemoveElementOp() {
 	}
 
 	h.value = resultArray.Interface()
-
-	addresses := h.value.([]gethcommon.Address)
-	for idx := 0; idx < len(addresses); idx++ {
-		if (addresses[idx] == gethcommon.Address{}) {
-			fmt.Println("[mutateElementOp] the address is empty, skipping")
-			return
-		}
-	}
 }
