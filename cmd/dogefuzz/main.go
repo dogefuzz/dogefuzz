@@ -29,10 +29,11 @@ func main() {
 
 	env := NewEnv(cfg)
 
-	// Run server
-	server := api.NewServer(env)
-	if err = server.Start(); err != nil {
-		log.Fatalf("Couldn't start server: %v", err)
+	// Start environment
+	blockchainEnvironment := environment.NewBlockchainEnvironment(env)
+	err = blockchainEnvironment.Setup(ctx)
+	if err != nil {
+		log.Fatalf("Couldn't start environemnt: %v", err)
 		panic(err)
 	}
 
@@ -44,11 +45,10 @@ func main() {
 	listenerManager := listener.NewManager(env)
 	listenerManager.Start()
 
-	// Start environment
-	blockchainEnvironment := environment.NewBlockchainEnvironment(env)
-	err = blockchainEnvironment.Setup(ctx)
-	if err != nil {
-		log.Fatalf("Couldn't start environemnt: %v", err)
+	// Run server
+	server := api.NewServer(env)
+	if err = server.Start(); err != nil {
+		log.Fatalf("Couldn't start server: %v", err)
 		panic(err)
 	}
 
