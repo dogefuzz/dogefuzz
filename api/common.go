@@ -29,6 +29,7 @@ type Env interface {
 	ContractsController() interfaces.ContractsController
 	TasksController() interfaces.TasksController
 	TransactionsController() interfaces.TransactionsController
+	PingController() interfaces.PingController
 	InstrumentExecutionTopic() interfaces.Topic[bus.InstrumentExecutionEvent]
 	TaskFinishTopic() interfaces.Topic[bus.TaskFinishEvent]
 	TaskInputRequestTopic() interfaces.Topic[bus.TaskInputRequestEvent]

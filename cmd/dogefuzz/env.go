@@ -56,6 +56,7 @@ type Env interface {
 	ContractsController() interfaces.ContractsController
 	TasksController() interfaces.TasksController
 	TransactionsController() interfaces.TransactionsController
+	PingController() interfaces.PingController
 
 	InstrumentExecutionTopic() interfaces.Topic[bus.InstrumentExecutionEvent]
 	TaskFinishTopic() interfaces.Topic[bus.TaskFinishEvent]
@@ -111,6 +112,7 @@ type env struct {
 	contractsController    interfaces.ContractsController
 	tasksController        interfaces.TasksController
 	transactionsController interfaces.TransactionsController
+	pingController         interfaces.PingController
 
 	instrumentExecutionTopic interfaces.Topic[bus.InstrumentExecutionEvent]
 	taskFinishTopic          interfaces.Topic[bus.TaskFinishEvent]
@@ -361,6 +363,13 @@ func (e *env) TransactionsController() interfaces.TransactionsController {
 		e.transactionsController = controller.NewTransactionsController(e)
 	}
 	return e.transactionsController
+}
+
+func (e *env) PingController() interfaces.PingController {
+	if e.pingController == nil {
+		e.pingController = controller.NewPingController()
+	}
+	return e.pingController
 }
 
 func (e *env) InstrumentExecutionTopic() interfaces.Topic[bus.InstrumentExecutionEvent] {

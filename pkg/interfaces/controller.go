@@ -14,3 +14,7 @@ type TransactionsController interface {
 	StoreDetectedWeaknesses(c *gin.Context)
 	StoreTransactionExecution(c *gin.Context)
 }
+
+type PingController interface {
+	Ping(c *gin.Context)
+}
