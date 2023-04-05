@@ -15,6 +15,7 @@ import (
 
 var ErrInvalidArray = errors.New("the provided json does not correspond to a array type")
 var ErrInvalidArraySize = errors.New("the provided json does not correspond to a array with size required by this handler")
+var ErrInvalidElement = errors.New("the provided json does not correspond to a valid element for this array")
 
 type arrayHandler struct {
 	size              int
@@ -82,15 +83,26 @@ func (h *arrayHandler) Serialize() string {
 }
 
 func (h *arrayHandler) Deserialize(value string) error {
-	var val []interface{}
-	err := json.Unmarshal([]byte(value), &val)
+	var values []string
+	err := json.Unmarshal([]byte(value), &values)
 	if err != nil {
 		return ErrInvalidArray
 	}
-	if len(val) != h.size {
+	if len(values) != h.size {
 		return ErrInvalidArraySize
 	}
-	h.value = val
+
+	sliceType := reflect.SliceOf(h.typ.GetType().Elem())
+	arrayValue := reflect.MakeSlice(sliceType, h.size, h.size)
+	for idx, value := range values {
+		err := h.handler.Deserialize(value)
+		if err != nil {
+			return ErrInvalidElement
+		}
+		valueAsInterface := h.handler.GetValue()
+		arrayValue.Index(idx).Set(reflect.ValueOf(valueAsInterface).Convert(h.typ.Elem.GetType()))
+	}
+	h.value = arrayValue.Interface()
 	return nil
 }
 
@@ -116,7 +128,7 @@ func (h *arrayHandler) MutateElementOp() {
 	idx := rand.Intn(arrayValue.Len())
 	temp := arrayValue.Index(idx)
 
-	h.handler.SetValue(temp)
+	h.handler.SetValue(temp.Interface())
 	mutator := common.RandomChoice(h.handler.GetMutators())
 	mutator()
 

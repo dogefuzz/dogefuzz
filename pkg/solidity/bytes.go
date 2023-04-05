@@ -97,6 +97,10 @@ func (h *bytesHandler) GetMutators() []func() {
 }
 
 func (h *bytesHandler) MutateElementOp() {
+	if h.value == nil || len(h.value) == 0 {
+		return
+	}
+
 	rand.Seed(time.Now().UnixNano())
 	idx := rand.Intn(len(h.value))
 	temp := h.value[idx]
@@ -109,6 +113,14 @@ func (h *bytesHandler) MutateElementOp() {
 }
 
 func (h *bytesHandler) AddElementOp() {
+	if h.value == nil || len(h.value) == 0 {
+		h.value = make([]byte, 0)
+		h.handler.Generate()
+		newValue := h.handler.GetValue().(byte)
+		h.value = append(h.value, newValue)
+		return
+	}
+
 	rand.Seed(time.Now().UnixNano())
 	insertionIdx := rand.Intn(len(h.value))
 
@@ -119,6 +131,9 @@ func (h *bytesHandler) AddElementOp() {
 }
 
 func (h *bytesHandler) RemoveElementOp() {
+	if h.value == nil || len(h.value) == 0 {
+		return
+	}
 	rand.Seed(time.Now().UnixNano())
 	removeIdx := rand.Intn(len(h.value))
 	h.value = append(h.value[:removeIdx], h.value[removeIdx+1:]...)
