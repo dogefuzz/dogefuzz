@@ -78,7 +78,15 @@ func (h *arrayHandler) LoadSeedsAndChooseOneRandomly(seeds common.Seeds) error {
 }
 
 func (h *arrayHandler) Serialize() string {
-	js, _ := json.Marshal(h.value)
+	arrayValue := reflect.ValueOf(h.value)
+	values := make([]string, arrayValue.Len())
+
+	for idx := 0; idx < arrayValue.Len(); idx++ {
+		h.handler.SetValue(arrayValue.Index(idx).Interface())
+		values[idx] = h.handler.Serialize()
+	}
+
+	js, _ := json.Marshal(values)
 	return string(js)
 }
 
