@@ -77,6 +77,7 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 	}
 
 	report := common.TaskReport{
+		TaskId:             task.Id,
 		TimeElapsed:        task.Expiration.Sub(task.StartTime),
 		ContractName:       contract.Name,
 		TotalInstructions:  uint64(len(contract.CFG.GetEdgesPCs())),

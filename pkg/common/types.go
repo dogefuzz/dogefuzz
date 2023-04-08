@@ -81,6 +81,7 @@ const (
 )
 
 type TaskReport struct {
+	TaskId             string              `json:"taskId"`
 	TimeElapsed        time.Duration       `json:"timeElapsed"`
 	ContractName       string              `json:"contractName"`
 	TotalInstructions  uint64              `json:"totalInstructions"`

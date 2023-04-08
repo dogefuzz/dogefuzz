@@ -21,6 +21,7 @@ func TaskReportGen() common.TaskReport {
 	}
 
 	return common.TaskReport{
+		TaskId:             gofakeit.UUID(),
 		TimeElapsed:        time.Duration(gofakeit.Number(1, 60)) * time.Minute,
 		ContractName:       gofakeit.Name(),
 		TotalInstructions:  gofakeit.Uint64(),
