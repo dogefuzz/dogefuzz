@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"time"
 
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 )
@@ -27,6 +28,9 @@ func NewVandalClient(vandalEndpoint string) *vandalClient {
 }
 
 func (c *vandalClient) Decompile(ctx context.Context, source string) ([]common.Block, []common.Function, error) {
+	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+	defer cancel()
+
 	body, err := json.Marshal(VandalDecompileRequest{Source: source})
 	if err != nil {
 		return nil, nil, err
