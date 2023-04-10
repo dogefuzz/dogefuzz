@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
@@ -162,7 +163,18 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 		transaction.Status = common.TRANSACTION_RUNNING
 	}
 
-	err = l.transactionService.BulkUpdate(transactions)
+	tries := 0
+	for tries >= 5 {
+		if err != nil {
+			time.Sleep(500 * time.Millisecond)
+		} else {
+			break
+		}
+
+		err = l.transactionService.BulkUpdate(transactions)
+		tries++
+	}
+
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when updating transactions in database: %v", err)
 		return
