@@ -41,6 +41,7 @@ func NewTasksController(e Env) *tasksController {
 func (ctrl *tasksController) Start(c *gin.Context) {
 	var request dto.StartTaskRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
+		ctrl.logger.Error("request failed to be parsed", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("request failed to be parsed: %s", err.Error())})
 		return
 	}
@@ -48,18 +49,21 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	var duration time.Duration
 	duration, err := time.ParseDuration(request.Duration)
 	if err != nil {
+		ctrl.logger.Error("duration failed to be parsed", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("duration failed to be parsed: %s", err.Error())})
 		return
 	}
 
 	compiledContract, err := ctrl.solidityCompiler.CompileSource(request.ContractName, request.ContractSource)
 	if err != nil {
+		ctrl.logger.Error("contract failed to be compiled", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("contract failed to be compiled: %s", err.Error())})
 		return
 	}
 
 	parsedABI, err := abi.JSON(strings.NewReader(compiledContract.AbiDefinition))
 	if err != nil {
+		ctrl.logger.Error("contract failed to be parsed", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("contract failed to be parsed: %s", err.Error())})
 		return
 	}
@@ -72,13 +76,15 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		payableMethods = append(payableMethods, function)
 	}
 	if len(payableMethods) == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "the provide contract doesn't have methods that changes the ontract's state"})
+		ctrl.logger.Error("the provide contract doesn't have methods that changes the ontract's state")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "the provide contract doesn't have methods that changes the contract's state"})
 		return
 	}
 
 	if len(request.Arguments) > 0 {
 		err = ctrl.tryValidateArgs(parsedABI, request.Arguments)
 		if err != nil {
+			ctrl.logger.Error("args failed to be parsed", zap.Error(err))
 			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("args failed to be parsed: %s", err.Error())})
 			return
 		}
@@ -96,7 +102,9 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	}
 	task, err := ctrl.taskService.Create(&taskDTO)
 	if err != nil {
+		ctrl.logger.Error("task failed to be created", zap.Error(err))
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
 	}
 
 	contractDTO := dto.NewContractDTO{
@@ -110,6 +118,7 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	}
 	contract, err := ctrl.contractService.Create(&contractDTO)
 	if err != nil {
+		ctrl.logger.Error("contract failed to be created", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -123,7 +132,9 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 	}
 	_, err = ctrl.functionService.Create(&functionDTO)
 	if err != nil {
+		ctrl.logger.Error("constructor failed to be created", zap.Error(err))
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+		return
 	}
 
 	for _, method := range payableMethods {
@@ -136,13 +147,15 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		}
 		_, err := ctrl.functionService.Create(&functionDTO)
 		if err != nil {
+			ctrl.logger.Error("function failed to be created", zap.Error(err))
 			c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
+			return
 		}
 	}
 
 	ctrl.logger.Info(fmt.Sprintf("Requesting fuzzing task %s for %s until %v", task.Id, contract.Name, task.Expiration))
 	ctrl.taskStartTopic.Publish(bus.TaskStartEvent{TaskId: task.Id})
-	c.JSON(200, dto.StartTaskResponse{TaskId: task.Id})
+	c.JSON(http.StatusOK, dto.StartTaskResponse{TaskId: task.Id})
 }
 
 func (ctrl *tasksController) tryValidateArgs(parsedABI abi.ABI, args []string) error {
