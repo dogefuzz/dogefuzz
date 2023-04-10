@@ -53,7 +53,7 @@ type TransactionService interface {
 	FindByHash(hash string) (*dto.TransactionDTO, error)
 	FindByTaskId(taskId string) ([]*dto.TransactionDTO, error)
 	FindDoneByTaskId(taskId string) ([]*dto.TransactionDTO, error)
-	FindTransactionsByFunctionNameAndOrderByTimestamp(functionName string, limit int64) ([]*dto.TransactionDTO, error)
+	FindDoneTransactionsByFunctionNameAndOrderByTimestamp(functionName string, limit int64) ([]*dto.TransactionDTO, error)
 	FindRunningAndCreatedBeforeThreshold(dateThreshold time.Time) ([]*dto.TransactionDTO, error)
 }
 
