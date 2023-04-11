@@ -164,14 +164,13 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 	}
 
 	tries := 0
-	for tries >= 5 {
+	for tries <= 5 {
+		err = l.transactionService.BulkUpdate(transactions)
 		if err != nil {
 			time.Sleep(500 * time.Millisecond)
 		} else {
 			break
 		}
-
-		err = l.transactionService.BulkUpdate(transactions)
 		tries++
 	}
 
