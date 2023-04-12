@@ -6,6 +6,7 @@ import (
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/dogefuzz/dogefuzz/entities"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/test/generators"
 	"github.com/dogefuzz/dogefuzz/test/it"
@@ -52,17 +53,17 @@ func (s *FunctionRepoIntegrationTestSuite) TestFindByContractId_WhenExistsMoreTh
 	contractId := gofakeit.LetterN(255)
 	function1 := generators.FunctionGen()
 	function1.ContractId = contractId
-	function1.IsConstructor = false
+	function1.Type = common.METHOD
 	err := s.repo.Create(s.env.DbConnection().GetDB(), function1)
 	assert.Nil(s.T(), err)
 	function2 := generators.FunctionGen()
 	function2.ContractId = contractId
-	function2.IsConstructor = true
+	function2.Type = common.CONSTRUCTOR
 	err = s.repo.Create(s.env.DbConnection().GetDB(), function2)
 	assert.Nil(s.T(), err)
 	function3 := generators.FunctionGen()
 	function3.ContractId = contractId
-	function3.IsConstructor = false
+	function3.Type = common.METHOD
 	err = s.repo.Create(s.env.DbConnection().GetDB(), function3)
 	assert.Nil(s.T(), err)
 
@@ -77,17 +78,17 @@ func (s *FunctionRepoIntegrationTestSuite) TestFindConstructorByContractId_WhenE
 	contractId := gofakeit.LetterN(255)
 	function1 := generators.FunctionGen()
 	function1.ContractId = contractId
-	function1.IsConstructor = false
+	function1.Type = common.METHOD
 	err := s.repo.Create(s.env.DbConnection().GetDB(), function1)
 	assert.Nil(s.T(), err)
 	function2 := generators.FunctionGen()
 	function2.ContractId = contractId
-	function2.IsConstructor = true
+	function2.Type = common.CONSTRUCTOR
 	err = s.repo.Create(s.env.DbConnection().GetDB(), function2)
 	assert.Nil(s.T(), err)
 	function3 := generators.FunctionGen()
 	function3.ContractId = contractId
-	function3.IsConstructor = false
+	function3.Type = common.METHOD
 	err = s.repo.Create(s.env.DbConnection().GetDB(), function3)
 	assert.Nil(s.T(), err)
 

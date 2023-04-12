@@ -27,10 +27,11 @@ func ContractGen() *entities.Contract {
 
 func FunctionGen() *entities.Function {
 	return &entities.Function{
-		Name:          gofakeit.Name(),
-		NumberOfArgs:  gofakeit.Int64(),
-		IsConstructor: gofakeit.Bool(),
-		ContractId:    gofakeit.LetterN(255),
+		Name:         gofakeit.Name(),
+		NumberOfArgs: gofakeit.Int64(),
+		Callable:     gofakeit.Bool(),
+		Type:         common.RandomChoice([]common.MethodType{common.METHOD, common.CONSTRUCTOR, common.FALLBACK, common.RECEIVE}),
+		ContractId:   gofakeit.LetterN(255),
 	}
 }
 

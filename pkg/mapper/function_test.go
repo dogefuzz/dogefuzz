@@ -26,11 +26,11 @@ func (s *FunctionMapperTestSuite) TestMapNewDTOToEntity_ShouldReturnAValidEntity
 	result := m.MapNewDTOToEntity(newFunctionDTO)
 
 	expectedResult := entities.Function{
-		Name:                    newFunctionDTO.Name,
-		NumberOfArgs:            newFunctionDTO.NumberOfArgs,
-		IsChangingContractState: newFunctionDTO.IsChangingContractState,
-		IsConstructor:           newFunctionDTO.IsConstructor,
-		ContractId:              newFunctionDTO.ContractId,
+		Name:         newFunctionDTO.Name,
+		NumberOfArgs: newFunctionDTO.NumberOfArgs,
+		Callable:     newFunctionDTO.Callable,
+		Type:         newFunctionDTO.Type,
+		ContractId:   newFunctionDTO.ContractId,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }
@@ -42,12 +42,12 @@ func (s *FunctionMapperTestSuite) TestMapDTOToEntity_ShouldReturnAValidEntity_Wh
 	result := m.MapDTOToEntity(functionDTO)
 
 	expectedResult := entities.Function{
-		Id:                      functionDTO.Id,
-		Name:                    functionDTO.Name,
-		NumberOfArgs:            functionDTO.NumberOfArgs,
-		IsChangingContractState: functionDTO.IsChangingContractState,
-		IsConstructor:           functionDTO.IsConstructor,
-		ContractId:              functionDTO.ContractId,
+		Id:           functionDTO.Id,
+		Name:         functionDTO.Name,
+		NumberOfArgs: functionDTO.NumberOfArgs,
+		Callable:     functionDTO.Callable,
+		Type:         functionDTO.Type,
+		ContractId:   functionDTO.ContractId,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }
@@ -59,11 +59,11 @@ func (s *FunctionMapperTestSuite) TestMapEntityToDTO_ShouldReturnAValidDTO_WhenR
 	result := m.MapEntityToDTO(entity)
 
 	expectedResult := dto.FunctionDTO{
-		Name:                    entity.Name,
-		NumberOfArgs:            entity.NumberOfArgs,
-		IsChangingContractState: entity.IsChangingContractState,
-		IsConstructor:           entity.IsConstructor,
-		ContractId:              entity.ContractId,
+		Name:         entity.Name,
+		NumberOfArgs: entity.NumberOfArgs,
+		Callable:     entity.Callable,
+		Type:         entity.Type,
+		ContractId:   entity.ContractId,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }

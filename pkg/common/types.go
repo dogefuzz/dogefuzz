@@ -164,3 +164,12 @@ type Function struct {
 type Seeds = map[TypeIdentifier][]string
 
 type ReporterType string
+
+type MethodType string
+
+const (
+	CONSTRUCTOR MethodType = "constructor"
+	FALLBACK    MethodType = "fallback"
+	RECEIVE     MethodType = "receive"
+	METHOD      MethodType = "method"
+)

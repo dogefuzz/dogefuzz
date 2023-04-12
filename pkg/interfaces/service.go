@@ -27,7 +27,7 @@ type FunctionService interface {
 
 type GethService interface {
 	Deploy(ctx context.Context, contract *common.Contract, args ...interface{}) (string, string, error)
-	BatchCall(ctx context.Context, contract *common.Contract, functionName string, inputsByTransactionId map[string][]interface{}) (map[string]string, map[string]error)
+	BatchCall(ctx context.Context, contract *common.Contract, function *dto.FunctionDTO, inputsByTransactionId map[string][]interface{}) (map[string]string, map[string]error)
 }
 
 type ReporterService interface {

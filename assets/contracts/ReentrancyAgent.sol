@@ -45,4 +45,12 @@ contract ReentrancyAgent {
         }
         assert(success);
     }
+
+    function TransferToContract(address payable to) public payable {
+        to.transfer(msg.value);
+    }
+
+    function SendToContract(address payable to) public payable {
+        require(to.send(msg.value), "Send failed");
+    }
 }

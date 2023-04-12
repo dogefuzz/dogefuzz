@@ -30,18 +30,17 @@ func NewAgent(cfg config.GethConfig) (*agent, error) {
 }
 
 func (d *agent) Send(ctx context.Context, wallet interfaces.Wallet, contract *common.Contract, functionName string, value *big.Int, args ...interface{}) (string, error) {
-
 	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 	if err != nil {
 		return "", err
 	}
+	addressAsHexString := gethcommon.HexToAddress(contract.Address)
+	boundContract := bind.NewBoundContract(addressAsHexString, parsedABI, d.client, d.client, d.client)
 
 	nonce, err := d.client.PendingNonceAt(ctx, wallet.GetAddress())
 	if err != nil {
 		return "", err
 	}
-
-	boundContract := bind.NewBoundContract(gethcommon.HexToAddress(contract.Address), parsedABI, d.client, d.client, d.client)
 
 	gasPrice, err := d.client.SuggestGasPrice(ctx)
 	if err != nil {
@@ -60,6 +59,43 @@ func (d *agent) Send(ctx context.Context, wallet interfaces.Wallet, contract *co
 	auth.Context = ctx
 
 	tx, err := boundContract.Transact(auth, functionName, args...)
+	if err != nil {
+		return "", err
+	}
+
+	return tx.Hash().Hex(), nil
+}
+
+func (d *agent) Transfer(ctx context.Context, wallet interfaces.Wallet, contract *common.Contract, value *big.Int) (string, error) {
+	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
+	if err != nil {
+		return "", err
+	}
+	addressAsHexString := gethcommon.HexToAddress(contract.Address)
+	boundContract := bind.NewBoundContract(addressAsHexString, parsedABI, d.client, d.client, d.client)
+
+	nonce, err := d.client.PendingNonceAt(ctx, wallet.GetAddress())
+	if err != nil {
+		return "", err
+	}
+
+	gasPrice, err := d.client.SuggestGasPrice(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	auth, err := bind.NewKeyedTransactorWithChainID(wallet.GetPrivateKey(), big.NewInt(d.cfg.ChainID))
+	if err != nil {
+		return "", err
+	}
+
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = value
+	auth.GasLimit = uint64(50000)
+	auth.GasPrice = gasPrice
+	auth.Context = ctx
+
+	tx, err := boundContract.Transfer(auth)
 	if err != nil {
 		return "", err
 	}

@@ -68,14 +68,14 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		return
 	}
 
-	payableMethods := make([]abi.Method, 0)
+	callableMethods := make([]abi.Method, 0)
 	for _, function := range parsedABI.Methods {
-		if !ctrl.isMethodChangingState(function) {
+		if !isMethodChangingState(function) {
 			continue
 		}
-		payableMethods = append(payableMethods, function)
+		callableMethods = append(callableMethods, function)
 	}
-	if len(payableMethods) == 0 {
+	if len(callableMethods) == 0 && parsedABI.Fallback.String() == "" && parsedABI.Receive.String() == "" {
 		ctrl.logger.Error("the provide contract doesn't have methods that changes the ontract's state")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "the provide contract doesn't have methods that changes the contract's state"})
 		return
@@ -123,34 +123,11 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		return
 	}
 
-	functionDTO := dto.NewFunctionDTO{
-		Name:                    parsedABI.Constructor.Name,
-		NumberOfArgs:            int64(len(parsedABI.Constructor.Inputs)),
-		IsChangingContractState: ctrl.isMethodChangingState(parsedABI.Constructor),
-		IsConstructor:           true,
-		ContractId:              contract.Id,
-	}
-	_, err = ctrl.functionService.Create(&functionDTO)
+	err = ctrl.storeAvailableMethods(contract, parsedABI)
 	if err != nil {
-		ctrl.logger.Error("constructor failed to be created", zap.Error(err))
+		ctrl.logger.Error("failed to store available methods", zap.Error(err))
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
 		return
-	}
-
-	for _, method := range payableMethods {
-		functionDTO := dto.NewFunctionDTO{
-			Name:                    method.Name,
-			NumberOfArgs:            int64(len(method.Inputs)),
-			IsChangingContractState: ctrl.isMethodChangingState(method),
-			IsConstructor:           false,
-			ContractId:              contract.Id,
-		}
-		_, err := ctrl.functionService.Create(&functionDTO)
-		if err != nil {
-			ctrl.logger.Error("function failed to be created", zap.Error(err))
-			c.JSON(http.StatusUnprocessableEntity, gin.H{"error": err.Error()})
-			return
-		}
 	}
 
 	ctrl.logger.Info(fmt.Sprintf("Requesting fuzzing task %s for %s until %v", task.Id, contract.Name, task.Expiration))
@@ -179,7 +156,55 @@ func (ctrl *tasksController) tryValidateArgs(parsedABI abi.ABI, args []string) e
 	return nil
 }
 
+func (ctrl *tasksController) storeAvailableMethods(contract *dto.ContractDTO, parsedABI abi.ABI) error {
+	err := ctrl.storeMethod(contract, parsedABI.Constructor, common.CONSTRUCTOR)
+	if err != nil {
+		return err
+	}
+
+	if parsedABI.Fallback.String() != "" {
+		err = ctrl.storeMethod(contract, parsedABI.Fallback, common.FALLBACK)
+		if err != nil {
+			return err
+		}
+	}
+
+	if parsedABI.Receive.String() != "" {
+		err = ctrl.storeMethod(contract, parsedABI.Receive, common.RECEIVE)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, method := range parsedABI.Methods {
+		err = ctrl.storeMethod(contract, method, common.METHOD)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// stores method in the database
+func (ctrl *tasksController) storeMethod(contract *dto.ContractDTO, method abi.Method, methodType common.MethodType) error {
+	functionDTO := dto.NewFunctionDTO{
+		Name:         method.Name,
+		NumberOfArgs: int64(len(method.Inputs)),
+		Callable:     isMethodChangingState(method),
+		Type:         methodType,
+		ContractId:   contract.Id,
+	}
+	_, err := ctrl.functionService.Create(&functionDTO)
+	if err != nil {
+		ctrl.logger.Error("function failed to be created", zap.Error(err))
+		return err
+	}
+	return nil
+}
+
 // Reference: https://docs.soliditylang.org/en/v0.8.17/abi-spec.html#json
-func (ctrl *tasksController) isMethodChangingState(method abi.Method) bool {
-	return method.StateMutability == "nonpayable" || method.StateMutability == "payable"
+func isMethodChangingState(method abi.Method) bool {
+	return method.Payable ||
+		method.StateMutability == "nonpayable" ||
+		method.StateMutability == "payable"
 }

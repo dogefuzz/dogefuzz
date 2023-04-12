@@ -84,7 +84,7 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 		l.logger.Sugar().Errorf("an error occurred when retrieving contract's functions> %v", err)
 		return
 	}
-	chosenFunction := chooseFunction(functions)
+	chosenFunction := chooseFunctionBetweenCallableFunctionsAndTransferHandlers(functions)
 
 	fuzzer, err := l.fuzzerLeader.GetFuzzerStrategy(task.FuzzingType)
 	if err != nil {
@@ -150,7 +150,7 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 		transactionsByTransactionId[tx.Id] = tx
 	}
 
-	transactionHashesByTransactionId, errorsByTransactionId := l.gethService.BatchCall(ctx, l.contractMapper.MapDTOToCommon(contract), chosenFunction.Name, inputsByTransactionId)
+	transactionHashesByTransactionId, errorsByTransactionId := l.gethService.BatchCall(ctx, l.contractMapper.MapDTOToCommon(contract), chosenFunction, inputsByTransactionId)
 	for transactionId, err := range errorsByTransactionId {
 		l.logger.Sugar().Warnf("failed to send transaction %s to node: %v", transactionId, err)
 		transaction := transactionsByTransactionId[transactionId]
@@ -180,16 +180,15 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 	}
 }
 
-func chooseFunction(functions []*dto.FunctionDTO) *dto.FunctionDTO {
+func chooseFunctionBetweenCallableFunctionsAndTransferHandlers(functions []*dto.FunctionDTO) *dto.FunctionDTO {
 	rand.Seed(common.Now().Unix())
 
 	filteredFunctions := make([]*dto.FunctionDTO, 0)
 	for _, function := range functions {
-		if !function.IsConstructor {
+		if function.Callable || function.Type == common.FALLBACK || function.Type == common.RECEIVE {
 			filteredFunctions = append(filteredFunctions, function)
 		}
 	}
 
-	idx := rand.Intn(len(filteredFunctions))
-	return filteredFunctions[idx]
+	return common.RandomChoice(filteredFunctions)
 }

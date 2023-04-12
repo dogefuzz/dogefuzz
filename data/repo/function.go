@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/dogefuzz/dogefuzz/entities"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -41,7 +42,7 @@ func (r *functionRepo) FindByContractId(tx *gorm.DB, contractId string) ([]entit
 
 func (r *functionRepo) FindConstructorByContractId(tx *gorm.DB, contractId string) (*entities.Function, error) {
 	var function entities.Function
-	if err := tx.Where("is_constructor = ?", true).Where("contract_id = ?", contractId).First(&function).Error; err != nil {
+	if err := tx.Where("type = ?", common.CONSTRUCTOR).Where("contract_id = ?", contractId).First(&function).Error; err != nil {
 		return nil, err
 	}
 	return &function, nil

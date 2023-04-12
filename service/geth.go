@@ -11,6 +11,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/data/repo"
 	"github.com/dogefuzz/dogefuzz/environment"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
+	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/geth"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -22,6 +23,7 @@ import (
 var ErrInvalidAddress = errors.New("the provided json does not correspond to a address type")
 
 type SendHandler = func(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, functionName string, value *big.Int, args []interface{}) (string, error)
+type TransferHandler = func(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, value *big.Int) (string, error)
 
 type gethService struct {
 	logger         *zap.Logger
@@ -62,7 +64,7 @@ func (s *gethService) Deploy(ctx context.Context, contract *common.Contract, arg
 func (s *gethService) BatchCall(
 	ctx context.Context,
 	contract *common.Contract,
-	functionName string,
+	function *dto.FunctionDTO,
 	inputsByTransactionId map[string][]interface{},
 ) (map[string]string, map[string]error) {
 	hashesByTransactionId := make(map[string]string)
@@ -78,35 +80,72 @@ func (s *gethService) BatchCall(
 	}
 
 	for transactionId, inputs := range inputsByTransactionId {
-		availableSendHandlers := []SendHandler{
-			s.sendToContractDirectly,
-			s.sendToContractViaExceptionAgentContract,
-			s.sendToContractViaGasConsumptionAgentContract,
-			s.sendToContractViaReentrancyAgentContract,
-		}
-		send := common.RandomChoice(availableSendHandlers)
-
-		parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
-		if err != nil {
-			errorsByTransactionId[transactionId] = err
-			continue
-		}
-		var value *big.Int
-		if parsedABI.Methods[functionName].IsPayable() {
-			rnd := rand.New(rand.NewSource(common.Now().UnixNano()))
-			value = new(big.Int).Rand(rnd, new(big.Int).SetUint64(common.ONE_ETHER))
+		if function.Type == common.FALLBACK || function.Type == common.RECEIVE {
+			hash, err := s.transfer(ctx, wallet, contract)
+			if err != nil {
+				errorsByTransactionId[transactionId] = err
+				continue
+			}
+			hashesByTransactionId[transactionId] = hash
 		} else {
-			value = big.NewInt(0)
+			hash, err := s.callMethod(ctx, wallet, contract, function.Name, inputs...)
+			if err != nil {
+				errorsByTransactionId[transactionId] = err
+				continue
+			}
+			hashesByTransactionId[transactionId] = hash
 		}
-		hash, err := send(ctx, wallet, contract, functionName, value, inputs)
-		if err != nil {
-			errorsByTransactionId[transactionId] = err
-			continue
-		}
-		hashesByTransactionId[transactionId] = hash
 	}
 
 	return hashesByTransactionId, errorsByTransactionId
+}
+
+func (s *gethService) transfer(ctx context.Context, wallet *geth.Wallet, contract *common.Contract) (string, error) {
+	availableTransferHandlers := []TransferHandler{
+		s.transferDirectlyToContract,
+		s.transferViaContractViaExceptionAgentContract,
+		s.transferViaContractViaGasConsumptionAgentContract,
+		s.transferViaContractViaReentrancyAgentContract,
+	}
+	transfer := common.RandomChoice(availableTransferHandlers)
+
+	rnd := rand.New(rand.NewSource(common.Now().UnixNano()))
+	value := new(big.Int).Rand(rnd, new(big.Int).SetUint64(common.ONE_ETHER))
+
+	hash, err := transfer(ctx, wallet, contract, value)
+	if err != nil {
+		return "", err
+	}
+	return hash, nil
+}
+
+func (s *gethService) callMethod(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, functionName string, args ...interface{}) (string, error) {
+	availableSendHandlers := []SendHandler{
+		s.sendToContractDirectly,
+		s.sendToContractViaExceptionAgentContract,
+		s.sendToContractViaGasConsumptionAgentContract,
+		s.sendToContractViaReentrancyAgentContract,
+	}
+
+	send := common.RandomChoice(availableSendHandlers)
+
+	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
+	if err != nil {
+		return "", err
+	}
+	var value *big.Int
+	if parsedABI.Methods[functionName].IsPayable() {
+		rnd := rand.New(rand.NewSource(common.Now().UnixNano()))
+		value = new(big.Int).Rand(rnd, new(big.Int).SetUint64(common.ONE_ETHER))
+	} else {
+		value = big.NewInt(0)
+	}
+
+	hash, err := send(ctx, wallet, contract, functionName, value, args)
+	if err != nil {
+		return "", err
+	}
+	return hash, nil
 }
 
 func (s *gethService) sendToContractDirectly(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, functionName string, value *big.Int, args []interface{}) (string, error) {
@@ -151,4 +190,44 @@ func (s *gethService) sendToContractViaAgentContract(ctx context.Context, agentI
 
 	contractDTO := s.contractMapper.MapEntityToDTO(agentContract)
 	return s.agent.Send(ctx, wallet, s.contractMapper.MapDTOToCommon(contractDTO), "CallContract", value, contractAddress, input)
+}
+
+func (s *gethService) transferDirectlyToContract(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, value *big.Int) (string, error) {
+	return s.agent.Transfer(ctx, wallet, contract, value)
+}
+
+func (s *gethService) transferViaContractViaExceptionAgentContract(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, value *big.Int) (string, error) {
+	return s.transferViaContractViaAgentContract(ctx, environment.EXCEPTION_AGENT_CONTRACT_ID, wallet, contract, value)
+}
+
+func (s *gethService) transferViaContractViaGasConsumptionAgentContract(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, value *big.Int) (string, error) {
+	return s.transferViaContractViaAgentContract(ctx, environment.GAS_CONSUMPTION_AGENT_CONTRACT_ID, wallet, contract, value)
+}
+
+func (s *gethService) transferViaContractViaReentrancyAgentContract(ctx context.Context, wallet *geth.Wallet, contract *common.Contract, value *big.Int) (string, error) {
+	return s.transferViaContractViaAgentContract(ctx, environment.REENTRANCY_AGENT_CONTRACT_ID, wallet, contract, value)
+}
+
+func (s *gethService) transferViaContractViaAgentContract(ctx context.Context, agentId string, wallet *geth.Wallet, contract *common.Contract, value *big.Int) (string, error) {
+	agentContract, err := s.contractRepo.Find(s.connection.GetDB(), agentId)
+	if err != nil {
+		if errors.Is(err, repo.ErrNotExists) {
+			return "", ErrContractNotFound
+		}
+		return "", err
+	}
+
+	contractAddress := gethcommon.HexToAddress(contract.Address)
+	if (contractAddress == gethcommon.Address{}) {
+		return "", ErrInvalidAddress
+	}
+
+	availableTransferMoneyMethods := []string{
+		"TransferToContract",
+		"SendToContract",
+	}
+	method := common.RandomChoice(availableTransferMoneyMethods)
+
+	contractDTO := s.contractMapper.MapEntityToDTO(agentContract)
+	return s.agent.Send(ctx, wallet, s.contractMapper.MapDTOToCommon(contractDTO), method, value, contractAddress)
 }

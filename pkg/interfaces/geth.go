@@ -11,6 +11,7 @@ import (
 
 type Agent interface {
 	Send(ctx context.Context, wallet Wallet, contract *common.Contract, functionName string, value *big.Int, args ...interface{}) (string, error)
+	Transfer(ctx context.Context, wallet Wallet, contract *common.Contract, value *big.Int) (string, error)
 }
 
 type Deployer interface {

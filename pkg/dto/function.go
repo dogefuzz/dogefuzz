@@ -1,18 +1,20 @@
 package dto
 
+import "github.com/dogefuzz/dogefuzz/pkg/common"
+
 type NewFunctionDTO struct {
-	Name                    string `json:"name"`
-	NumberOfArgs            int64  `json:"numberOfArgs"`
-	IsChangingContractState bool   `json:"isChangingContractState"`
-	IsConstructor           bool   `json:"isConstructor"`
-	ContractId              string `json:"contractId"`
+	Name         string            `json:"name"`
+	NumberOfArgs int64             `json:"numberOfArgs"`
+	Callable     bool              `json:"callable"`
+	Type         common.MethodType `json:"type"`
+	ContractId   string            `json:"contractId"`
 }
 
 type FunctionDTO struct {
-	Id                      string `json:"id"`
-	Name                    string `json:"name"`
-	NumberOfArgs            int64  `json:"numberOfArgs"`
-	IsChangingContractState bool   `json:"isChangingContractState"`
-	IsConstructor           bool   `json:"isConstrutor"`
-	ContractId              string `json:"contractId"`
+	Id           string            `json:"id"`
+	Name         string            `json:"name"`
+	NumberOfArgs int64             `json:"numberOfArgs"`
+	Callable     bool              `json:"callable"`
+	Type         common.MethodType `json:"type"`
+	ContractId   string            `json:"contractId"`
 }
