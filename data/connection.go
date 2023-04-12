@@ -37,7 +37,7 @@ func NewConnection(cfg *config.Config, logger *zap.Logger) (*connection, error) 
 
 func (m *connection) Clean() error {
 	m.logger.Info(fmt.Sprintf("Cleaning \"%s.db\" database file", m.databaseName))
-	return os.Remove(m.databaseName)
+	return os.Remove(fmt.Sprintf("%s.db", m.databaseName))
 }
 
 func (m *connection) GetDB() *gorm.DB {
