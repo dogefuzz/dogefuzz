@@ -185,7 +185,7 @@ func chooseFunctionBetweenCallableFunctionsAndTransferHandlers(functions []*dto.
 
 	filteredFunctions := make([]*dto.FunctionDTO, 0)
 	for _, function := range functions {
-		if function.Callable || function.Type == common.FALLBACK || function.Type == common.RECEIVE {
+		if function.Callable && function.Type != common.CONSTRUCTOR {
 			filteredFunctions = append(filteredFunctions, function)
 		}
 	}
