@@ -101,6 +101,11 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 			return
 		}
 
+		if len(inputs) != len(abiFunction.Inputs) {
+			l.logger.Sugar().Errorf("the number of inputs generated is not equal to the number of inputs expected")
+			return
+		}
+
 		serializedInputs := make([]string, len(inputs))
 		for idx := 0; idx < len(inputs); idx++ {
 			typeHandler, err := l.solidityService.GetTypeHandlerWithContext(abiFunction.Inputs[idx].Type)
@@ -185,10 +190,10 @@ func chooseFunctionBetweenCallableFunctionsAndTransferHandlers(functions []*dto.
 
 	filteredFunctions := make([]*dto.FunctionDTO, 0)
 	for _, function := range functions {
+
 		if function.Callable && function.Type != common.CONSTRUCTOR {
 			filteredFunctions = append(filteredFunctions, function)
 		}
 	}
-
 	return common.RandomChoice(filteredFunctions)
 }

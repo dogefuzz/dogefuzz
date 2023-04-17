@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type GetAgentResponse struct {
-	Address string `json:"address"`
+type GetAgentsResponse struct {
+	Addresses []string `json:"addresses"`
 }
 
 type contractsController struct {
@@ -22,13 +22,24 @@ func NewContractsController(e Env) *contractsController {
 	}
 }
 
-func (ctrl *contractsController) GetAgent(c *gin.Context) {
-	contract, err := ctrl.contractService.Get(environment.REENTRANCY_AGENT_CONTRACT_ID)
-	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
-		return
+func (ctrl *contractsController) GetAgents(c *gin.Context) {
+	agentsIds := []string{
+		environment.EXCEPTION_AGENT_CONTRACT_ID,
+		environment.GAS_CONSUMPTION_AGENT_CONTRACT_ID,
+		environment.REENTRANCY_AGENT_CONTRACT_ID,
 	}
-	c.JSON(http.StatusOK, GetAgentResponse{
-		Address: contract.Address,
+
+	addresses := make([]string, len(agentsIds))
+	for idx, agentId := range agentsIds {
+		contract, err := ctrl.contractService.Get(agentId)
+		if err != nil {
+			c.AbortWithStatus(http.StatusNotFound)
+			return
+		}
+		addresses[idx] = contract.Address
+	}
+
+	c.JSON(http.StatusOK, GetAgentsResponse{
+		Addresses: addresses,
 	})
 }

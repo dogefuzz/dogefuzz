@@ -3,7 +3,7 @@ package interfaces
 import "github.com/gin-gonic/gin"
 
 type ContractsController interface {
-	GetAgent(c *gin.Context)
+	GetAgents(c *gin.Context)
 }
 
 type TasksController interface {
