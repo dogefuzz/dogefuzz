@@ -2,11 +2,9 @@ package fuzz
 
 import (
 	"errors"
-	"sort"
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
-	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
@@ -34,14 +32,8 @@ func (s *powerSchedule) RequestSeeds(method abi.Method, strategy common.PowerSch
 		return nil, err
 	}
 
-	switch strategy {
-	case common.COVERAGE_BASED_STRATEGY:
-		s.orderTransactionsByDeltaCoverage(transactions)
-	case common.DISTANCE_BASED_STRATEGY:
-		s.orderTransactionsByDeltaMinDistance(transactions)
-	default:
-		return nil, ErrInvalidStrategy
-	}
+	orderer := buildOrderer(strategy)
+	orderer.OrderTransactions(transactions)
 
 	seeds := make([][]string, 0)
 	for idx := 0; idx < len(transactions) && idx < s.cfg.FuzzerConfig.SeedsSize; idx++ {
@@ -61,18 +53,6 @@ func (s *powerSchedule) RequestSeeds(method abi.Method, strategy common.PowerSch
 	}
 
 	return deserializedSeeds, nil
-}
-
-func (s *powerSchedule) orderTransactionsByDeltaCoverage(transactions []*dto.TransactionDTO) {
-	sort.SliceStable(transactions, func(i, j int) bool {
-		return transactions[i].DeltaCoverage < transactions[j].DeltaCoverage
-	})
-}
-
-func (s *powerSchedule) orderTransactionsByDeltaMinDistance(transactions []*dto.TransactionDTO) {
-	sort.SliceStable(transactions, func(i, j int) bool {
-		return transactions[i].DeltaMinDistance < transactions[j].DeltaCoverage
-	})
 }
 
 func (s *powerSchedule) completeSeedsWithPreConfiguredSeeds(method abi.Method, seeds [][]interface{}, seedsAmountToBeAdded int) ([][]interface{}, error) {
