@@ -39,6 +39,6 @@ type TransactionRepo interface {
 	FindByBlockchainHash(tx *gorm.DB, blockchainHash string) (*entities.Transaction, error)
 	FindByTaskId(tx *gorm.DB, taskId string) ([]entities.Transaction, error)
 	FindDoneByTaskId(tx *gorm.DB, taskId string) ([]entities.Transaction, error)
-	FindDoneTransactionsByFunctionNameAndOrderByTimestamp(tx *gorm.DB, functionName string, limit int64) ([]entities.Transaction, error)
+	FindDoneTransactionsByFunctionIdAndOrderByTimestamp(tx *gorm.DB, functionId string, limit int64) ([]entities.Transaction, error)
 	FindRunningAndCreatedBeforeThreshold(tx *gorm.DB, dateThreshold time.Time) ([]entities.Transaction, error)
 }

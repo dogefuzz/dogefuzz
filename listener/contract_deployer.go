@@ -140,6 +140,7 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 	}
 	contract.CFG = *cfg
 	contract.DistanceMap = distance.ComputeDistanceMap(*cfg, l.cfg.FuzzerConfig.CritialInstructions)
+	contract.TargetInstructionsFreq = distance.ComputeTargetInstructionsFrequency(*cfg, l.cfg.FuzzerConfig.CritialInstructions)
 	contract.Status = common.CONTRACT_DEPLOYED
 	err = l.contractService.Update(contract)
 	if err != nil {

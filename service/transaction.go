@@ -134,8 +134,8 @@ func (s *transactionService) FindDoneByTaskId(taskId string) ([]*dto.Transaction
 	return transactionDTOs, nil
 }
 
-func (s *transactionService) FindDoneTransactionsByFunctionNameAndOrderByTimestamp(functionName string, limit int64) ([]*dto.TransactionDTO, error) {
-	transactions, err := s.transactionRepo.FindDoneTransactionsByFunctionNameAndOrderByTimestamp(s.connection.GetDB(), functionName, limit)
+func (s *transactionService) FindDoneTransactionsByFunctionIdAndOrderByTimestamp(functionId string, limit int64) ([]*dto.TransactionDTO, error) {
+	transactions, err := s.transactionRepo.FindDoneTransactionsByFunctionIdAndOrderByTimestamp(s.connection.GetDB(), functionId, limit)
 	if err != nil {
 		return nil, err
 	}

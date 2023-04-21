@@ -93,7 +93,7 @@ func (s *TransactionRepoIntegrationTestSuite) TestFindByTaskId_WhenExistsMultipl
 	assert.ElementsMatch(s.T(), []entities.Transaction{*transaction1, *transaction2, *transaction3}, transactions)
 }
 
-func (s *TransactionRepoIntegrationTestSuite) TestFindDoneTransactionsByFunctionNameAndOrderByTimestamp_WhenExistsMultipleTransactionsWithTheSameFunction_ShouldReturnListOfTransactions() {
+func (s *TransactionRepoIntegrationTestSuite) TestFindDoneTransactionsByFunctionIdAndOrderByTimestamp_WhenExistsMultipleTransactionsWithTheSameId_ShouldReturnListOfTransactions() {
 	function := generators.FunctionGen()
 	err := s.functionRepo.Create(s.env.DbConnection().GetDB(), function)
 	assert.Nil(s.T(), err)
@@ -116,7 +116,7 @@ func (s *TransactionRepoIntegrationTestSuite) TestFindDoneTransactionsByFunction
 	err = s.repo.Create(s.env.DbConnection().GetDB(), transaction3)
 	assert.Nil(s.T(), err)
 
-	transactions, err := s.repo.FindDoneTransactionsByFunctionNameAndOrderByTimestamp(s.env.DbConnection().GetDB(), function.Name, 10)
+	transactions, err := s.repo.FindDoneTransactionsByFunctionIdAndOrderByTimestamp(s.env.DbConnection().GetDB(), function.Id, 10)
 	assert.Nil(s.T(), err)
 	assert.True(s.T(), sort.SliceIsSorted(transactions, func(i, j int) bool {
 		return transactions[i].Timestamp.Before(transactions[j].Timestamp)

@@ -15,7 +15,7 @@
   "fuzzer": {
     "criticalInstructions": ["CALL", "SELFDESTRUCT", "CALLCODE", "DELEGATECALL"],
     "batchSize": 1,
-    "seedsSize": 10,
+    "seedsSize": 5,
     "transactionTimeout": "10s",
     "pendingTransactionsThreshold": 5,
     "seeds": {

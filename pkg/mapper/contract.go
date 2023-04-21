@@ -2,6 +2,7 @@ package mapper
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/dogefuzz/dogefuzz/entities"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
@@ -42,19 +43,21 @@ func (m *contractMapper) MapNewWithIdDTOToEntity(d *dto.NewContractWithIdDTO) *e
 func (m *contractMapper) MapDTOToEntity(d *dto.ContractDTO) *entities.Contract {
 	cfg, _ := json.Marshal(d.CFG)
 	distanceMap, _ := json.Marshal(d.DistanceMap)
+	targetInstructionsFreq := strconv.FormatUint(d.TargetInstructionsFreq, 10)
 
 	return &entities.Contract{
-		Id:                 d.Id,
-		TaskId:             d.TaskId,
-		Status:             d.Status,
-		Address:            d.Address,
-		Source:             d.Source,
-		DeploymentBytecode: d.DeploymentBytecode,
-		RuntimeBytecode:    d.RuntimeBytecode,
-		AbiDefinition:      d.AbiDefinition,
-		Name:               d.Name,
-		CFG:                string(cfg),
-		DistanceMap:        string(distanceMap),
+		Id:                     d.Id,
+		TaskId:                 d.TaskId,
+		Status:                 d.Status,
+		Address:                d.Address,
+		Source:                 d.Source,
+		DeploymentBytecode:     d.DeploymentBytecode,
+		RuntimeBytecode:        d.RuntimeBytecode,
+		AbiDefinition:          d.AbiDefinition,
+		Name:                   d.Name,
+		CFG:                    string(cfg),
+		DistanceMap:            string(distanceMap),
+		TargetInstructionsFreq: targetInstructionsFreq,
 	}
 }
 
@@ -64,18 +67,28 @@ func (m *contractMapper) MapEntityToDTO(c *entities.Contract) *dto.ContractDTO {
 	var distanceMap common.DistanceMap
 	_ = json.Unmarshal([]byte(c.DistanceMap), &distanceMap)
 
+	var targetInstructionsFreq uint64
+	if c.TargetInstructionsFreq != "" {
+		val, err := strconv.ParseUint(c.TargetInstructionsFreq, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		targetInstructionsFreq = val
+	}
+
 	return &dto.ContractDTO{
-		Id:                 c.Id,
-		TaskId:             c.TaskId,
-		Status:             c.Status,
-		Address:            c.Address,
-		Source:             c.Source,
-		DeploymentBytecode: c.DeploymentBytecode,
-		RuntimeBytecode:    c.RuntimeBytecode,
-		AbiDefinition:      c.AbiDefinition,
-		Name:               c.Name,
-		CFG:                cfg,
-		DistanceMap:        distanceMap,
+		Id:                     c.Id,
+		TaskId:                 c.TaskId,
+		Status:                 c.Status,
+		Address:                c.Address,
+		Source:                 c.Source,
+		DeploymentBytecode:     c.DeploymentBytecode,
+		RuntimeBytecode:        c.RuntimeBytecode,
+		AbiDefinition:          c.AbiDefinition,
+		Name:                   c.Name,
+		CFG:                    cfg,
+		DistanceMap:            distanceMap,
+		TargetInstructionsFreq: targetInstructionsFreq,
 	}
 }
 

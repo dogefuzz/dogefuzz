@@ -3,6 +3,7 @@ package listener
 import (
 	"context"
 
+	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/coverage"
@@ -12,6 +13,7 @@ import (
 )
 
 type executionAnalyticsListener struct {
+	cfg                      *config.Config
 	logger                   *zap.Logger
 	instrumentExecutionTopic interfaces.Topic[bus.InstrumentExecutionEvent]
 	contractService          interfaces.ContractService
@@ -21,6 +23,7 @@ type executionAnalyticsListener struct {
 
 func NewExecutionAnalyticsListener(e Env) *executionAnalyticsListener {
 	return &executionAnalyticsListener{
+		cfg:                      e.Config(),
 		logger:                   e.Logger(),
 		instrumentExecutionTopic: e.InstrumentExecutionTopic(),
 		contractService:          e.ContractService(),
@@ -60,6 +63,7 @@ func (l *executionAnalyticsListener) processEvent(ctx context.Context, evt bus.I
 
 	transaction.DeltaCoverage = coverage.ComputeDeltaCoverage(contract.CFG, transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
 	transaction.DeltaMinDistance = distance.ComputeDeltaMinDistance(contract.DistanceMap, transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
+	transaction.CriticalInstructionsHits = common.SumOccurrencesOfStringList(l.cfg.FuzzerConfig.CritialInstructions, transaction.ExecutedInstructions)
 	transaction.Status = common.TRANSACTION_DONE
 	err = l.transactionService.Update(transaction)
 	if err != nil {

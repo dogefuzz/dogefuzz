@@ -77,9 +77,9 @@ func (r *transactionRepo) FindDoneByTaskId(tx *gorm.DB, taskId string) ([]entiti
 	return transactions, nil
 }
 
-func (r *transactionRepo) FindDoneTransactionsByFunctionNameAndOrderByTimestamp(tx *gorm.DB, functionName string, limit int64) ([]entities.Transaction, error) {
+func (r *transactionRepo) FindDoneTransactionsByFunctionIdAndOrderByTimestamp(tx *gorm.DB, functionId string, limit int64) ([]entities.Transaction, error) {
 	var function entities.Function
-	if err := tx.Where("name = ?", functionName).Find(&function).Error; err != nil {
+	if err := tx.Where("id = ?", functionId).Find(&function).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotExists
 		}

@@ -3,6 +3,7 @@ package mapper
 import (
 	"encoding/json"
 	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/brianvoe/gofakeit/v6"
@@ -48,18 +49,21 @@ func (s *ContractMapperTestSuite) TestMapDTOToEntity_ShouldReturnValidEntity_Whe
 
 	expectedCFG, _ := json.Marshal(contractDTO.CFG)
 	expectedDistanceMap, _ := json.Marshal(contractDTO.DistanceMap)
+	targetInstructionsFreq := strconv.FormatUint(contractDTO.TargetInstructionsFreq, 10)
+
 	expectedResult := entities.Contract{
-		Id:                 contractDTO.Id,
-		TaskId:             contractDTO.TaskId,
-		Status:             contractDTO.Status,
-		Address:            contractDTO.Address,
-		Source:             contractDTO.Source,
-		DeploymentBytecode: contractDTO.DeploymentBytecode,
-		RuntimeBytecode:    contractDTO.RuntimeBytecode,
-		AbiDefinition:      contractDTO.AbiDefinition,
-		Name:               contractDTO.Name,
-		CFG:                string(expectedCFG),
-		DistanceMap:        string(expectedDistanceMap),
+		Id:                     contractDTO.Id,
+		TaskId:                 contractDTO.TaskId,
+		Status:                 contractDTO.Status,
+		Address:                contractDTO.Address,
+		Source:                 contractDTO.Source,
+		DeploymentBytecode:     contractDTO.DeploymentBytecode,
+		RuntimeBytecode:        contractDTO.RuntimeBytecode,
+		AbiDefinition:          contractDTO.AbiDefinition,
+		Name:                   contractDTO.Name,
+		CFG:                    string(expectedCFG),
+		DistanceMap:            string(expectedDistanceMap),
+		TargetInstructionsFreq: targetInstructionsFreq,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }
@@ -74,18 +78,29 @@ func (s *ContractMapperTestSuite) TestMapEntityToDTO_ShouldReturnValidDTO_WhenRe
 	_ = json.Unmarshal([]byte(contract.CFG), &expectedCFG)
 	var expectedDistanceMap common.DistanceMap
 	_ = json.Unmarshal([]byte(contract.DistanceMap), &expectedDistanceMap)
+
+	var targetInstructionsFreq uint64
+	if contract.TargetInstructionsFreq != "" {
+		val, err := strconv.ParseUint(contract.TargetInstructionsFreq, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		targetInstructionsFreq = val
+	}
+
 	expectedResult := dto.ContractDTO{
-		Id:                 contract.Id,
-		TaskId:             contract.TaskId,
-		Status:             contract.Status,
-		Address:            contract.Address,
-		Source:             contract.Source,
-		DeploymentBytecode: contract.DeploymentBytecode,
-		RuntimeBytecode:    contract.RuntimeBytecode,
-		AbiDefinition:      contract.AbiDefinition,
-		Name:               contract.Name,
-		CFG:                expectedCFG,
-		DistanceMap:        expectedDistanceMap,
+		Id:                     contract.Id,
+		TaskId:                 contract.TaskId,
+		Status:                 contract.Status,
+		Address:                contract.Address,
+		Source:                 contract.Source,
+		DeploymentBytecode:     contract.DeploymentBytecode,
+		RuntimeBytecode:        contract.RuntimeBytecode,
+		AbiDefinition:          contract.AbiDefinition,
+		Name:                   contract.Name,
+		CFG:                    expectedCFG,
+		DistanceMap:            expectedDistanceMap,
+		TargetInstructionsFreq: targetInstructionsFreq,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }
@@ -98,18 +113,28 @@ func (s *ContractMapperTestSuite) TestMapEntityToDTO_ShouldReturnValidDTOWithEmp
 	m := NewContractMapper()
 	result := m.MapEntityToDTO(contract)
 
+	var targetInstructionsFreq uint64
+	if contract.TargetInstructionsFreq != "" {
+		val, err := strconv.ParseUint(contract.TargetInstructionsFreq, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		targetInstructionsFreq = val
+	}
+
 	expectedResult := dto.ContractDTO{
-		Id:                 contract.Id,
-		TaskId:             contract.TaskId,
-		Status:             contract.Status,
-		Address:            contract.Address,
-		Source:             contract.Source,
-		DeploymentBytecode: contract.DeploymentBytecode,
-		RuntimeBytecode:    contract.RuntimeBytecode,
-		AbiDefinition:      contract.AbiDefinition,
-		Name:               contract.Name,
-		CFG:                common.CFG{},
-		DistanceMap:        common.DistanceMap(nil),
+		Id:                     contract.Id,
+		TaskId:                 contract.TaskId,
+		Status:                 contract.Status,
+		Address:                contract.Address,
+		Source:                 contract.Source,
+		DeploymentBytecode:     contract.DeploymentBytecode,
+		RuntimeBytecode:        contract.RuntimeBytecode,
+		AbiDefinition:          contract.AbiDefinition,
+		Name:                   contract.Name,
+		CFG:                    common.CFG{},
+		DistanceMap:            common.DistanceMap(nil),
+		TargetInstructionsFreq: targetInstructionsFreq,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }

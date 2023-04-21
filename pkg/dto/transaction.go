@@ -16,17 +16,18 @@ type NewTransactionDTO struct {
 }
 
 type TransactionDTO struct {
-	Id                   string                   `json:"id"`
-	Timestamp            time.Time                `json:"timestamp"`
-	BlockchainHash       string                   `json:"blockchainHash"`
-	TaskId               string                   `json:"taskId"`
-	FunctionId           string                   `json:"functionId"`
-	Inputs               []string                 `json:"inputs"`
-	DetectedWeaknesses   []string                 `json:"detectedWeaknesses"`
-	ExecutedInstructions []string                 `json:"executedInstructions"`
-	DeltaCoverage        uint64                   `json:"deltaCoverage"`
-	DeltaMinDistance     uint64                   `json:"deltaMinDistance"`
-	Status               common.TransactionStatus `json:"status"`
+	Id                       string                   `json:"id"`
+	Timestamp                time.Time                `json:"timestamp"`
+	BlockchainHash           string                   `json:"blockchainHash"`
+	TaskId                   string                   `json:"taskId"`
+	FunctionId               string                   `json:"functionId"`
+	Inputs                   []string                 `json:"inputs"`
+	DetectedWeaknesses       []string                 `json:"detectedWeaknesses"`
+	ExecutedInstructions     []string                 `json:"executedInstructions"`
+	DeltaCoverage            uint64                   `json:"deltaCoverage"`
+	DeltaMinDistance         uint64                   `json:"deltaMinDistance"`
+	CriticalInstructionsHits uint64                   `json:"criticalInstructionsHits"`
+	Status                   common.TransactionStatus `json:"status"`
 }
 
 type NewExecutionDTO struct {

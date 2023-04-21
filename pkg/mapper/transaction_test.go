@@ -45,19 +45,21 @@ func (s *TransactionMapperTestSuite) TestMapDTOToEntity_ShouldReturnAValidEntity
 
 	deltaCoverage := strconv.FormatUint(transactionDTO.DeltaCoverage, 10)
 	deltaMinDistance := strconv.FormatUint(transactionDTO.DeltaMinDistance, 10)
+	criticalInstructionsHits := strconv.FormatUint(transactionDTO.CriticalInstructionsHits, 10)
 
 	expectedResult := entities.Transaction{
-		Id:                   transactionDTO.Id,
-		Timestamp:            transactionDTO.Timestamp,
-		BlockchainHash:       transactionDTO.BlockchainHash,
-		TaskId:               transactionDTO.TaskId,
-		FunctionId:           transactionDTO.FunctionId,
-		Inputs:               strings.Join(transactionDTO.Inputs, ";"),
-		DetectedWeaknesses:   strings.Join(transactionDTO.DetectedWeaknesses, ";"),
-		ExecutedInstructions: strings.Join(transactionDTO.ExecutedInstructions, ";"),
-		DeltaCoverage:        deltaCoverage,
-		DeltaMinDistance:     deltaMinDistance,
-		Status:               transactionDTO.Status,
+		Id:                       transactionDTO.Id,
+		Timestamp:                transactionDTO.Timestamp,
+		BlockchainHash:           transactionDTO.BlockchainHash,
+		TaskId:                   transactionDTO.TaskId,
+		FunctionId:               transactionDTO.FunctionId,
+		Inputs:                   strings.Join(transactionDTO.Inputs, ";"),
+		DetectedWeaknesses:       strings.Join(transactionDTO.DetectedWeaknesses, ";"),
+		ExecutedInstructions:     strings.Join(transactionDTO.ExecutedInstructions, ";"),
+		DeltaCoverage:            deltaCoverage,
+		DeltaMinDistance:         deltaMinDistance,
+		Status:                   transactionDTO.Status,
+		CriticalInstructionsHits: criticalInstructionsHits,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }
@@ -72,18 +74,22 @@ func (s *TransactionMapperTestSuite) TestMapEntityToDTO_ShouldReturnAValidDTO_Wh
 	assert.Nil(s.T(), err)
 	deltaMinDistance, err := strconv.ParseUint(entity.DeltaMinDistance, 10, 64)
 	assert.Nil(s.T(), err)
+	criticalInstructionsHits, err := strconv.ParseUint(entity.CriticalInstructionsHits, 10, 64)
+	assert.Nil(s.T(), err)
+
 	expectedResult := dto.TransactionDTO{
-		Id:                   entity.Id,
-		Timestamp:            entity.Timestamp,
-		BlockchainHash:       entity.BlockchainHash,
-		TaskId:               entity.TaskId,
-		FunctionId:           entity.FunctionId,
-		Inputs:               strings.Split(entity.Inputs, ";"),
-		DetectedWeaknesses:   strings.Split(entity.DetectedWeaknesses, ";"),
-		ExecutedInstructions: strings.Split(entity.ExecutedInstructions, ";"),
-		DeltaCoverage:        deltaCoverage,
-		DeltaMinDistance:     deltaMinDistance,
-		Status:               entity.Status,
+		Id:                       entity.Id,
+		Timestamp:                entity.Timestamp,
+		BlockchainHash:           entity.BlockchainHash,
+		TaskId:                   entity.TaskId,
+		FunctionId:               entity.FunctionId,
+		Inputs:                   strings.Split(entity.Inputs, ";"),
+		DetectedWeaknesses:       strings.Split(entity.DetectedWeaknesses, ";"),
+		ExecutedInstructions:     strings.Split(entity.ExecutedInstructions, ";"),
+		DeltaCoverage:            deltaCoverage,
+		DeltaMinDistance:         deltaMinDistance,
+		Status:                   entity.Status,
+		CriticalInstructionsHits: criticalInstructionsHits,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }

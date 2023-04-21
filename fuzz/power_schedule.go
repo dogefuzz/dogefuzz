@@ -2,6 +2,7 @@ package fuzz
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/common"
@@ -16,6 +17,8 @@ type powerSchedule struct {
 	cfg                *config.Config
 	transactionService interfaces.TransactionService
 	solidityService    interfaces.SolidityService
+	functionService    interfaces.FunctionService
+	contractService    interfaces.ContractService
 }
 
 func NewPowerSchedule(e env) *powerSchedule {
@@ -23,16 +26,34 @@ func NewPowerSchedule(e env) *powerSchedule {
 		cfg:                e.Config(),
 		transactionService: e.TransactionService(),
 		solidityService:    e.SolidityService(),
+		functionService:    e.FunctionService(),
+		contractService:    e.ContractService(),
 	}
 }
 
-func (s *powerSchedule) RequestSeeds(method abi.Method, strategy common.PowerScheduleStrategy) ([][]interface{}, error) {
-	transactions, err := s.transactionService.FindDoneTransactionsByFunctionNameAndOrderByTimestamp(method.Name, int64(s.cfg.FuzzerConfig.SeedsSize)*2)
+func (s *powerSchedule) RequestSeeds(functionId string, strategy common.PowerScheduleStrategy) ([][]interface{}, error) {
+	function, err := s.functionService.Get(functionId)
 	if err != nil {
 		return nil, err
 	}
 
-	orderer := buildOrderer(strategy)
+	contract, err := s.contractService.Get(function.ContractId)
+	if err != nil {
+		return nil, err
+	}
+
+	abiDefinition, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
+	if err != nil {
+		return nil, err
+	}
+	method := abiDefinition.Methods[function.Name]
+
+	transactions, err := s.transactionService.FindDoneTransactionsByFunctionIdAndOrderByTimestamp(functionId, int64(s.cfg.FuzzerConfig.SeedsSize)*2)
+	if err != nil {
+		return nil, err
+	}
+
+	orderer := buildOrderer(strategy, contract)
 	orderer.OrderTransactions(transactions)
 
 	seeds := make([][]string, 0)

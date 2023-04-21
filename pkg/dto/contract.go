@@ -24,15 +24,16 @@ type NewContractWithIdDTO struct {
 }
 
 type ContractDTO struct {
-	Id                 string                `json:"id"`
-	TaskId             string                `json:"taskId"`
-	Status             common.ContractStatus `json:"status"`
-	Address            string                `json:"address"`
-	Source             string                `json:"source"`
-	DeploymentBytecode string                `json:"deploymentBytecode"`
-	RuntimeBytecode    string                `json:"runtimeBytecode"`
-	AbiDefinition      string                `json:"abiDefinition"`
-	Name               string                `json:"name"`
-	CFG                common.CFG            `json:"cfg"`
-	DistanceMap        common.DistanceMap    `json:"distanceMap"`
+	Id                     string                `json:"id"`
+	TaskId                 string                `json:"taskId"`
+	Status                 common.ContractStatus `json:"status"`
+	Address                string                `json:"address"`
+	Source                 string                `json:"source"`
+	DeploymentBytecode     string                `json:"deploymentBytecode"`
+	RuntimeBytecode        string                `json:"runtimeBytecode"`
+	AbiDefinition          string                `json:"abiDefinition"`
+	Name                   string                `json:"name"`
+	CFG                    common.CFG            `json:"cfg"`
+	DistanceMap            common.DistanceMap    `json:"distanceMap"`
+	TargetInstructionsFreq uint64                `json:"targetInstructionsFreq"`
 }

@@ -95,7 +95,7 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 	abiFunction := abiDefinition.Methods[chosenFunction.Name]
 	transactionsDTO := make([]*dto.NewTransactionDTO, l.cfg.FuzzerConfig.BatchSize)
 	for idx := 0; idx < l.cfg.FuzzerConfig.BatchSize; idx++ {
-		inputs, err := fuzzer.GenerateInput(abiFunction)
+		inputs, err := fuzzer.GenerateInput(chosenFunction.Id)
 		if err != nil {
 			l.logger.Sugar().Errorf("an error ocurred when generating inputs: %v", err)
 			return

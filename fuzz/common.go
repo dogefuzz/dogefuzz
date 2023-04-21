@@ -19,18 +19,20 @@ type env interface {
 
 	TransactionService() interfaces.TransactionService
 	SolidityService() interfaces.SolidityService
+	FunctionService() interfaces.FunctionService
+	ContractService() interfaces.ContractService
 }
 
-type Orderer interface {
+type orderer interface {
 	OrderTransactions(transactions []*dto.TransactionDTO)
 }
 
-func buildOrderer(strategy common.PowerScheduleStrategy) Orderer {
+func buildOrderer(strategy common.PowerScheduleStrategy, contract *dto.ContractDTO) orderer {
 	switch strategy {
 	case common.COVERAGE_BASED_STRATEGY:
 		return newCoverageBasedOrderer()
 	case common.DISTANCE_BASED_STRATEGY:
-		return newDistanceBasedOrderer()
+		return newDistanceBasedOrderer(contract)
 	default:
 		panic(fmt.Sprintf("invalid power schedule strategy: %s", strategy))
 	}
