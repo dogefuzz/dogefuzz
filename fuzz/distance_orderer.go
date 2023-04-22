@@ -54,7 +54,7 @@ func (o *distanceBasedOrderer) computeScore(transaction *dto.TransactionDTO) flo
 	for _, distance := range maxDistance {
 		distanceSum += int64(distance)
 	}
-	distancePercentage := float64(transaction.DeltaMinDistance) / float64(distanceSum)
+	distancePercentage := (float64(distanceSum) - float64(transaction.DeltaMinDistance)) / float64(distanceSum)
 
 	return HITS_WEIGHT*hitsPercentage + DISTANCE_WEIGHT*distancePercentage
 }
