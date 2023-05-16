@@ -9,6 +9,7 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/coverage"
 	"github.com/dogefuzz/dogefuzz/pkg/distance"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
+	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"go.uber.org/zap"
 )
 
@@ -63,7 +64,9 @@ func (l *executionAnalyticsListener) processEvent(ctx context.Context, evt bus.I
 
 	transaction.DeltaCoverage = coverage.ComputeDeltaCoverage(contract.CFG, transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
 	transaction.DeltaMinDistance = distance.ComputeDeltaMinDistance(contract.DistanceMap, transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
-	transaction.CriticalInstructionsHits = common.SumOccurrencesOfStringList(l.cfg.FuzzerConfig.CritialInstructions, transaction.ExecutedInstructions)
+	executedInstructionNames := l.getInstructionNames(transaction.ExecutedInstructions, contract)
+	transaction.CriticalInstructionsHits = common.SumOccurrencesOfStringList(l.cfg.FuzzerConfig.CritialInstructions, executedInstructionNames)
+
 	transaction.Status = common.TRANSACTION_DONE
 	err = l.transactionService.Update(transaction)
 	if err != nil {
@@ -79,4 +82,13 @@ func (l *executionAnalyticsListener) processEvent(ctx context.Context, evt bus.I
 		l.logger.Sugar().Errorf("task could not be saved: %v", err)
 		return
 	}
+}
+
+func (l *executionAnalyticsListener) getInstructionNames(executedInstructions []string, contract *dto.ContractDTO) []string {
+	instructions := contract.CFG.Instructions
+	instructionNames := make([]string, len(executedInstructions))
+	for idx, instructionPC := range executedInstructions {
+		instructionNames[idx] = instructions[instructionPC]
+	}
+	return instructionNames
 }

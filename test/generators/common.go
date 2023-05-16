@@ -30,7 +30,14 @@ func CFGGen() common.CFG {
 		pcs = append(pcs, pc)
 	}
 
-	return common.CFG{Graph: graph, Blocks: blocks}
+	rangeLength := rand.Intn(255)
+	instructions := make(map[string]string)
+	for idx := 0; idx < rangeLength; idx++ {
+		instruction := gofakeit.HexUint64()
+		instructions[instruction] = gofakeit.LetterN(32)
+	}
+
+	return common.CFG{Graph: graph, Blocks: blocks, Instructions: instructions}
 }
 
 func CFGBlockGen() common.CFGBlock {

@@ -1,8 +1,9 @@
 package common
 
 type CFG struct {
-	Graph  map[string][]string `json:"graph"`
-	Blocks map[string]CFGBlock `json:"blocks"`
+	Graph        map[string][]string `json:"graph"`
+	Blocks       map[string]CFGBlock `json:"blocks"`
+	Instructions map[string]string   `json:"instructions"`
 }
 
 func (g CFG) GetEdgesPCs() []string {

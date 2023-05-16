@@ -31,11 +31,13 @@ func (s *vandalService) GetCFG(ctx context.Context, contract *common.Contract) (
 	cfg := new(common.CFG)
 	cfg.Graph = make(map[string][]string)
 	cfg.Blocks = make(map[string]common.CFGBlock)
+	cfg.Instructions = make(map[string]string)
 	for _, block := range blocks {
 		instructions := make(map[string]string)
 		pcs := make([]string, 0)
 		for pc, instruction := range block.Instructions {
 			instructions[pc] = instruction.Op
+			cfg.Instructions[pc] = instruction.Op
 			pcs = append(pcs, pc)
 		}
 
