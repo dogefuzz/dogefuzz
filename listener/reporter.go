@@ -71,9 +71,11 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 
 	transactionsReports := make([]common.TransactionReport, len(transactions))
 	aggregatedWeakneses := make([]string, 0)
+	var criticalInstructionsHits uint64 = 0
 	for idx, transaction := range transactions {
 		transactionsReports[idx] = l.buildTransactionReport(transaction)
 		aggregatedWeakneses = append(aggregatedWeakneses, transaction.DetectedWeaknesses...)
+		criticalInstructionsHits += transaction.CriticalInstructionsHits
 	}
 
 	report := common.TaskReport{
@@ -87,6 +89,7 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 		MinDistanceByTime:  l.computeMinDistanceByTime(contract.DistanceMap, transactions),
 		Transactions:       transactionsReports,
 		DetectedWeaknesses: common.GetUniqueSlice(aggregatedWeakneses),
+		CriticalInstructionsHits: criticalInstructionsHits,
 	}
 	err = l.reporterService.SendReport(ctx, report)
 	if err != nil {

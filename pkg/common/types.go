@@ -81,16 +81,17 @@ const (
 )
 
 type TaskReport struct {
-	TaskId             string              `json:"taskId"`
-	TimeElapsed        time.Duration       `json:"timeElapsed"`
-	ContractName       string              `json:"contractName"`
-	TotalInstructions  uint64              `json:"totalInstructions"`
-	Coverage           uint64              `json:"coverage"`
-	CoverageByTime     TimeSeriesData      `json:"coverageByTime"`
-	MinDistance        uint64              `json:"minDistance"`
-	MinDistanceByTime  TimeSeriesData      `json:"minDistanceByTime"`
-	Transactions       []TransactionReport `json:"transactions"`
-	DetectedWeaknesses []string            `json:"detectedWeaknesses"`
+	TaskId                   string              `json:"taskId"`
+	TimeElapsed              time.Duration       `json:"timeElapsed"`
+	ContractName             string              `json:"contractName"`
+	TotalInstructions        uint64              `json:"totalInstructions"`
+	Coverage                 uint64              `json:"coverage"`
+	CoverageByTime           TimeSeriesData      `json:"coverageByTime"`
+	MinDistance              uint64              `json:"minDistance"`
+	MinDistanceByTime        TimeSeriesData      `json:"minDistanceByTime"`
+	Transactions             []TransactionReport `json:"transactions"`
+	DetectedWeaknesses       []string            `json:"detectedWeaknesses"`
+	CriticalInstructionsHits uint64              `json:"criticalInstructionsHits"`
 }
 
 type TimeSeriesData struct {
