@@ -69,27 +69,32 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 		return
 	}
 
-	transactionsReports := make([]common.TransactionReport, len(transactions))
+	heatmap := l.initHeatMap(contract.CFG)
 	aggregatedWeakneses := make([]string, 0)
+	var averageCoverage float64 = 0
 	var criticalInstructionsHits uint64 = 0
-	for idx, transaction := range transactions {
-		transactionsReports[idx] = l.buildTransactionReport(transaction)
+
+	for _, transaction := range transactions {
+		l.updateHeatMapWithExecutedInstructions(heatmap, transaction.ExecutedInstructions)
 		aggregatedWeakneses = append(aggregatedWeakneses, transaction.DetectedWeaknesses...)
 		criticalInstructionsHits += transaction.CriticalInstructionsHits
+		averageCoverage += float64(transaction.Coverage)
 	}
 
 	report := common.TaskReport{
-		TaskId:             task.Id,
-		TimeElapsed:        task.Expiration.Sub(task.StartTime),
-		ContractName:       contract.Name,
-		TotalInstructions:  uint64(len(contract.CFG.GetEdgesPCs())),
-		Coverage:           coverage.ComputeCoverage(contract.CFG, task.AggregatedExecutedInstructions),
-		CoverageByTime:     l.computeCoverageByTime(contract.CFG, transactions),
-		MinDistance:        distance.ComputeMinDistance(contract.DistanceMap, task.AggregatedExecutedInstructions),
-		MinDistanceByTime:  l.computeMinDistanceByTime(contract.DistanceMap, transactions),
-		Transactions:       transactionsReports,
-		DetectedWeaknesses: common.GetUniqueSlice(aggregatedWeakneses),
+		TaskId:                   task.Id,
+		TimeElapsed:              task.Expiration.Sub(task.StartTime),
+		ContractName:             contract.Name,
+		TotalInstructions:        uint64(len(contract.CFG.GetEdgesPCs())),
+		Coverage:                 coverage.ComputeCoverage(contract.CFG, task.AggregatedExecutedInstructions),
+		CoverageByTime:           l.computeCoverageByTime(contract.CFG, transactions),
+		MinDistance:              distance.ComputeMinDistance(contract.DistanceMap, task.AggregatedExecutedInstructions),
+		MinDistanceByTime:        l.computeMinDistanceByTime(contract.DistanceMap, transactions),
+		DetectedWeaknesses:       common.GetUniqueSlice(aggregatedWeakneses),
 		CriticalInstructionsHits: criticalInstructionsHits,
+		AverageCoverage:          averageCoverage / float64(len(transactions)),
+		Instructions:             l.buildInstructionsMap(contract.CFG),
+		InstructionHitsHeatMap:                  heatmap,
 	}
 	err = l.reporterService.SendReport(ctx, report)
 	if err != nil {
@@ -138,14 +143,32 @@ func (l *reporterListener) computeTimeseriesFromTransactions(transactions []*dto
 	return result
 }
 
-func (l *reporterListener) buildTransactionReport(transaction *dto.TransactionDTO) common.TransactionReport {
-	return common.TransactionReport{
-		Timestamp:            transaction.Timestamp,
-		BlockchainHash:       transaction.BlockchainHash,
-		Inputs:               transaction.Inputs,
-		DetectedWeaknesses:   transaction.DetectedWeaknesses,
-		ExecutedInstructions: transaction.ExecutedInstructions,
-		DeltaCoverage:        transaction.DeltaCoverage,
-		DeltaMinDistance:     transaction.DeltaMinDistance,
+func (l *reporterListener) buildInstructionsMap(cfg common.CFG) map[string]string {
+	instructionsMap := make(map[string]string)
+	for _, block := range cfg.Blocks {
+		for pc, instruction := range block.Instructions {
+			instructionsMap[pc] = instruction
+		}
 	}
+	return instructionsMap
+}
+
+func (l *reporterListener) initHeatMap(cfg common.CFG) map[string]uint64 {
+	heatmap := make(map[string]uint64)
+	for _, block := range cfg.Blocks {
+		for pc, _ := range block.Instructions {
+			heatmap[pc] = 0
+		}
+	}
+	return heatmap
+}
+
+func (l *reporterListener) updateHeatMapWithExecutedInstructions(heatmap map[string]uint64, executedInstructions []string) map[string]uint64 {
+	for _, pc := range executedInstructions {
+		if _, ok := heatmap[pc]; !ok {
+			continue
+		}
+		heatmap[pc]++
+	}
+	return heatmap
 }

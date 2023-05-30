@@ -8,11 +8,6 @@ import (
 )
 
 func TaskReportGen() common.TaskReport {
-	transactionsCount := gofakeit.Number(1, 10)
-	transactions := make([]common.TransactionReport, transactionsCount)
-	for idx := 0; idx < int(transactionsCount); idx++ {
-		transactions[idx] = TransactionReportGen()
-	}
 
 	weaknessesCount := gofakeit.Number(1, 10)
 	weaknesses := make([]string, weaknessesCount)
@@ -29,8 +24,9 @@ func TaskReportGen() common.TaskReport {
 		CoverageByTime:     TimeSeriesDataGen(),
 		MinDistance:        gofakeit.Uint64(),
 		MinDistanceByTime:  TimeSeriesDataGen(),
-		Transactions:       transactions,
 		DetectedWeaknesses: weaknesses,
+		Instructions: make(map[string]string),
+		InstructionHitsHeatMap: make(map[string]uint64),
 	}
 }
 
@@ -45,34 +41,4 @@ func TimeSeriesDataGen() common.TimeSeriesData {
 		ys[idx] = gofakeit.Uint64()
 	}
 	return common.TimeSeriesData{X: xs, Y: ys}
-}
-
-func TransactionReportGen() common.TransactionReport {
-	inputsCount := gofakeit.Number(1, 10)
-	inputs := make([]string, inputsCount)
-	for idx := 0; idx < int(inputsCount); idx++ {
-		inputs[idx] = gofakeit.LetterN(255)
-	}
-
-	weaknessesCount := gofakeit.Number(1, 10)
-	weaknesses := make([]string, weaknessesCount)
-	for idx := 0; idx < int(weaknessesCount); idx++ {
-		weaknesses[idx] = gofakeit.LetterN(255)
-	}
-
-	instructionsCount := gofakeit.Number(1, 10)
-	instructions := make([]string, instructionsCount)
-	for idx := 0; idx < int(instructionsCount); idx++ {
-		instructions[idx] = gofakeit.LetterN(255)
-	}
-
-	return common.TransactionReport{
-		Timestamp:            gofakeit.Date(),
-		BlockchainHash:       gofakeit.LetterN(255),
-		Inputs:               inputs,
-		DetectedWeaknesses:   weaknesses,
-		ExecutedInstructions: instructions,
-		DeltaCoverage:        gofakeit.Uint64(),
-		DeltaMinDistance:     gofakeit.Uint64(),
-	}
 }

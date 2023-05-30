@@ -57,6 +57,7 @@ func TransactionGen() *entities.Transaction {
 		Inputs:                   gofakeit.LetterN(255),
 		DetectedWeaknesses:       gofakeit.LetterN(255),
 		ExecutedInstructions:     gofakeit.LetterN(255),
+		Coverage:                 strconv.FormatUint(gofakeit.Uint64(), 10),
 		DeltaCoverage:            strconv.FormatUint(gofakeit.Uint64(), 10),
 		DeltaMinDistance:         strconv.FormatUint(gofakeit.Uint64(), 10),
 		Status:                   common.RandomChoice([]common.TransactionStatus{common.TRANSACTION_CREATED, common.TRANSACTION_RUNNING, common.TRANSACTION_SEND_ERROR, common.TRANSACTION_DONE}),

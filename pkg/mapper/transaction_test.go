@@ -43,6 +43,7 @@ func (s *TransactionMapperTestSuite) TestMapDTOToEntity_ShouldReturnAValidEntity
 	m := NewTransactionMapper()
 	result := m.MapDTOToEntity(transactionDTO)
 
+	coverage := strconv.FormatUint(transactionDTO.Coverage, 10)
 	deltaCoverage := strconv.FormatUint(transactionDTO.DeltaCoverage, 10)
 	deltaMinDistance := strconv.FormatUint(transactionDTO.DeltaMinDistance, 10)
 	criticalInstructionsHits := strconv.FormatUint(transactionDTO.CriticalInstructionsHits, 10)
@@ -56,6 +57,7 @@ func (s *TransactionMapperTestSuite) TestMapDTOToEntity_ShouldReturnAValidEntity
 		Inputs:                   strings.Join(transactionDTO.Inputs, ";"),
 		DetectedWeaknesses:       strings.Join(transactionDTO.DetectedWeaknesses, ";"),
 		ExecutedInstructions:     strings.Join(transactionDTO.ExecutedInstructions, ";"),
+		Coverage:                 coverage,
 		DeltaCoverage:            deltaCoverage,
 		DeltaMinDistance:         deltaMinDistance,
 		Status:                   transactionDTO.Status,
@@ -70,6 +72,8 @@ func (s *TransactionMapperTestSuite) TestMapEntityToDTO_ShouldReturnAValidDTO_Wh
 	m := NewTransactionMapper()
 	result := m.MapEntityToDTO(entity)
 
+	coverage, err := strconv.ParseUint(entity.Coverage, 10, 64)
+	assert.Nil(s.T(), err)
 	deltaCoverage, err := strconv.ParseUint(entity.DeltaCoverage, 10, 64)
 	assert.Nil(s.T(), err)
 	deltaMinDistance, err := strconv.ParseUint(entity.DeltaMinDistance, 10, 64)
@@ -86,6 +90,7 @@ func (s *TransactionMapperTestSuite) TestMapEntityToDTO_ShouldReturnAValidDTO_Wh
 		Inputs:                   strings.Split(entity.Inputs, ";"),
 		DetectedWeaknesses:       strings.Split(entity.DetectedWeaknesses, ";"),
 		ExecutedInstructions:     strings.Split(entity.ExecutedInstructions, ";"),
+		Coverage:                 coverage,
 		DeltaCoverage:            deltaCoverage,
 		DeltaMinDistance:         deltaMinDistance,
 		Status:                   entity.Status,

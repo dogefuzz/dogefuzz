@@ -20,7 +20,7 @@ func TestTypeHandlerTestSuite(t *testing.T) {
 }
 
 func (s *TypeHandlerTestSuite) SetupSuite() {
-	addresses := []string {
+	addresses := []string{
 		"0x095e7e130af11aebd04fb5fb81193bda66eefb81",
 		"0x149efdd75031aa34c01a01da9fb8e859c5166b49",
 		"0xae02fb2776c3e3051e25af26712b6b34b70e5266",

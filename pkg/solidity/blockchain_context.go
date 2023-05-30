@@ -9,4 +9,3 @@ func NewBlockchainContext(availableAddresses []string) *BlockchainContext {
 		AvailableAddresses: availableAddresses,
 	}
 }
-

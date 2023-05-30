@@ -25,6 +25,7 @@ func (m *transactionMapper) MapNewDTOToEntity(n *dto.NewTransactionDTO) *entitie
 }
 
 func (m *transactionMapper) MapDTOToEntity(c *dto.TransactionDTO) *entities.Transaction {
+	coverage := strconv.FormatUint(c.Coverage, 10)
 	deltaCoverage := strconv.FormatUint(c.DeltaCoverage, 10)
 	deltaMinDistance := strconv.FormatUint(c.DeltaMinDistance, 10)
 	criticalInstructionsHits := strconv.FormatUint(c.CriticalInstructionsHits, 10)
@@ -38,6 +39,7 @@ func (m *transactionMapper) MapDTOToEntity(c *dto.TransactionDTO) *entities.Tran
 		Inputs:                   strings.Join(c.Inputs, ";"),
 		DetectedWeaknesses:       strings.Join(c.DetectedWeaknesses, ";"),
 		ExecutedInstructions:     strings.Join(c.ExecutedInstructions, ";"),
+		Coverage:                 coverage,
 		DeltaCoverage:            deltaCoverage,
 		DeltaMinDistance:         deltaMinDistance,
 		CriticalInstructionsHits: criticalInstructionsHits,
@@ -59,6 +61,15 @@ func (m *transactionMapper) MapEntityToDTO(c *entities.Transaction) *dto.Transac
 	var executedInstructions []string
 	if c.ExecutedInstructions != "" {
 		executedInstructions = strings.Split(c.ExecutedInstructions, ";")
+	}
+
+	var coverage uint64
+	if c.Coverage != "" {
+		val, err := strconv.ParseUint(c.Coverage, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+		coverage = val
 	}
 
 	var deltaCoverage uint64
@@ -97,6 +108,7 @@ func (m *transactionMapper) MapEntityToDTO(c *entities.Transaction) *dto.Transac
 		Inputs:                   inputs,
 		DetectedWeaknesses:       detectedWeaknesses,
 		ExecutedInstructions:     executedInstructions,
+		Coverage:                 coverage,
 		DeltaCoverage:            deltaCoverage,
 		DeltaMinDistance:         deltaMinDistance,
 		CriticalInstructionsHits: criticalInstructionsHits,

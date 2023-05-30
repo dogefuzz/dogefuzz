@@ -81,32 +81,24 @@ const (
 )
 
 type TaskReport struct {
-	TaskId                   string              `json:"taskId"`
-	TimeElapsed              time.Duration       `json:"timeElapsed"`
-	ContractName             string              `json:"contractName"`
-	TotalInstructions        uint64              `json:"totalInstructions"`
-	Coverage                 uint64              `json:"coverage"`
-	CoverageByTime           TimeSeriesData      `json:"coverageByTime"`
-	MinDistance              uint64              `json:"minDistance"`
-	MinDistanceByTime        TimeSeriesData      `json:"minDistanceByTime"`
-	Transactions             []TransactionReport `json:"transactions"`
-	DetectedWeaknesses       []string            `json:"detectedWeaknesses"`
-	CriticalInstructionsHits uint64              `json:"criticalInstructionsHits"`
+	TaskId                   string            `json:"taskId"`
+	TimeElapsed              time.Duration     `json:"timeElapsed"`
+	ContractName             string            `json:"contractName"`
+	TotalInstructions        uint64            `json:"totalInstructions"`
+	Coverage                 uint64            `json:"coverage"`
+	CoverageByTime           TimeSeriesData    `json:"coverageByTime"`
+	MinDistance              uint64            `json:"minDistance"`
+	MinDistanceByTime        TimeSeriesData    `json:"minDistanceByTime"`
+	DetectedWeaknesses       []string          `json:"detectedWeaknesses"`
+	CriticalInstructionsHits uint64            `json:"criticalInstructionsHits"`
+	AverageCoverage          float64           `json:"averageCoverage"`
+	Instructions             map[string]string `json:"instructions"`
+	InstructionHitsHeatMap   map[string]uint64 `json:"instructionHitsHeatMap"`
 }
 
 type TimeSeriesData struct {
 	X []time.Time `json:"x"`
 	Y []uint64    `json:"y"`
-}
-
-type TransactionReport struct {
-	Timestamp            time.Time `json:"timestamp"`
-	BlockchainHash       string    `json:"blockchainHash"`
-	Inputs               []string  `json:"inputs"`
-	DetectedWeaknesses   []string  `json:"detectedWeaknesses"`
-	ExecutedInstructions []string  `json:"executedInstructions"`
-	DeltaCoverage        uint64    `json:"deltaCoverage"`
-	DeltaMinDistance     uint64    `json:"deltaMinDistance"`
 }
 
 type EventsSnapshot struct {

@@ -8,8 +8,8 @@ import (
 	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/coverage"
 	"github.com/dogefuzz/dogefuzz/pkg/distance"
-	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
+	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 	"go.uber.org/zap"
 )
 
@@ -62,6 +62,7 @@ func (l *executionAnalyticsListener) processEvent(ctx context.Context, evt bus.I
 		return
 	}
 
+	transaction.Coverage = coverage.ComputeCoverage(contract.CFG, transaction.ExecutedInstructions)
 	transaction.DeltaCoverage = coverage.ComputeDeltaCoverage(contract.CFG, transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
 	transaction.DeltaMinDistance = distance.ComputeDeltaMinDistance(contract.DistanceMap, transaction.ExecutedInstructions, task.AggregatedExecutedInstructions)
 	executedInstructionNames := l.getInstructionNames(transaction.ExecutedInstructions, contract)
