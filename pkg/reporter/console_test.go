@@ -32,9 +32,9 @@ func (s *ConsoleReporterTestSuite) TestSendOutput_ShouldReturnNil_WhenSendValidR
 	buffer.WriteString("********** FUZZING EXECUTION RESULT **********\n")
 	buffer.WriteString(fmt.Sprintf("Time Elapsed: %v\n", report.TimeElapsed))
 	buffer.WriteString(fmt.Sprintf("Contract Name: %s\n", report.ContractName))
-	buffer.WriteString(fmt.Sprintf("Coverage: %0.2f%%\n", 100*(float64(report.Coverage)/float64(report.TotalInstructions))))
+	buffer.WriteString(fmt.Sprintf("Max Coverage: %0.2f%%\n", 100*(float64(report.Coverage)/float64(report.TotalInstructions))))
+	buffer.WriteString(fmt.Sprintf("Average Coverage: %0.2f%%\n", 100*report.AverageCoverage/float64(report.TotalInstructions)))
 	buffer.WriteString(fmt.Sprintf("Min Distance: %d\n", report.MinDistance))
-	buffer.WriteString(fmt.Sprintf("Transactions: %d\n", len(report.Transactions)))
 	buffer.WriteString("Weakneses Found:\n")
 	for _, weakness := range report.DetectedWeaknesses {
 		buffer.WriteString(fmt.Sprintf("\t- %s\n", weakness))
