@@ -16,7 +16,7 @@ services:
       AGENT_WALLET_BALANCE: '1000000000000000000000000' # 1_000_000 ETH
       NODE_PASSWORD: '123456'
       GAS_LIMIT: '8000000'
-      FUZZER_HOST: 'host.docker.internal'
+      FUZZER_HOST: ${FUZZER_HOST_VAR:-host.docker.internal}
       FUZZER_PORT: '3456'
     ports:
       - "8545:8545"
