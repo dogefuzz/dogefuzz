@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  geth:
+    build: ../enhanced-go-ethereum
+    environment:
+      CHAIN_ID: 1900
+      NODE_WALLET_ADDRESS: '0x095e7e130af11aebd04fb5fb81193bda66eefb81'
+      NODE_WALLET_PRIVATE_KEY: 'f33ff13222d9141bcfe072f4c148026bf0187a3ca1f7c4063a7f3e4aff6591a5'
+      NODE_WALLET_BALANCE: '20000000000000000000' # 20 ETH
+      DEPLOYER_WALLET_ADDRESS: '0x149efdd75031aa34c01a01da9fb8e859c5166b49'
+      DEPLOYER_WALLET_PRIVATE_KEY: '1c8d8e900c1b8c6554d995e172c3f58ebaf0e035be4f597e89aa3599cd970d9b'
+      DEPLOYER_WALLET_BALANCE: '1000000000000000000000000' # 1_000_000 ETH
+      AGENT_WALLET_ADDRESS: '0xae02fb2776c3e3051e25af26712b6b34b70e5266'
+      AGENT_WALLET_PRIVATE_KEY: '39a7089e3f7e093b900bc8e98e6e5cba4639cd04d3e944ce1ddd2ca1595b7b87'
+      AGENT_WALLET_BALANCE: '1000000000000000000000000' # 1_000_000 ETH
+      NODE_PASSWORD: '123456'
+      GAS_LIMIT: '8000000'
+      FUZZER_HOST: ${FUZZER_HOST_VAR:-host.docker.internal}
+      FUZZER_PORT: '3456'
+    ports:
+      - "8545:8545"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  vandal:
+    build: https://github.com/dogefuzz/vandal-api.git#main
+    ports:
+      - "5005:5000"

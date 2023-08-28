@@ -147,7 +147,7 @@ func (ctrl *transactionsController) StoreTransactionExecution(c *gin.Context) {
 		return
 	}
 
-	if contract.Address == request.Address {
+	if contract.Address != request.Address {
 		ctrl.logger.Info("this execution doesn't correspond to the contract being tested, so this execution analytics will be ignored")
 		c.AbortWithStatus(200)
 		return

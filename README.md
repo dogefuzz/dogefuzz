@@ -1,7 +1,7 @@
 # Dogefuzz: A flexible fuzzer to detect common vulnerabilities in Smart Contracts
 
 ## Setup
-First, run the docker compose file first to start the local node and vandal API.
+First, run the docker compose file to start the local EVM node and Vandal API server.
 ```
 docker compose -f ./infra/docker-compose.yml up -d
 ```
@@ -13,7 +13,7 @@ To run the fuzzer server, run the following command:
 ```
 go run ./cmd/dogefuzz
 ```
-And the server will start listen the port 3456.
+And the server will start listen the port 3456 (default).
 
 To execute a fuzzing process, here an example of request:
 ```
@@ -47,4 +47,16 @@ It will execute the contract `AddressLotteryV2` contract per 15 minutes using th
 - reentrancy
 - timestamp-dependency
 
-As no `args` were passed, the fuzzer will generate the contructor arguments.
+Available options for `fuzzingType` are: 
+
+- 	blackbox
+-	greybox
+-   directed_greybox
+
+As no `arguments` were passed, the fuzzer will generate the contructor arguments.
+
+
+## Code Structure
+
+1. ./assets/contracts - Directory where attack contracts are located.
+2. ./infra - Contains docker files and docker compose files.

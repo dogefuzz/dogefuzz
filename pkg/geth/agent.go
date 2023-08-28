@@ -54,7 +54,7 @@ func (d *agent) Send(ctx context.Context, wallet interfaces.Wallet, contract *co
 
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = value
-	auth.GasLimit = uint64(50000)
+	auth.GasLimit = uint64(8000000)
 	auth.GasPrice = gasPrice
 	auth.Context = ctx
 
@@ -91,7 +91,7 @@ func (d *agent) Transfer(ctx context.Context, wallet interfaces.Wallet, contract
 
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = value
-	auth.GasLimit = uint64(50000)
+	auth.GasLimit = uint64(8000000)
 	auth.GasPrice = gasPrice
 	auth.Context = ctx
 

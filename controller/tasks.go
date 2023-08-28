@@ -76,7 +76,7 @@ func (ctrl *tasksController) Start(c *gin.Context) {
 		callableMethods = append(callableMethods, function)
 	}
 	if len(callableMethods) == 0 && parsedABI.Fallback.String() == "" && parsedABI.Receive.String() == "" {
-		ctrl.logger.Error("the provide contract doesn't have methods that changes the ontract's state")
+		ctrl.logger.Error("the provide contract doesn't have methods that changes the contract's state")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "the provide contract doesn't have methods that changes the contract's state"})
 		return
 	}
