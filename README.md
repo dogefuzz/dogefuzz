@@ -38,7 +38,7 @@ curl -X POST \
 }'
 ```
 
-It will execute the contract `AddressLotteryV2` contract per 15 minutes using the `directed_greybox` fuzzing strategy. And, it will detect the following weaknesses:
+It will execute the contract `AddressLotteryV2` contract per 15 minutes using the `directed_greybox` fuzzing strategy. And, it will try to detect the following weaknesses:
 
 - delegate
 - exception-disorder
@@ -53,10 +53,13 @@ Available options for `fuzzingType` are:
 -	greybox
 -   directed_greybox
 
-As no `arguments` were passed, the fuzzer will generate the contructor arguments.
+When no `arguments` were passed, the fuzzer will generate the contructor arguments.
 
+The final report will be generated in the end of the fuzzing campaign and named `result.json`. 
+
+Note: The `contractSource` must be a JSON string, you can use sites and tools to do a JSON Stringify operation, as we need to convert CR/LF characters to their textual representation. 
 
 ## Code Structure
 
-1. ./assets/contracts - Directory where attack contracts are located.
-2. ./infra - Contains docker files and docker compose files.
+1. ./assets/contracts - Directory where agent's source code are located.
+2. ./infra - Contains Docker files and Docker compose files.
