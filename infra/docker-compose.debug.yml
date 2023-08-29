@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   geth:
-    build: ../enhanced-go-ethereum
+    build: ../../enhanced-go-ethereum
     environment:
       CHAIN_ID: 1900
       NODE_WALLET_ADDRESS: '0x095e7e130af11aebd04fb5fb81193bda66eefb81'
@@ -15,7 +15,7 @@ services:
       AGENT_WALLET_PRIVATE_KEY: '39a7089e3f7e093b900bc8e98e6e5cba4639cd04d3e944ce1ddd2ca1595b7b87'
       AGENT_WALLET_BALANCE: '1000000000000000000000000' # 1_000_000 ETH
       NODE_PASSWORD: '123456'
-      GAS_LIMIT: '8000000'
+      GAS_LIMIT: '800000000'
       FUZZER_HOST: ${FUZZER_HOST_VAR:-host.docker.internal}
       FUZZER_PORT: '3456'
     ports:

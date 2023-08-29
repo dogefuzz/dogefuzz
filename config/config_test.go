@@ -31,6 +31,7 @@ func (s *ConfigTestSuite) TestLoadConfig_WhenPassingAValidPath_ReturnAValidConfi
 		GethConfig: GethConfig{
 			NodeAddress:           "<nodeAddress>",
 			ChainID:               1002,
+			MinGasLimit:           700000000,
 			DeployerPrivateKeyHex: "<deployerPrivateKeyHex>",
 			AgentPrivateKeyHex:    "<agentPrivateKeyHex>",
 		},
@@ -91,6 +92,7 @@ func (s *ConfigTestSuite) TestLoadConfig_WhenPassingHaveAnEnvVariable_ReturnAVal
 		GethConfig: GethConfig{
 			NodeAddress:           expectedGethNodeAddress,
 			ChainID:               1002,
+			MinGasLimit:           700000000,
 			DeployerPrivateKeyHex: "<deployerPrivateKeyHex>",
 			AgentPrivateKeyHex:    "<agentPrivateKeyHex>",
 		},
