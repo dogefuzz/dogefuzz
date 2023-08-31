@@ -36,6 +36,7 @@ func GethConfigGen() config.GethConfig {
 	return config.GethConfig{
 		NodeAddress:           gofakeit.URL(),
 		ChainID:               gofakeit.Int64(),
+		MinGasLimit:           gofakeit.Uint64(),
 		DeployerPrivateKeyHex: gofakeit.HexUint32(),
 		AgentPrivateKeyHex:    gofakeit.HexUint32(),
 	}
