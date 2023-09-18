@@ -23,6 +23,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
   vandal:
-    build: https://github.com/dogefuzz/vandal-api.git#main
+    build: https://github.com/pamunb/vandal-api.git#main
     ports:
       - "5005:5000"
