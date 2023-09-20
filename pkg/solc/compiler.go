@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -114,7 +115,7 @@ func (c *solidityCompiler) downloadSolcBinaryBasedOnVersion(version *semver.Vers
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", ErrSolidityBinariesListCouldNotBeDownloaded
+		return "", ErrSolidityBinariesListCouldNotBeDownloaded(strconv.Itoa(resp.StatusCode))
 	}
 
 	_, err = io.Copy(solcFile, resp.Body)

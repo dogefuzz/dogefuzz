@@ -3,9 +3,11 @@ package solc
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"net/http"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -14,7 +16,10 @@ import (
 var ErrVersionNotFound = errors.New("the pragma version string was not found")
 var ErrNoVersionMatch = errors.New("no solc version matched with the solidity file's constraint")
 var ErrInvalidConstraint = errors.New("a invalid constraint string was provided")
-var ErrSolidityBinariesListCouldNotBeDownloaded = errors.New("the solidity binaries list could not be downloaded externally")
+
+func ErrSolidityBinariesListCouldNotBeDownloaded(code string) error {
+	return errors.New(fmt.Sprintf("the solidity binaries list could not be downloaded externally (HTTP %s)", code))
+}
 
 func getMaxVersionBasedOnContraint(descendingSortedVersions []string, constraintStr string) (*semver.Version, error) {
 	constraints, err := semver.NewConstraint(constraintStr)
@@ -54,12 +59,12 @@ func getDescendingOrderedVersionsFromSolidyBinariesEndpoint() ([]string, error) 
 	const SOLIDITY_BINARIES_LIST_ENDPOINT = "https://binaries.soliditylang.org/bin/list.txt"
 	resp, err := http.Get(SOLIDITY_BINARIES_LIST_ENDPOINT)
 	if err != nil {
-		return nil, ErrSolidityBinariesListCouldNotBeDownloaded
+		return nil, ErrSolidityBinariesListCouldNotBeDownloaded(err.Error())
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, ErrSolidityBinariesListCouldNotBeDownloaded
+		return nil, ErrSolidityBinariesListCouldNotBeDownloaded(strconv.Itoa(resp.StatusCode))
 	}
 
 	var versions []string
