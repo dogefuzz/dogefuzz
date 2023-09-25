@@ -2,6 +2,7 @@ package listener
 
 import (
 	"context"
+	"math"
 	"sort"
 	"time"
 
@@ -71,6 +72,7 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 
 	heatmap := l.initHeatMap(contract.CFG)
 	aggregatedWeakneses := make([]string, 0)
+	var totalCoverage float64 = 0
 	var averageCoverage float64 = 0
 	var criticalInstructionsHits uint64 = 0
 
@@ -78,8 +80,13 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 		l.updateHeatMapWithExecutedInstructions(heatmap, transaction.ExecutedInstructions)
 		aggregatedWeakneses = append(aggregatedWeakneses, transaction.DetectedWeaknesses...)
 		criticalInstructionsHits += transaction.CriticalInstructionsHits
-		averageCoverage += float64(transaction.Coverage)
+		totalCoverage += float64(transaction.Coverage)
 	}
+
+	if len(transactions) == 0 || math.IsNaN(totalCoverage) {
+		averageCoverage = 0.0
+	}
+	averageCoverage = totalCoverage / float64(len(transactions))
 
 	report := common.TaskReport{
 		TaskId:                   task.Id,
@@ -92,9 +99,9 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 		MinDistanceByTime:        l.computeMinDistanceByTime(contract.DistanceMap, transactions),
 		DetectedWeaknesses:       common.GetUniqueSlice(aggregatedWeakneses),
 		CriticalInstructionsHits: criticalInstructionsHits,
-		AverageCoverage:          averageCoverage / float64(len(transactions)),
+		AverageCoverage:          averageCoverage,
 		Instructions:             l.buildInstructionsMap(contract.CFG),
-		InstructionHitsHeatMap:                  heatmap,
+		InstructionHitsHeatMap:   heatmap,
 	}
 	err = l.reporterService.SendReport(ctx, report)
 	if err != nil {
