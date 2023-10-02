@@ -73,7 +73,7 @@ func (d *deployer) Deploy(ctx context.Context, contract *common.Contract, args .
 
 	auth.Nonce = big.NewInt(int64(nonce))
 	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(2000000)
+	auth.GasLimit = uint64(3000000)
 	auth.GasPrice = gasPrice
 	auth.Context = timeoutCtx
 

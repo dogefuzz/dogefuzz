@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   geth:
-    build: ../../enhanced-go-ethereum
+    build: ../../dogefuzz-enhanced-go-ethereum
     environment:
       CHAIN_ID: 1900
       NODE_WALLET_ADDRESS: '0x095e7e130af11aebd04fb5fb81193bda66eefb81'
@@ -23,6 +23,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
   vandal:
-    build: ../../vandal-api
+    build: ../../dogefuzz-vandal-api
     ports:
       - "5005:5000"
