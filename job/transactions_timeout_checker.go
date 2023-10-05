@@ -50,11 +50,10 @@ func (j *transactionsTimeoutCheckerJob) Handler() {
 	for retries := 0; retries < maxRetries; retries++ {
 		err = j.transactionService.BulkUpdate(transactions)
 		if err != nil {
-			j.logger.Sugar().Warnf("an error occured when updating transactions: %v", err)
-			j.logger.Sugar().Warnf("retrying...%d", retries)
 			time.Sleep(100 * time.Millisecond)
 			continue
 		}
-		break
+		return
 	}
+	j.logger.Sugar().Warnf("an error occured when updating transactions: %v", err)
 }

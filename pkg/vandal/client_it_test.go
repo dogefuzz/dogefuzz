@@ -41,7 +41,7 @@ contract HelloWorld {
 	contract, _ := compiler.CompileSource("HelloWorld", VALID_SOLIDITY_FILE)
 
 	c := NewVandalClient("http://localhost:51243", 15*time.Second)
-	blocks, functions, err := c.Decompile(context.Background(), contract.DeploymentBytecode)
+	blocks, functions, err := c.Decompile(context.Background(), contract.DeploymentBytecode, contract.Name)
 	assert.Equal(s.T(), 30, len(blocks))
 	assert.Equal(s.T(), 2, len(functions))
 	assert.Nil(s.T(), err)
