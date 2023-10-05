@@ -7,5 +7,5 @@ import (
 )
 
 type VandalClient interface {
-	Decompile(ctx context.Context, source string) ([]common.Block, []common.Function, error)
+	Decompile(ctx context.Context, source string, name string) ([]common.Block, []common.Function, error)
 }

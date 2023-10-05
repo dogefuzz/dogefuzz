@@ -23,7 +23,7 @@ func NewVandalService(e Env) *vandalService {
 func (s *vandalService) GetCFG(ctx context.Context, contract *common.Contract) (*common.CFG, error) {
 	client := s.getClient()
 
-	blocks, _, err := client.Decompile(ctx, contract.RuntimeBytecode)
+	blocks, _, err := client.Decompile(ctx, contract.RuntimeBytecode, contract.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (s *vandalService) GetCFG(ctx context.Context, contract *common.Contract) (
 
 func (s *vandalService) getClient() interfaces.VandalClient {
 	if s.client == nil {
-		s.client = vandal.NewVandalClient(s.cfg.Endpoint)
+		s.client = vandal.NewVandalClient(s.cfg.Endpoint, s.cfg.CfgTimeout)
 	}
 	return s.client
 }

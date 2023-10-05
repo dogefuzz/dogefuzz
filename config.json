@@ -2,12 +2,13 @@
   "databaseName": "dogefuzz",
   "serverPort": 3456,
   "vandal": {
-    "endpoint": "http://localhost:5005"
+    "endpoint": "http://localhost:5005",
+    "cfgTimeout": "20s"
   },
   "geth": {
     "nodeAddress": "http://localhost:8545",
     "chainId": 1900,
-    "minGasLimit": 1000000,
+    "minGasLimit": 3000000,
     "deployerAddress": "0x149efdd75031aa34c01a01da9fb8e859c5166b49",
     "deployerPrivateKeyHex": "1c8d8e900c1b8c6554d995e172c3f58ebaf0e035be4f597e89aa3599cd970d9b",
     "agentAddress": "0xae02fb2776c3e3051e25af26712b6b34b70e5266",
@@ -15,9 +16,9 @@
   },
   "fuzzer": {
     "criticalInstructions": ["CALL", "SELFDESTRUCT", "CALLCODE", "DELEGATECALL"],
-    "batchSize": 1,
+    "batchSize": 3,
     "seedsSize": 5,
-    "transactionTimeout": "10s",
+    "transactionTimeout": "17s",
     "pendingTransactionsThreshold": 5,
     "seeds": {
       "bool": ["true", "false"],

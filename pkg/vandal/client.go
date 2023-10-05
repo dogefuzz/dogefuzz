@@ -17,21 +17,23 @@ const DELIMITER = "================================"
 
 type VandalDecompileRequest struct {
 	Source string `json:"source"`
+	Name   string `json:"name"`
 }
 
 type vandalClient struct {
 	endpoint string
+	timeout  time.Duration
 }
 
-func NewVandalClient(vandalEndpoint string) *vandalClient {
-	return &vandalClient{endpoint: vandalEndpoint}
+func NewVandalClient(vandalEndpoint string, vandalTimeout time.Duration) *vandalClient {
+	return &vandalClient{endpoint: vandalEndpoint, timeout: vandalTimeout}
 }
 
-func (c *vandalClient) Decompile(ctx context.Context, source string) ([]common.Block, []common.Function, error) {
-	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+func (c *vandalClient) Decompile(ctx context.Context, source string, name string) ([]common.Block, []common.Function, error) {
+	ctx, cancel := context.WithTimeout(ctx, c.timeout*time.Second)
 	defer cancel()
 
-	body, err := json.Marshal(VandalDecompileRequest{Source: source})
+	body, err := json.Marshal(VandalDecompileRequest{Source: source, Name: name})
 	if err != nil {
 		return nil, nil, err
 	}
