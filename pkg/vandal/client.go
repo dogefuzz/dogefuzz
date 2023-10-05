@@ -28,7 +28,7 @@ func NewVandalClient(vandalEndpoint string) *vandalClient {
 }
 
 func (c *vandalClient) Decompile(ctx context.Context, source string) ([]common.Block, []common.Function, error) {
-	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
 	defer cancel()
 
 	body, err := json.Marshal(VandalDecompileRequest{Source: source})
