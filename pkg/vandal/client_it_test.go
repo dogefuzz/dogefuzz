@@ -3,7 +3,6 @@ package vandal
 import (
 	"context"
 	"testing"
-	"time"
 
 	"github.com/dogefuzz/dogefuzz/pkg/solc"
 	"github.com/stretchr/testify/assert"
@@ -40,11 +39,11 @@ contract HelloWorld {
 	compiler := solc.NewSolidityCompiler("/tmp/dogefuzz/")
 	contract, _ := compiler.CompileSource("HelloWorld", VALID_SOLIDITY_FILE)
 
-	c := NewVandalClient("http://localhost:51243", 15*time.Second)
+	c := NewVandalClient("http://localhost:51243", 20)
 	blocks, functions, err := c.Decompile(context.Background(), contract.DeploymentBytecode, contract.Name)
+	assert.Nil(s.T(), err)
 	assert.Equal(s.T(), 30, len(blocks))
 	assert.Equal(s.T(), 2, len(functions))
-	assert.Nil(s.T(), err)
 }
 
 // func (s *VandalClientIntegrationTestSuite) TestDecompile_WithBenchmarkContracts() {
