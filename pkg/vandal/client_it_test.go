@@ -3,6 +3,7 @@ package vandal
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/dogefuzz/dogefuzz/pkg/solc"
 	"github.com/stretchr/testify/assert"
@@ -39,7 +40,7 @@ contract HelloWorld {
 	compiler := solc.NewSolidityCompiler("/tmp/dogefuzz/")
 	contract, _ := compiler.CompileSource("HelloWorld", VALID_SOLIDITY_FILE)
 
-	c := NewVandalClient("http://localhost:51243")
+	c := NewVandalClient("http://localhost:51243", 15*time.Second)
 	blocks, functions, err := c.Decompile(context.Background(), contract.DeploymentBytecode)
 	assert.Equal(s.T(), 30, len(blocks))
 	assert.Equal(s.T(), 2, len(functions))
