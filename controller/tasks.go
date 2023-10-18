@@ -40,6 +40,9 @@ func NewTasksController(e Env) *tasksController {
 
 func (ctrl *tasksController) Start(c *gin.Context) {
 	var request dto.StartTaskRequest
+
+	ctrl.logger.Info(fmt.Sprintf("Validating fuzzing request for %s", request.ContractName))
+
 	if err := c.ShouldBindJSON(&request); err != nil {
 		ctrl.logger.Error("request failed to be parsed", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("request failed to be parsed: %s", err.Error())})

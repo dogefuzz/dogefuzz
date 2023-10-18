@@ -47,13 +47,14 @@ func (j *transactionsTimeoutCheckerJob) Handler() {
 	}
 
 	maxRetries := 5
+	var bulk_err error
 	for retries := 0; retries < maxRetries; retries++ {
-		err = j.transactionService.BulkUpdate(transactions)
+		bulk_err = j.transactionService.BulkUpdate(transactions)
 		if err != nil {
 			time.Sleep(100 * time.Millisecond)
 			continue
 		}
 		return
 	}
-	j.logger.Sugar().Warnf("an error occured when updating transactions: %v", err)
+	j.logger.Sugar().Warnf("an error occured when updating transactions: %v", bulk_err)
 }

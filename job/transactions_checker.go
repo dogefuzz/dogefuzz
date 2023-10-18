@@ -1,6 +1,8 @@
 package job
 
 import (
+	"time"
+
 	"github.com/dogefuzz/dogefuzz/config"
 	"github.com/dogefuzz/dogefuzz/pkg/bus"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
@@ -29,13 +31,21 @@ func (j *transactionsCheckerJob) Id() string         { return "transactions-chec
 func (j *transactionsCheckerJob) CronConfig() string { return "* * * * * *" }
 
 func (j *transactionsCheckerJob) Handler() {
-	tasks, err := j.taskService.FindNotFinishedThatHaveDeployedContractAndLimitedPendingTransactions(j.cfg.FuzzerConfig.PendingTransactionsThreshold)
-	if err != nil {
-		j.logger.Sugar().Errorf("an error occured when retrieving tasks that are still running: %v", err)
+
+	maxRetries := 5
+	var find_error error
+	for retries := 0; retries < maxRetries; retries++ {
+		tasks, find_error := j.taskService.FindNotFinishedThatHaveDeployedContractAndLimitedPendingTransactions(j.cfg.FuzzerConfig.PendingTransactionsThreshold)
+		if find_error != nil {
+			time.Sleep(100 * time.Millisecond)
+			continue
+		}
+
+		for _, task := range tasks {
+			j.taskInputRequestTopic.Publish(bus.TaskInputRequestEvent{TaskId: task.Id})
+		}
+
 		return
 	}
-
-	for _, task := range tasks {
-		j.taskInputRequestTopic.Publish(bus.TaskInputRequestEvent{TaskId: task.Id})
-	}
+	j.logger.Sugar().Errorf("an error occured when retrieving tasks that are still running: %v", find_error)
 }
