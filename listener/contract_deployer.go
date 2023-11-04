@@ -20,6 +20,7 @@ type contractDeployerListener struct {
 	logger                *zap.Logger
 	taskStartTopic        interfaces.Topic[bus.TaskStartEvent]
 	taskInputRequestTopic interfaces.Topic[bus.TaskInputRequestEvent]
+	taskFinishTopic       interfaces.Topic[bus.TaskFinishEvent]
 	taskService           interfaces.TaskService
 	gethService           interfaces.GethService
 	vandalService         interfaces.VandalService
@@ -36,6 +37,7 @@ func NewContractDeployerListener(e Env) *contractDeployerListener {
 		logger:                e.Logger(),
 		taskStartTopic:        e.TaskStartTopic(),
 		taskInputRequestTopic: e.TaskInputRequestTopic(),
+		taskFinishTopic:       e.TaskFinishTopic(),
 		taskService:           e.TaskService(),
 		gethService:           e.GethService(),
 		vandalService:         e.VandalService(),
@@ -61,29 +63,34 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 	task, err := l.taskService.Get(evt.TaskId)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when retrieving task: %v", err)
+		sendTaskEndDueToError(task, l)
 		return
 	}
 
 	contract, err := l.contractService.FindByTaskId(task.Id)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when retrieving contract: %v", err)
+		sendTaskEndDueToError(task, l)
 		return
 	}
 
 	if contract.Status == common.CONTRACT_DEPLOYED {
-		l.logger.Sugar().Warnf("the contract %s was already deployed", contract.Id)
+		l.logger.Sugar().Errorf("the contract %s was already deployed", contract.Id)
+		sendTaskEndDueToError(task, l)
 		return
 	}
 
 	parsedABI, err := abi.JSON(strings.NewReader(contract.AbiDefinition))
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when parsing contract ABI definition: %v", err)
+		sendTaskEndDueToError(task, l)
 		return
 	}
 
 	constructor, err := l.functionService.FindConstructorByContractId(contract.Id)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when retrieving contract's constructor: %v", err)
+		sendTaskEndDueToError(task, l)
 		return
 	}
 
@@ -95,6 +102,7 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 		handler, err := l.solidityService.GetTypeHandlerWithContext(definition.Type)
 		if err != nil {
 			l.logger.Sugar().Errorf("an error ocurred when parsing args: %v", err)
+			sendTaskEndDueToError(task, l)
 			return
 		}
 
@@ -102,6 +110,7 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 			err = handler.Deserialize(task.Arguments[idx])
 			if err != nil {
 				l.logger.Sugar().Errorf("an error ocurred when parsing args: %v", err)
+				sendTaskEndDueToError(task, l)
 				return
 			}
 		} else {
@@ -114,6 +123,7 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 	address, tx, err := l.gethService.Deploy(ctx, l.contractMapper.MapDTOToCommon(contract), args...)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when deploying contract: %v", err)
+		sendTaskEndDueToError(task, l)
 		return
 	}
 	l.logger.Sugar().Debugf("deploying contract %s at %s", contract.Id, address)
@@ -130,12 +140,14 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 	_, err = l.transactionService.Create(transactionDTO)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred when storing contract's deploy transaction: %v", err)
+		sendTaskEndDueToError(task, l)
 		return
 	}
 
 	cfg, err := l.vandalService.GetCFG(ctx, l.contractMapper.MapDTOToCommon(contract))
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred while getting CFG from vandal service: %v", err)
+		sendTaskEndDueToError(task, l)
 		return
 	}
 	contract.CFG = *cfg
@@ -145,6 +157,7 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 	err = l.contractService.Update(contract)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error occurred while updating contract adress: %v", err)
+		sendTaskEndDueToError(task, l)
 		return
 	}
 	l.logger.Sugar().Debugf("generated contract's CFG and distance map for contract %s", contract.Id)
@@ -153,10 +166,17 @@ func (l *contractDeployerListener) processEvent(ctx context.Context, evt bus.Tas
 	err = l.taskService.Update(task)
 	if err != nil {
 		l.logger.Sugar().Errorf("an error ocurred while updating task with new expiration: %v", err)
+		sendTaskEndDueToError(task, l)
 		return
 	}
 	l.logger.Sugar().Debugf("updating task with new expiration %s", contract.Id)
 
 	l.logger.Info(fmt.Sprintf("requesting new inputs for task %s", task.Id))
 	l.taskInputRequestTopic.Publish(bus.TaskInputRequestEvent{TaskId: task.Id})
+}
+
+func sendTaskEndDueToError(task *dto.TaskDTO, l *contractDeployerListener) {
+	task.Status = common.TASK_DEPLOY_ERROR
+	l.taskService.Update(task)
+	l.taskFinishTopic.Publish(bus.TaskFinishEvent{TaskId: task.Id})
 }

@@ -85,11 +85,13 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 
 	if len(transactions) == 0 || math.IsNaN(totalCoverage) {
 		averageCoverage = 0.0
+	} else {
+		averageCoverage = totalCoverage / float64(len(transactions))
 	}
-	averageCoverage = totalCoverage / float64(len(transactions))
 
 	report := common.TaskReport{
 		TaskId:                   task.Id,
+		TaskStatus:               task.Status,
 		TimeElapsed:              task.Expiration.Sub(task.StartTime),
 		ContractName:             contract.Name,
 		TotalInstructions:        uint64(len(contract.CFG.GetEdgesPCs())),
@@ -109,7 +111,10 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 		return
 	}
 
-	task.Status = common.TASK_DONE
+	if task.Status != common.TASK_DEPLOY_ERROR {
+		task.Status = common.TASK_DONE
+	}
+
 	err = l.taskService.Update(task)
 	if err != nil {
 		l.logger.Sugar().Errorf("the task %s could not be updated", task.Id)

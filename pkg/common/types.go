@@ -45,9 +45,10 @@ const (
 type TaskStatus string
 
 const (
-	TASK_RUNNING TaskStatus = "running"
-	TASK_DONE    TaskStatus = "done"
-	TASK_REPORT  TaskStatus = "report"
+	TASK_RUNNING      TaskStatus = "running"
+	TASK_DEPLOY_ERROR TaskStatus = "error"
+	TASK_DONE         TaskStatus = "done"
+	TASK_REPORT       TaskStatus = "report"
 )
 
 type TransactionStatus string
@@ -82,6 +83,7 @@ const (
 
 type TaskReport struct {
 	TaskId                   string            `json:"taskId"`
+	TaskStatus               TaskStatus        `json:"taskStatus"`
 	TimeElapsed              time.Duration     `json:"timeElapsed"`
 	ContractName             string            `json:"contractName"`
 	TotalInstructions        uint64            `json:"totalInstructions"`
