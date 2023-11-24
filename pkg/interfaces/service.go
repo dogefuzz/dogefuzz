@@ -55,6 +55,7 @@ type TransactionService interface {
 	FindDoneByTaskId(taskId string) ([]*dto.TransactionDTO, error)
 	FindDoneTransactionsByFunctionIdAndOrderByTimestamp(functionId string, limit int64) ([]*dto.TransactionDTO, error)
 	FindRunningAndCreatedBeforeThreshold(dateThreshold time.Time) ([]*dto.TransactionDTO, error)
+	FindTimeTakenToWeakness(taskId string, weaknessType common.OracleType) (uint32, error)
 }
 
 type VandalService interface {

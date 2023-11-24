@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dogefuzz/dogefuzz/entities"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"gorm.io/gorm"
 )
 
@@ -41,4 +42,5 @@ type TransactionRepo interface {
 	FindDoneByTaskId(tx *gorm.DB, taskId string) ([]entities.Transaction, error)
 	FindDoneTransactionsByFunctionIdAndOrderByTimestamp(tx *gorm.DB, functionId string, limit int64) ([]entities.Transaction, error)
 	FindRunningAndCreatedBeforeThreshold(tx *gorm.DB, dateThreshold time.Time) ([]entities.Transaction, error)
+	FindTimeTakenToWeakness(tx *gorm.DB, taskId string, weaknessType common.OracleType) (uint32, error)
 }

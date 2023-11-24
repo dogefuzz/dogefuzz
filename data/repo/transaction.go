@@ -100,3 +100,24 @@ func (r *transactionRepo) FindRunningAndCreatedBeforeThreshold(tx *gorm.DB, date
 	}
 	return transactions, nil
 }
+
+func (r *transactionRepo) FindTimeTakenToWeakness(tx *gorm.DB, taskId string, weaknessType common.OracleType) (uint32, error) {
+	var totalTimeInSeconds uint32
+	query := `
+		SELECT 
+			strftime('%s', timestamp) - strftime('%s', (
+				SELECT MIN(timestamp) 
+				FROM transactions
+				WHERE task_id = ?)
+				)
+		FROM transactions 
+		WHERE detected_weaknesses like ?
+		ORDER BY timestamp
+		LIMIT 1	
+	`
+
+	if err := tx.Raw(query, taskId, "%"+weaknessType+"%").Scan(&totalTimeInSeconds).Error; err != nil {
+		return 0, err
+	}
+	return totalTimeInSeconds, nil
+}

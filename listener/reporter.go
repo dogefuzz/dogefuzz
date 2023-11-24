@@ -72,6 +72,7 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 
 	heatmap := l.initHeatMap(contract.CFG)
 	aggregatedWeakneses := make([]string, 0)
+	timeToWeaknessMap := make(map[string]uint32)
 	var totalCoverage float64 = 0
 	var averageCoverage float64 = 0
 	var criticalInstructionsHits uint64 = 0
@@ -89,6 +90,15 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 		averageCoverage = totalCoverage / float64(len(transactions))
 	}
 
+	detectedWeaknesses := common.GetUniqueSlice(aggregatedWeakneses)
+	for _, weakness := range detectedWeaknesses {
+		timeToWeakness, err := l.transactionService.FindTimeTakenToWeakness(task.Id, common.OracleType(weakness))
+		if err != nil {
+			l.logger.Sugar().Errorf("an error occurred when retrieving transactions of this task: %v", err)
+		}
+		timeToWeaknessMap[weakness] = timeToWeakness
+	}
+
 	report := common.TaskReport{
 		TaskId:                   task.Id,
 		TaskStatus:               task.Status,
@@ -100,6 +110,7 @@ func (l *reporterListener) processEvent(ctx context.Context, evt bus.TaskFinishE
 		MinDistance:              distance.ComputeMinDistance(contract.DistanceMap, task.AggregatedExecutedInstructions),
 		MinDistanceByTime:        l.computeMinDistanceByTime(contract.DistanceMap, transactions),
 		DetectedWeaknesses:       common.GetUniqueSlice(aggregatedWeakneses),
+		TimeToWeakness:           timeToWeaknessMap,
 		CriticalInstructionsHits: criticalInstructionsHits,
 		AverageCoverage:          averageCoverage,
 		Instructions:             l.buildInstructionsMap(contract.CFG),

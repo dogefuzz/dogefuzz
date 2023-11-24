@@ -92,6 +92,7 @@ type TaskReport struct {
 	MinDistance              uint64            `json:"minDistance"`
 	MinDistanceByTime        TimeSeriesData    `json:"minDistanceByTime"`
 	DetectedWeaknesses       []string          `json:"detectedWeaknesses"`
+	TimeToWeakness           map[string]uint32 `json:"timeToWeaknesses"`
 	CriticalInstructionsHits uint64            `json:"criticalInstructionsHits"`
 	AverageCoverage          float64           `json:"averageCoverage"`
 	Instructions             map[string]string `json:"instructions"`

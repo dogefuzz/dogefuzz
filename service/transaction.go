@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dogefuzz/dogefuzz/data/repo"
+	"github.com/dogefuzz/dogefuzz/pkg/common"
 	"github.com/dogefuzz/dogefuzz/pkg/dto"
 	"github.com/dogefuzz/dogefuzz/pkg/interfaces"
 )
@@ -156,4 +157,13 @@ func (s *transactionService) FindRunningAndCreatedBeforeThreshold(dateThreshold 
 		transactionDTOs[idx] = s.transactionMapper.MapEntityToDTO(&transaction)
 	}
 	return transactionDTOs, nil
+}
+
+func (s *transactionService) FindTimeTakenToWeakness(taskId string, weaknessType common.OracleType) (uint32, error) {
+	timeToWeakness, err := s.transactionRepo.FindTimeTakenToWeakness(s.connection.GetDB(), taskId, weaknessType)
+	if err != nil {
+		return 0, err
+	}
+	return timeToWeakness, nil
+
 }
