@@ -111,12 +111,12 @@ func (r *transactionRepo) FindTimeTakenToWeakness(tx *gorm.DB, taskId string, we
 				WHERE task_id = ?)
 				)
 		FROM transactions 
-		WHERE detected_weaknesses like ?
+		WHERE detected_weaknesses like ? AND task_id = ?
 		ORDER BY timestamp
 		LIMIT 1	
 	`
 
-	if err := tx.Raw(query, taskId, "%"+weaknessType+"%").Scan(&totalTimeInSeconds).Error; err != nil {
+	if err := tx.Raw(query, taskId, "%"+weaknessType+"%", taskId).Scan(&totalTimeInSeconds).Error; err != nil {
 		return 0, err
 	}
 	return totalTimeInSeconds, nil
