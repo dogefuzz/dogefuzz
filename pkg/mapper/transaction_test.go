@@ -2,7 +2,6 @@ package mapper
 
 import (
 	"reflect"
-	"strconv"
 	"strings"
 	"testing"
 
@@ -43,10 +42,10 @@ func (s *TransactionMapperTestSuite) TestMapDTOToEntity_ShouldReturnAValidEntity
 	m := NewTransactionMapper()
 	result := m.MapDTOToEntity(transactionDTO)
 
-	coverage := strconv.FormatUint(transactionDTO.Coverage, 10)
-	deltaCoverage := strconv.FormatUint(transactionDTO.DeltaCoverage, 10)
-	deltaMinDistance := strconv.FormatUint(transactionDTO.DeltaMinDistance, 10)
-	criticalInstructionsHits := strconv.FormatUint(transactionDTO.CriticalInstructionsHits, 10)
+	coverage := transactionDTO.Coverage
+	deltaCoverage := transactionDTO.DeltaCoverage
+	deltaMinDistance := transactionDTO.DeltaMinDistance
+	criticalInstructionsHits := transactionDTO.CriticalInstructionsHits
 
 	expectedResult := entities.Transaction{
 		Id:                       transactionDTO.Id,
@@ -72,15 +71,6 @@ func (s *TransactionMapperTestSuite) TestMapEntityToDTO_ShouldReturnAValidDTO_Wh
 	m := NewTransactionMapper()
 	result := m.MapEntityToDTO(entity)
 
-	coverage, err := strconv.ParseUint(entity.Coverage, 10, 64)
-	assert.Nil(s.T(), err)
-	deltaCoverage, err := strconv.ParseUint(entity.DeltaCoverage, 10, 64)
-	assert.Nil(s.T(), err)
-	deltaMinDistance, err := strconv.ParseUint(entity.DeltaMinDistance, 10, 64)
-	assert.Nil(s.T(), err)
-	criticalInstructionsHits, err := strconv.ParseUint(entity.CriticalInstructionsHits, 10, 64)
-	assert.Nil(s.T(), err)
-
 	expectedResult := dto.TransactionDTO{
 		Id:                       entity.Id,
 		Timestamp:                entity.Timestamp,
@@ -90,11 +80,11 @@ func (s *TransactionMapperTestSuite) TestMapEntityToDTO_ShouldReturnAValidDTO_Wh
 		Inputs:                   strings.Split(entity.Inputs, ";"),
 		DetectedWeaknesses:       strings.Split(entity.DetectedWeaknesses, ";"),
 		ExecutedInstructions:     strings.Split(entity.ExecutedInstructions, ";"),
-		Coverage:                 coverage,
-		DeltaCoverage:            deltaCoverage,
-		DeltaMinDistance:         deltaMinDistance,
+		Coverage:                 entity.Coverage,
+		DeltaCoverage:            entity.DeltaCoverage,
+		DeltaMinDistance:         entity.DeltaMinDistance,
 		Status:                   entity.Status,
-		CriticalInstructionsHits: criticalInstructionsHits,
+		CriticalInstructionsHits: entity.CriticalInstructionsHits,
 	}
 	assert.True(s.T(), reflect.DeepEqual(expectedResult, *result))
 }
