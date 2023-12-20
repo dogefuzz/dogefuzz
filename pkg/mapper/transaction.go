@@ -1,7 +1,6 @@
 package mapper
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/dogefuzz/dogefuzz/entities"
@@ -25,10 +24,10 @@ func (m *transactionMapper) MapNewDTOToEntity(n *dto.NewTransactionDTO) *entitie
 }
 
 func (m *transactionMapper) MapDTOToEntity(c *dto.TransactionDTO) *entities.Transaction {
-	coverage := strconv.FormatUint(c.Coverage, 10)
-	deltaCoverage := strconv.FormatUint(c.DeltaCoverage, 10)
-	deltaMinDistance := strconv.FormatUint(c.DeltaMinDistance, 10)
-	criticalInstructionsHits := strconv.FormatUint(c.CriticalInstructionsHits, 10)
+	coverage := c.Coverage
+	deltaCoverage := c.DeltaCoverage
+	deltaMinDistance := c.DeltaMinDistance
+	criticalInstructionsHits := c.CriticalInstructionsHits
 
 	return &entities.Transaction{
 		Id:                       c.Id,
@@ -63,41 +62,13 @@ func (m *transactionMapper) MapEntityToDTO(c *entities.Transaction) *dto.Transac
 		executedInstructions = strings.Split(c.ExecutedInstructions, ";")
 	}
 
-	var coverage uint64
-	if c.Coverage != "" {
-		val, err := strconv.ParseUint(c.Coverage, 10, 64)
-		if err != nil {
-			panic(err)
-		}
-		coverage = val
-	}
+	var coverage uint64 = c.Coverage
 
-	var deltaCoverage uint64
-	if c.DeltaCoverage != "" {
-		val, err := strconv.ParseUint(c.DeltaCoverage, 10, 64)
-		if err != nil {
-			panic(err)
-		}
-		deltaCoverage = val
-	}
+	var deltaCoverage uint64 = c.DeltaCoverage
 
-	var deltaMinDistance uint64
-	if c.DeltaMinDistance != "" {
-		val, err := strconv.ParseUint(c.DeltaMinDistance, 10, 64)
-		if err != nil {
-			panic(err)
-		}
-		deltaMinDistance = val
-	}
+	var deltaMinDistance uint64 = c.DeltaMinDistance
 
-	var criticalInstructionsHits uint64
-	if c.CriticalInstructionsHits != "" {
-		val, err := strconv.ParseUint(c.CriticalInstructionsHits, 10, 64)
-		if err != nil {
-			panic(err)
-		}
-		criticalInstructionsHits = val
-	}
+	var criticalInstructionsHits uint64 = c.CriticalInstructionsHits
 
 	return &dto.TransactionDTO{
 		Id:                       c.Id,

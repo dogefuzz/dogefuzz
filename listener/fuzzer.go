@@ -168,18 +168,18 @@ func (l *fuzzerListener) processEvent(ctx context.Context, evt bus.TaskInputRequ
 		transaction.Status = common.TRANSACTION_RUNNING
 	}
 
-	tries := 0
-	for tries <= 5 {
-		err = l.transactionService.BulkUpdate(transactions)
-		if err != nil {
-			time.Sleep(500 * time.Millisecond)
+	maxRetries := 5
+	var bulk_error error
+	for retries := 0; retries < maxRetries; retries++ {
+		bulk_error = l.transactionService.BulkUpdate(transactions)
+		if bulk_error != nil {
+			time.Sleep(100 * time.Millisecond)
+			continue
 		} else {
 			break
 		}
-		tries++
 	}
-
-	if err != nil {
+	if bulk_error != nil {
 		l.logger.Sugar().Errorf("an error ocurred when updating transactions in database: %v", err)
 		return
 	}

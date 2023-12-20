@@ -28,6 +28,13 @@ func NewConnection(cfg *config.Config, logger *zap.Logger) (*connection, error) 
 		return nil, err
 	}
 
+	db.Exec("PRAGMA journal_mode=WAL;")
+
+	db.Exec("pragma page_size = 32768;")
+	db.Exec("pragma mmap_size = 30000000000;")
+	db.Exec("pragma temp_store = memory;")
+	db.Exec("pragma synchronous = normal;")
+
 	return &connection{
 		db:           db,
 		databaseName: cfg.DatabaseName,
