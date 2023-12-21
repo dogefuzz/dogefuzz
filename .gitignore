@@ -29,3 +29,5 @@ go.work
 
 result.json
 dogefuzz
+dogefuzz.db-shm
+dogefuzz.db-wal

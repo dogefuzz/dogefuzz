@@ -44,6 +44,9 @@ func (h *stringHandler) Generate() {
 	rand.Seed(common.Now().UnixNano())
 	var alphabet = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	length := rand.Intn(256)
+	if length == 0 {
+		length = 1
+	}
 	wordSlice := make([]rune, length)
 	for i := range wordSlice {
 		wordSlice[i] = alphabet[rand.Intn(len(alphabet))]
