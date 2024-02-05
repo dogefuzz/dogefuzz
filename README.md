@@ -1,8 +1,8 @@
 # Dogefuzz: A flexible fuzzer to detect common vulnerabilities in Smart Contracts
 
-## Setup
+## Setup services using docker
 
-First, run the docker compose file to start the local EVM node and Vandal API server.
+First, run the docker-compose file to start the local EVM (geth) node and Vandal API server.
 
 For Docker version >= v2.20.2:
 
@@ -16,19 +16,37 @@ For previous Docker versions:
 docker-compose -f ./infra/docker-compose.yml up -d
 ```
 
+## Setup geth service without docker (for debugging)
+
+First, you need to run vandal using docker: 
+
+```
+docker compose  -f "infra/docker-compose.yml" up -d --build vandal
+```
+
+Second, to run geth outside of docker, follow the steps below:
+
+1. Clone the repo https://github.com/PAMunb/dogefuzz-enhanced-go-ethereum
+2. Run the following commands inside the cloned dir
+```
+go run build/ci.go install -static ./cmd/geth
+ln -s build/bin/geth geth
+source ./vars_for_debuging_geth.sh
+./entrypoint.sh
+```
+
+## Run and execute dogefuzz fuzzer
+
+To build and run the fuzzer server (dogefuzz), run the following command:
+
+```
+go build ./cmd/dogefuzz && go run ./cmd/dogefuzz 
+```
+
+The server will start listening to port 3456 (default).
 To configure the fuzzer behavior, look into the [config.json](config.json) file.
 
-## Run and execute
-
-To run the fuzzer server, run the following command:
-
-```
-go run ./cmd/dogefuzz
-```
-
-And the server will start listen the port 3456 (default).
-
-To execute a fuzzing process, here an example of request:
+To execute a fuzzing process, here is an example of a request:
 
 ```
 curl -X POST \
@@ -67,13 +85,13 @@ Available options for `fuzzingType` are:
 - greybox
 - directed_greybox
 
-When no `arguments` were passed, the fuzzer will generate the contructor arguments.
+When no `arguments` are passed, the fuzzer will generate the constructor arguments.
 
-The final report will be generated in the end of the fuzzing campaign and named `result.json`.
+The final report will be generated at the end of the fuzzing campaign and named `result.json`.
 
 Note: The `contractSource` must be a JSON string, you can use sites and tools to do a JSON Stringify operation, as we need to convert CR/LF characters to their textual representation.
 
 ## Code Structure
 
-1. ./assets/contracts - Directory where agent's source code are located.
+1. ./assets/contracts - Directory where the agent's source code is located.
 2. ./infra - Contains Docker files and Docker compose files.
